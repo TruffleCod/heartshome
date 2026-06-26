@@ -5,6 +5,7 @@ import HeartHomeHeader from '../components/HeartHomeHeader';
 import InternalForumCaveBackdrop from '../components/InternalForumCaveBackdrop';
 import InternalForumEyesBackground from '../components/InternalForumEyesBackground';
 import VerificationModal from '../components/VerificationModal';
+import { publicPath } from '../utils/publicPath';
 import {
   INTERNAL_FORUM_BLACK,
   INTERNAL_FORUM_DARK_SURFACE,
@@ -48,7 +49,7 @@ const comments = [
       {
         type: 'link',
         href: '/p/44d2ae09f6',
-        label: 'http://localhost:5173/p/44d2ae09f6',
+        label: 'https://trufflecod.github.io/heartshome/p/44d2ae09f6',
       },
     ],
   },
@@ -80,7 +81,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {
@@ -405,7 +406,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                           style={paragraphStyle}
                         >
                           <a
-                            href={paragraph.href}
+                            href={publicPath(paragraph.href)}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{

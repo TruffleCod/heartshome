@@ -1,4 +1,5 @@
 import { DongyangOldStoriesLayout } from '../../DongyangOldStoriesBlog';
+import { publicPath } from '../../../utils/publicPath';
 
 const paragraphs = [
   '3月4日，雨',
@@ -34,7 +35,7 @@ export default function WestHillSiteCollapse() {
           <div className="dy-post-time">2005-03-04 22:17</div>
           <img
             className="dy-signature"
-            src="/images/blog/lihongyu-sign.png"
+            src={publicPath('images/blog/lihongyu-sign.png')}
             alt="李宏宇签名"
           />
           {paragraphs.map((paragraph) => (
@@ -43,7 +44,7 @@ export default function WestHillSiteCollapse() {
           <div className="dy-investigation-photos">
             {investigationImages.map((image, index) => (
               <figure className="dy-investigation-photo" key={image}>
-                <img src={image} alt={`西山旧址调查照片 ${index + 1}`} />
+                <img src={publicPath(image)} alt={`西山旧址调查照片 ${index + 1}`} />
               </figure>
             ))}
           </div>

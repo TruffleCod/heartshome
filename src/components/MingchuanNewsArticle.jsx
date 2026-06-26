@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MingchuanFloatingAds from './MingchuanFloatingAds';
+import { publicPath } from '../utils/publicPath';
 
 const GLITCH_TEXT = '请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名';
 const BODY_GLITCH_CHANCE = 0.3;
@@ -32,7 +33,7 @@ function renderFigure(figure) {
       }}
     >
       <img
-        src={figure.src}
+        src={publicPath(figure.src)}
         alt={figure.alt || ''}
         style={{
           display: 'block',

@@ -4,6 +4,7 @@ import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
+import { publicPath } from '../utils/publicPath';
 
 const EMERGENCY_HELP_PATH = '/p/ad5f0c8b62';
 
@@ -62,7 +63,7 @@ export default function ForumRulesPost() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   return (

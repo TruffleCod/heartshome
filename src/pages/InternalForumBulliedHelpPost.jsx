@@ -4,6 +4,7 @@ import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
+import { publicPath } from '../utils/publicPath';
 import {
   INNER_FORUM_LIGHT_ACCENT,
   INNER_FORUM_LIGHT_BG,
@@ -46,7 +47,7 @@ export default function InternalForumBulliedHelpPost() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {

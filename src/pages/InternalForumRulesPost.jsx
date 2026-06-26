@@ -5,6 +5,7 @@ import HeartHomeHeader from '../components/HeartHomeHeader';
 import InternalForumCaveBackdrop from '../components/InternalForumCaveBackdrop';
 import InternalForumEyesBackground from '../components/InternalForumEyesBackground';
 import VerificationModal from '../components/VerificationModal';
+import { publicPath } from '../utils/publicPath';
 import {
   INTERNAL_FORUM_BLACK,
   INTERNAL_FORUM_GLOW,
@@ -28,7 +29,7 @@ export default function InternalForumRulesPost() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {

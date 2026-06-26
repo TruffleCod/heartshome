@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DongyangOldStoriesLayout } from '../../DongyangOldStoriesBlog';
+import { publicPath } from '../../../utils/publicPath';
 
 const paragraphs = [
   '5月25日，阴',
@@ -223,7 +224,7 @@ export default function MingchuanThirdMiddleCaseFour() {
           <div className="dy-post-time">2005-05-25 22:04</div>
           <img
             className="dy-signature"
-            src="/images/blog/lihongyu-sign.png"
+            src={publicPath('images/blog/lihongyu-sign.png')}
             alt="李宏宇签名"
           />
           {visibleParagraphs.map((paragraph) => (

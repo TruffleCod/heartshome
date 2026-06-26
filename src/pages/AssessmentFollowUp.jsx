@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { publicPath } from '../utils/publicPath';
 
 const CHOICE_QUESTIONS = [
   {
@@ -51,7 +52,7 @@ const FLASH_IMAGES = [
   '/images/followup/flash-3.png',
   '/images/followup/flash-4.png',
 ];
-const FOLLOWUP_CURSOR = "url('/images/followup/cursor-knife.svg') 8 6, auto";
+const FOLLOWUP_CURSOR = `url('${publicPath('images/followup/cursor-knife.svg')}') 8 6, auto`;
 const COMPLETE_TEXT = '恭喜您已登陆，当前登陆身份为花匠338。\n系统已记录下你的选择。\n\n请选择下一步。';
 const COMPLETE_HIGHLIGHT = '花匠338';
 const FINAL_NAME_SCRIBBLE_CONFIG = {
@@ -1402,7 +1403,7 @@ export default function AssessmentFollowUp() {
           }}
         >
           <img
-            src={FLASH_IMAGES[currentFlashImageIndex]}
+            src={publicPath(FLASH_IMAGES[currentFlashImageIndex])}
             alt={`闪回画面${currentFlashImageIndex + 1}`}
             style={{
               width: '100%',
@@ -1829,4 +1830,3 @@ export default function AssessmentFollowUp() {
     </div>
   );
 }
-

@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { publicPath } from '../utils/publicPath';
 
 const NEWS_RED = '#8b0000';
 const INK = '#141414';
@@ -125,7 +126,7 @@ function ImageBox({ ad, height = '100%', fit = 'cover' }) {
       }}
     >
       <img
-        src={ad.image}
+        src={publicPath(ad.image)}
         alt=""
         style={{
           display: 'block',

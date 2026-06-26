@@ -1,5 +1,6 @@
 ﻿import { useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { publicPath } from '../utils/publicPath';
 
 const menuItems = [
   { label: '首页', icon: '⌂', href: '/p/71a6d0e2bf' },
@@ -282,7 +283,7 @@ function InteractiveMap() {
       >
         <img
           className="dy-map-image"
-          src="/images/mingchuan-map.png"
+          src={publicPath('images/mingchuan-map.png')}
           alt="明川市地图"
           draggable="false"
           style={{
@@ -1111,9 +1112,9 @@ export function DongyangOldStoriesLayout({ children }) {
       <main className="dy-page">
         <div className="dy-shell">
           <div className="dy-topline">
-            <a className="dy-brand" href="/p/71a6d0e2bf">
+            <Link className="dy-brand" to="/p/71a6d0e2bf">
               <strong>东阳旧事</strong>
-            </a>
+            </Link>
             <span className="dy-tagline">一个记者，只写给自己看的手札记录</span>
           </div>
 
@@ -1156,10 +1157,10 @@ export function DongyangOldStoriesLayout({ children }) {
                   <span>{item.label}</span>
                 </button>
               ) : (
-                <a className="dy-side-button" href={item.href} key={item.label}>
+                <Link className="dy-side-button" to={item.href} key={item.label}>
                   <span className="dy-side-icon" aria-hidden="true">{item.icon}</span>
                   <span>{item.label}</span>
-                </a>
+                </Link>
               )
             )}
           </nav>
@@ -1201,7 +1202,7 @@ export default function DongyangOldStoriesBlog() {
       <article className="dy-card">
         <div
           className="dy-cover"
-          style={{ '--dy-cover-image': 'url("/images/news/west-hill.png")' }}
+          style={{ '--dy-cover-image': `url("${publicPath('images/news/west-hill.png')}")` }}
           aria-hidden="true"
         />
         <div className="dy-card-body">
@@ -1264,7 +1265,7 @@ export function DongyangOldStoriesSearch() {
                 <div className="dy-image-links">
                   {(item.paths || [item.path]).map((path, index) => (
                     <a
-                      href={path}
+                      href={publicPath(path)}
                       target="_blank"
                       rel="noopener noreferrer"
                       key={path}
@@ -1273,7 +1274,7 @@ export function DongyangOldStoriesSearch() {
                     </a>
                   ))}
                   {item.downloadPath ? (
-                    <a href={item.downloadPath} download={item.downloadName || true}>
+                    <a href={publicPath(item.downloadPath)} download={item.downloadName || true}>
                       查看译文
                     </a>
                   ) : null}

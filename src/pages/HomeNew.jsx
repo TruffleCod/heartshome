@@ -5,6 +5,7 @@ import LogoPng from '../assets/logo.png';
 import ConsultantCarousel from '../components/ConsultantCarousel';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
+import { publicPath } from '../utils/publicPath';
 
 export default function HomeNew() {
   const [showVerification, setShowVerification] = useState(false);
@@ -15,7 +16,7 @@ export default function HomeNew() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   return (

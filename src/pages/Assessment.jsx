@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import VerificationModal from '../components/VerificationModal';
+import { publicPath } from '../utils/publicPath';
 
 const questions = [
   {
@@ -180,7 +181,7 @@ export default function Assessment() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   const handleChange = (questionId, value) => {

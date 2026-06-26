@@ -1,3 +1,5 @@
+import { publicPath } from '../utils/publicPath';
+
 export default function InternalForumCaveBackdrop({ active }) {
   if (!active) {
     return null;
@@ -46,7 +48,7 @@ export default function InternalForumCaveBackdrop({ active }) {
           style={{
             position: 'absolute',
             inset: '-2%',
-            backgroundImage: 'url("/images/blog/background.png")',
+            backgroundImage: `url("${publicPath('images/blog/background.png')}")`,
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',

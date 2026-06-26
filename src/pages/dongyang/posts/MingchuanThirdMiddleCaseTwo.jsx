@@ -1,4 +1,5 @@
 import { DongyangOldStoriesLayout } from '../../DongyangOldStoriesBlog';
+import { publicPath } from '../../../utils/publicPath';
 
 const paragraphs = [
   '4月25日，大雾',
@@ -32,7 +33,7 @@ export default function MingchuanThirdMiddleCaseTwo() {
           <div className="dy-post-time">2005-04-25 22:58</div>
           <img
             className="dy-signature"
-            src="/images/blog/lihongyu-sign.png"
+            src={publicPath('images/blog/lihongyu-sign.png')}
             alt="李宏宇签名"
           />
           {paragraphs.map((paragraph) => (
@@ -40,7 +41,7 @@ export default function MingchuanThirdMiddleCaseTwo() {
           ))}
           <div className="dy-investigation-photos">
             <figure className="dy-investigation-photo">
-              <img src="/images/blog/2005-04-25.png" alt="明川三中少女失踪案调查照片" />
+              <img src={publicPath('images/blog/2005-04-25.png')} alt="明川三中少女失踪案调查照片" />
             </figure>
           </div>
         </div>

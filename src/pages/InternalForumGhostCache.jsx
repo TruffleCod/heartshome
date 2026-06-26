@@ -1,5 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 
+import { publicPath } from '../utils/publicPath';
+
 const RUNNER_WIDTH = 126;
 const RUNNER_HEIGHT = 126;
 const RUNNER_X = 72;
@@ -35,7 +37,7 @@ const GROUND_LIBRARY = [
         baseY: -1,
         render: () => (
           <img
-            src={src}
+            src={publicPath(src)}
             alt=""
             aria-hidden="true"
             style={{
@@ -65,7 +67,7 @@ const GROUND_LIBRARY = [
         baseY: -1,
         render: (animationFrame = 0) => (
           <img
-            src={animationFrame % 2 === 0 ? '/images/followup/human-1.png' : '/images/followup/human-2.png'}
+            src={publicPath(animationFrame % 2 === 0 ? '/images/followup/human-1.png' : '/images/followup/human-2.png')}
             alt=""
             aria-hidden="true"
             style={{
@@ -93,7 +95,7 @@ const BONUS_LIBRARY = [
     collisionInsetY: 8,
     render: () => (
       <img
-        src="/images/followup/heart.png"
+        src={publicPath('images/followup/heart.png')}
         alt=""
         aria-hidden="true"
         style={{
@@ -118,7 +120,7 @@ function renderRunner(phase, animationFrame) {
 
   return (
     <img
-      src={runnerSrc}
+      src={publicPath(runnerSrc)}
       alt=""
       aria-hidden="true"
       style={{

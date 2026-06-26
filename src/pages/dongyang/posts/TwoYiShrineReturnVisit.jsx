@@ -1,4 +1,5 @@
 import { DongyangOldStoriesLayout } from '../../DongyangOldStoriesBlog';
+import { publicPath } from '../../../utils/publicPath';
 
 const paragraphs = [
   '3月7日，阴',
@@ -33,7 +34,7 @@ export default function TwoYiShrineReturnVisit() {
           <div className="dy-post-time">2005-03-07 21:36</div>
           <img
             className="dy-signature"
-            src="/images/blog/lihongyu-sign.png"
+            src={publicPath('images/blog/lihongyu-sign.png')}
             alt="李宏宇签名"
           />
           {paragraphs.map((paragraph) => (

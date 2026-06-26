@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import VerificationModal from '../components/VerificationModal';
+import { publicPath } from '../utils/publicPath';
 
 const forumPosts = [
   {
@@ -38,7 +39,7 @@ export default function Forum() {
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open('/p/b12e8f40a6', '_blank', 'noopener,noreferrer');
+    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
   };
 
   return (
