@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="10" fill="#f4efe4"/>
+  <rect x="7" y="7" width="50" height="50" rx="6" fill="#fffaf0" stroke="#6b5135" stroke-width="3"/>
+  <text x="32" y="44" text-anchor="middle" font-family="KaiTi, STKaiti, SimKai, serif" font-size="38" font-weight="700" fill="#6b2f22">&#19996;</text>
+  <path d="M16 15h32" stroke="#9b2f2f" stroke-width="3" stroke-linecap="round"/>
+</svg>
