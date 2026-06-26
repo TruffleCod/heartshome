@@ -78,7 +78,7 @@ const pageRoutes = [
   { path: '/p/f2c96a10de', component: InternalForumRulesPost, pageNumber: '18', progressTheme: 'innerDark' },
   { path: '/p/0b9e71d4ac', component: InternalForumThanksSleepPost, pageNumber: '19', progressTheme: 'innerDark' },
   { path: '/p/94dc1b7e03', component: InnerForumWorkspace, pageNumber: '22', progressTheme: 'innerWorkspace' },
-  { path: '/p/b80a4e6c1f', component: InternalForumBulliedHelpPost, pageNumber: '20', progressTheme: 'innerLight' },
+  { path: '/p/b80a4e6c1f', component: InternalForumBulliedHelpPost, pageNumber: '20' },
   { path: '/p/5a1f90d7c3', component: InternalForumPlantingCeremonyReplyPost, pageNumber: '21', progressTheme: 'innerDark' },
   { path: '/p/e08c72fa9d', component: InternalForumGhostCache, pageNumber: '43', hideProgressBanner: true, site: 'blackFlower' },
   { path: '/p/6c9f02a7bd', component: InternalForumRitualEntry, pageNumber: '44', progressTheme: 'charcoal', site: 'blackFlower' },

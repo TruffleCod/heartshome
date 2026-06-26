@@ -5,14 +5,6 @@ import HeartHomeHeader from '../components/HeartHomeHeader';
 import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
-import {
-  INNER_FORUM_LIGHT_ACCENT,
-  INNER_FORUM_LIGHT_BG,
-  INNER_FORUM_LIGHT_BORDER,
-  INNER_FORUM_LIGHT_MUTED,
-  INNER_FORUM_LIGHT_SURFACE_ALT,
-  INNER_FORUM_LIGHT_TEXT,
-} from '../constants/internalForumTheme';
 
 const comments = [
   {
@@ -64,15 +56,15 @@ export default function InternalForumBulliedHelpPost() {
     <div
       style={{
         minHeight: '100vh',
-        background: INNER_FORUM_LIGHT_BG,
-        color: INNER_FORUM_LIGHT_TEXT,
+        background: '#ffffff',
+        color: '#26313d',
         display: 'flex',
         flexDirection: 'column',
         fontFamily:
           'Inter, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif',
       }}
     >
-      <HeartHomeHeader variant="innerLight" />
+      <HeartHomeHeader />
 
       <main
         style={{
@@ -98,9 +90,9 @@ export default function InternalForumBulliedHelpPost() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: INNER_FORUM_LIGHT_ACCENT,
+            background: '#1f4d33',
             color: '#ffffff',
-            border: `1px solid ${INNER_FORUM_LIGHT_ACCENT}`,
+            border: '1px solid #1a412b',
             textDecoration: 'none',
             fontSize: 14,
             fontWeight: 800,
@@ -125,7 +117,7 @@ export default function InternalForumBulliedHelpPost() {
           <h1
             style={{
               margin: '0 0 46px',
-              color: INNER_FORUM_LIGHT_ACCENT,
+              color: '#243142',
               fontSize: 34,
               fontWeight: 800,
               lineHeight: 1.35,
@@ -138,7 +130,7 @@ export default function InternalForumBulliedHelpPost() {
           <div
             style={{
               margin: '0 0 56px',
-              color: INNER_FORUM_LIGHT_MUTED,
+              color: '#334155',
               display: 'flex',
               flexWrap: 'wrap',
               gap: '10px 18px',
@@ -160,9 +152,9 @@ export default function InternalForumBulliedHelpPost() {
               margin: '0 0 30px',
               padding: '10px 16px',
               borderRadius: 999,
-              background: INNER_FORUM_LIGHT_SURFACE_ALT,
-              border: `1px solid ${INNER_FORUM_LIGHT_BORDER}`,
-              color: INNER_FORUM_LIGHT_MUTED,
+              background: '#f7fbf7',
+              border: '1px solid #dfe7e2',
+              color: '#66766c',
               fontSize: 14,
               fontWeight: 700,
               lineHeight: 1.6,
@@ -171,28 +163,28 @@ export default function InternalForumBulliedHelpPost() {
             该贴子被锁定中，无法公开
           </div>
 
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             对不起有些标题党了，打这篇帖子之前我删了很多遍，因为我也不知道这算不算霸凌。可能只是我太敏感，或者我本来就是那种很容易把小事想得很严重的人。
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             我是一个高二女生。这学期开学，班里有几个女生一直说我“装”。一开始只是很小的事，比如我回答问题的时候，她们会在下面小声笑。我听不清完整的话，但能听到“又来了”“好会表现”之类的话。有一次老师夸我作文写得好，下课以后她们就在后面说：“有些人真的很会立人设。”
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             我以前偶尔会穿裙子去学校，也会别一些小发卡什么的，现在我不太敢了。那几个人会说：“上个学而已，这么漂亮打扮给谁看啊。”如果我正好和男生说话了，她们就起哄说“小公主来了！”但如果我不说话，她们又说我在装清高。
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             最近班级群现在有人会用“👸”这个表情来指代我。她们不会直接叫我的名字，也不会当着老师的面说什么很难听的话。她们只是在群里发👸的表情，或者说“某些公主又开始飘了”如果我问，她们就会说：“你怎么什么都往自己身上套啊？”或者说：“我们又没说你，你这么急干嘛？”
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             我试过告诉班主任，但他听完以后说，青春期女生之间讲话，有时候确实是会比较没有轻重，让我不要太在意。还说“你把心思多放在学习上，好好提升自己，不要把同学对你的评价放在心上”。听完以后我更难受了。
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             后来她们好像知道我跟老师说过了，就更不跟我说话了，我路过的时候大家都会突然变得安静，或者互相看一眼，然后故意说：“别说了，等下人家又觉得我们欺负她”。有一次我只是请同桌帮我递一下作业，她们就在后面笑，说：“小公主又需要人伺候了。”
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             现在我每天都在想自己是不是哪里不对。是不是我真的很装？
           </p>
-          <p style={{ margin: '0 0 22px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             我不举手回答问题，也不穿喜欢的裙子去上学，走路也尽量不经过她们那边，但她们还是能找到新的话来说我。
             <br />
             我现在只要听见后面有人笑，就会觉得是在笑我。群里有人发一个表情，我会反复想是不是在影射我。我知道这样很累，也很可笑，可是我控制不住。
@@ -200,7 +192,7 @@ export default function InternalForumBulliedHelpPost() {
           <p style={{ margin: '0 0 22px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             对不起，我写到这里还是觉得自己很矫情。明明没有人打我，也没有发生什么特别严重的事。
           </p>
-          <p style={{ margin: '0 0 56px', color: INNER_FORUM_LIGHT_TEXT, fontSize: 21, lineHeight: 1.95 }}>
+          <p style={{ margin: '0 0 56px', color: '#26313d', fontSize: 21, lineHeight: 1.95 }}>
             但我真的每天都很难受。
           </p>
 
@@ -218,7 +210,6 @@ export default function InternalForumBulliedHelpPost() {
         contentMaxWidth={980}
         outerHorizontalPadding={0}
         innerHorizontalPadding={42}
-        variant="innerLight"
       />
 
       {showVerification && (
