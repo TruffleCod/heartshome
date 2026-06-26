@@ -114,7 +114,7 @@ export default function HeartHomeFooter({
             fontWeight: 700,
           }}
         >
-          <Link to="/p/a8f3c1e29b" style={{ color: styles.text, textDecoration: 'none' }}>
+          <Link to="/" style={{ color: styles.text, textDecoration: 'none' }}>
             首页
           </Link>
           <Link to="/p/4d9e2b7a10" style={{ color: styles.text, textDecoration: 'none' }}>

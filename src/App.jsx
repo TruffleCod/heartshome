@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import PageProgressBanner from './components/PageProgressBanner';
 import ScrollToTop from './components/ScrollToTop';
 import HomeNew from './pages/HomeNew';
@@ -51,7 +51,7 @@ import InternalForumRitualEntry from './pages/InternalForumRitualEntry';
 import InternalForumRitualQuestions from './pages/InternalForumRitualQuestions';
 
 const pageRoutes = [
-  { path: '/p/a8f3c1e29b', component: HomeNew, pageNumber: '01' },
+  { path: '/', component: HomeNew, pageNumber: '01' },
   { path: '/p/4d9e2b7a10', component: DiseaseInfo, pageNumber: '02' },
   { path: '/p/b12e8f40a6', component: Forum, pageNumber: '04' },
   { path: '/p/d3a90b7c2e', component: ForumRulesPost, pageNumber: '07' },
@@ -235,7 +235,6 @@ const pageRoutes = [
 ];
 
 const paths = {
-  home: '/p/a8f3c1e29b',
   diseaseInfo: '/p/4d9e2b7a10',
   forum: '/p/b12e8f40a6',
   forumRules: '/p/d3a90b7c2e',
@@ -412,7 +411,6 @@ function AppRoutes() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Navigate to={paths.home} replace />} />
         <Route path={paths.mingchuanSearch} element={<MingchuanNewsSearch />} />
         <Route path={paths.dongyangSearch} element={<DongyangOldStoriesSearch />} />
         {pageRoutes.map((route, index) => {

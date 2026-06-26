@@ -788,7 +788,7 @@ export default function InternalForumRitualQuestions() {
         ))}
       </div>
       <div style={{ marginTop: 34 }}>
-        <Link to="/p/a8f3c1e29b" style={endingReturnButtonStyle}>
+        <Link to="/" style={endingReturnButtonStyle}>
           返回
         </Link>
       </div>

@@ -46,7 +46,7 @@ export default function HeartHomeHeader({ dark = false, variant = 'default' }) {
       }}
     >
       <Link
-        to="/p/a8f3c1e29b"
+        to="/"
         aria-label="返回心之家首页"
         onClick={() => {
           window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
