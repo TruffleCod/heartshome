@@ -1202,7 +1202,7 @@ export default function DongyangOldStoriesBlog() {
       <article className="dy-card">
         <div
           className="dy-cover"
-          style={{ '--dy-cover-image': `url("${publicPath('images/news/west-hill.png')}")` }}
+          style={{ '--dy-cover-image': `url("${publicPath('images/blog/LHY.png')}")` }}
           aria-hidden="true"
         />
         <div className="dy-card-body">
