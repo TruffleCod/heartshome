@@ -291,21 +291,26 @@ const paths = {
 const siteProfiles = {
   heartHome: {
     title: '心之家',
-    icon: '/favicon-heart-home.svg',
+    icon: 'favicon-heart-home.svg',
   },
   mingchuanNews: {
     title: '明川新闻网',
-    icon: '/favicon-mingchuan-news.svg',
+    icon: 'favicon-mingchuan-news.svg',
   },
   dongyangBlog: {
     title: '东阳旧事博客',
-    icon: '/favicon-dongyang-blog.svg',
+    icon: 'favicon-dongyang-blog.svg',
   },
   blackFlower: {
     title: '心之家',
-    icon: '/favicon-black-flower.svg',
+    icon: 'favicon-black-flower.svg',
   },
 };
+
+const routerBasename =
+  import.meta.env.BASE_URL === '/'
+    ? undefined
+    : import.meta.env.BASE_URL.replace(/\/$/, '');
 
 function getSiteProfile(pathname) {
   if (pathname === paths.mingchuanSearch) {
@@ -330,7 +335,7 @@ function updateFavicon(iconHref) {
   }
 
   iconLink.type = 'image/svg+xml';
-  iconLink.href = iconHref;
+  iconLink.href = `${import.meta.env.BASE_URL}${iconHref}`;
 }
 
 function getTotalPages() {
@@ -451,7 +456,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <AppRoutes />
     </BrowserRouter>
   );
