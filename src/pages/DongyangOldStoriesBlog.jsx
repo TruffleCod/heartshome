@@ -1283,7 +1283,7 @@ export function DongyangOldStoriesSearch() {
             ) : item.type === 'text' ? (
               <a
                 className="dy-result-card"
-                href={item.path}
+                href={publicPath(item.path)}
                 target="_blank"
                 rel="noopener noreferrer"
                 key={item.id}

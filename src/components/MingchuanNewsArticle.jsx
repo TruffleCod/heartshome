@@ -525,7 +525,7 @@ export default function MingchuanNewsArticle({
                   {visibleRelatedLinks.map((link, index) => (
                     <a
                       key={link.href}
-                      href={link.href}
+                      href={publicPath(link.href)}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
