@@ -2,6 +2,7 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import PageProgressBanner from './components/PageProgressBanner';
 import ScrollToTop from './components/ScrollToTop';
+import StartGame from './pages/StartGame';
 import HomeNew from './pages/HomeNew';
 import Forum from './pages/Forum';
 import ForumRulesPost from './pages/ForumRulesPost';
@@ -411,6 +412,7 @@ function AppRoutes() {
     <>
       <ScrollToTop />
       <Routes>
+        <Route path="/start-game" element={<StartGame />} />
         <Route path={paths.mingchuanSearch} element={<MingchuanNewsSearch />} />
         <Route path={paths.dongyangSearch} element={<DongyangOldStoriesSearch />} />
         {pageRoutes.map((route, index) => {
