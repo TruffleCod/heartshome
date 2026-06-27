@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 
 import { publicPath } from '../utils/publicPath';
+import { preloadImages } from '../utils/preloadAssets';
 
 const RUNNER_WIDTH = 126;
 const RUNNER_HEIGHT = 126;
@@ -18,6 +19,15 @@ const FLOWER_SOURCES = [
   '/images/followup/flower-1.png',
   '/images/followup/flower-2.png',
   '/images/followup/flower-3.png',
+];
+const GAME_IMAGE_SOURCES = [
+  '/images/followup/dino-1.png',
+  '/images/followup/dino-2.png',
+  '/images/followup/dino-3.png',
+  '/images/followup/human-1.png',
+  '/images/followup/human-2.png',
+  '/images/followup/heart.png',
+  ...FLOWER_SOURCES,
 ];
 
 const GROUND_LIBRARY = [
@@ -206,6 +216,10 @@ export default function InternalForumGhostCache() {
   });
 
   const [gameState, setGameState] = useState(gameStateRef.current);
+
+  useEffect(() => {
+    preloadImages(GAME_IMAGE_SOURCES);
+  }, []);
 
   const handleCloseTab = () => {
     window.close();
