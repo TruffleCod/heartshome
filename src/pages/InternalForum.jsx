@@ -168,7 +168,11 @@ export default function InternalForum() {
     setShowSuccessModal(true);
     successTimerRef.current = window.setTimeout(() => {
       if (targetPath === '/p/6c9f02a7bd') {
-        window.open(publicPath(targetPath), '_blank', 'noopener,noreferrer');
+        window.open(
+          'https://trufflecod.github.io/heartshome/p/6c9f02a7bd',
+          '_blank',
+          'noopener,noreferrer'
+        );
         setShowSuccessModal(false);
         return;
       }
