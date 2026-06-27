@@ -57,7 +57,7 @@ const pageRoutes = [
   { path: '/p/b12e8f40a6', component: Forum, pageNumber: '04' },
   { path: '/p/d3a90b7c2e', component: ForumRulesPost, pageNumber: '07' },
   { path: '/p/7c1e4a9f08', component: PostDetail, pageNumber: '08', props: { postId: 'holiday-flower' } },
-  { path: '/p/b80a4e6c1f', component: InternalForumBulliedHelpPost, pageNumber: '09', progressTheme: 'innerLight' },
+  { path: '/p/b80a4e6c1f', component: InternalForumBulliedHelpPost, pageNumber: '09', progressTheme: 'dark' },
   { path: '/p/2f8d6c0b91', component: PostDetail, pageNumber: '10', props: { postId: 'depression-memory' } },
   { path: '/p/8a04e6d3f2', component: PostDetail, pageNumber: '11', props: { postId: 'moral-kidnapping-rant' } },
   { path: '/p/91b7c2e0a4', component: PostDetail, pageNumber: '12', props: { postId: 'career-empty' } },

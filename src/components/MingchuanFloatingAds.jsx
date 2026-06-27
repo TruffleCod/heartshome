@@ -156,7 +156,7 @@ function NameForm({
     }
 
     if (!looksLikeName(name)) {
-      setMessage('请输入看起来像真实姓名的内容。');
+      setMessage('姓名格式不正确。');
       return;
     }
 

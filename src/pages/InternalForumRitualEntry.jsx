@@ -36,7 +36,7 @@ export default function InternalForumRitualEntry() {
     event.preventDefault();
     const normalized = gardenerName.trim().replace(/\s+/g, '');
     if (normalized !== '顾意') {
-      setNoticeText('身份校验失败，请确认是否输入园丁001的真名。');
+      setNoticeText('身份校验失败');
       return;
     }
 

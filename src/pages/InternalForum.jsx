@@ -212,7 +212,7 @@ export default function InternalForum() {
           currentAccount
         )
       ) {
-        setInnerForumMessage(`姓名不匹配：当前身份 ${INNER_FORUM_CURRENT_ID} 的姓名校验未通过。`);
+        setInnerForumMessage('姓名或密码错误。');
         return;
       }
 
@@ -224,7 +224,7 @@ export default function InternalForum() {
           currentAccount
         )
       ) {
-        setInnerForumMessage(`密码不匹配：当前身份 ${INNER_FORUM_CURRENT_ID} 的密码校验未通过。`);
+        setInnerForumMessage('姓名或密码错误。');
         return;
       }
 
@@ -249,7 +249,7 @@ export default function InternalForum() {
         return;
       }
 
-      setInnerForumMessage('登录校验未通过。');
+      setInnerForumMessage('姓名或密码错误。');
     } catch (error) {
       setInnerForumMessage('登录验证失败，请稍后再试。');
     } finally {
@@ -270,7 +270,7 @@ export default function InternalForum() {
     const targetAccount = INNER_FORUM_ACCOUNTS[normalizedId];
 
     if (!targetAccount) {
-      setSwitchAccountMessage(`登陆ID不存在：${normalizedId}`);
+      setSwitchAccountMessage('登陆信息有误。');
       return;
     }
 
@@ -290,7 +290,7 @@ export default function InternalForum() {
           targetAccount
         )
       ) {
-        setSwitchAccountMessage(`姓名不匹配：${normalizedId} 的姓名校验未通过。`);
+        setSwitchAccountMessage('登陆信息有误。');
         return;
       }
 
@@ -302,7 +302,7 @@ export default function InternalForum() {
           targetAccount
         )
       ) {
-        setSwitchAccountMessage(`密码不匹配：${normalizedId} 的密码校验未通过。`);
+        setSwitchAccountMessage('登陆信息有误。');
         return;
       }
 
@@ -324,7 +324,7 @@ export default function InternalForum() {
         return;
       }
 
-      setSwitchAccountMessage('登录校验未通过。');
+      setSwitchAccountMessage('登陆信息有误。');
     } catch (error) {
       setSwitchAccountMessage('登录验证失败，请稍后再试。');
     } finally {
