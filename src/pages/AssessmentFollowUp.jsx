@@ -1405,6 +1405,7 @@ export default function AssessmentFollowUp() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 12,
+            overflow: 'hidden',
           }}
         >
           <img
@@ -1415,6 +1416,7 @@ export default function AssessmentFollowUp() {
               height: '100%',
               objectFit: 'cover',
               filter: 'contrast(1.02) saturate(0.88)',
+              transform: 'scale(1.012)',
             }}
           />
         </div>
