@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
+import { preloadImages } from '../utils/preloadAssets';
 
 const CHOICE_QUESTIONS = [
   {
@@ -47,10 +48,10 @@ const CHOICE_QUESTIONS = [
 
 const NAME_ANSWERS = new Set(['赵兰子']);
 const FLASH_IMAGES = [
-  '/images/followup/flash-1.png',
-  '/images/followup/flash-2.png',
-  '/images/followup/flash-3.png',
-  '/images/followup/flash-4.png',
+  '/images/followup/flash-1.jpg',
+  '/images/followup/flash-2.jpg',
+  '/images/followup/flash-3.jpg',
+  '/images/followup/flash-4.jpg',
 ];
 const FOLLOWUP_CURSOR = `url('${publicPath('images/followup/cursor-knife.svg')}') 8 6, auto`;
 const COMPLETE_TEXT = '恭喜您已登陆，当前登陆身份为花匠338。\n系统已记录下你的选择。\n\n请选择下一步。';
@@ -662,6 +663,10 @@ export default function AssessmentFollowUp() {
     ],
     [],
   );
+
+  useEffect(() => {
+    preloadImages(FLASH_IMAGES);
+  }, []);
 
   useEffect(() => {
     const tickTimer = window.setInterval(() => {

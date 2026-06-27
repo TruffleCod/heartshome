@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import guZhengqing from '../assets/consultants/gu-zhengqing.png';
-import yuanZhixia from '../assets/consultants/yuan-zhixia.png';
+import yuanZhixia from '../assets/consultants/yuan-zhixia.jpg';
 import luXinyin from '../assets/consultants/lu-xinyin.png';
-import chenJi from '../assets/consultants/chen-ji.png';
+import chenJi from '../assets/consultants/chen-ji.jpg';
 
 const slides = [
   {

@@ -23,8 +23,8 @@ const paragraphs = [
 ];
 
 const caseImages = [
-  '/images/blog/2005-03-02.png',
-  '/images/blog/notebook.png',
+  '/images/blog/2005-03-02.jpg',
+  '/images/blog/notebook.jpg',
 ];
 
 export default function MingchuanThirdMiddleCaseThree() {
@@ -36,7 +36,7 @@ export default function MingchuanThirdMiddleCaseThree() {
           <div className="dy-post-time">2005-04-29 23:41</div>
           <img
             className="dy-signature"
-            src={publicPath('images/blog/lihongyu-sign.png')}
+            src={publicPath('images/blog/lihongyu-sign.jpg')}
             alt="李宏宇签名"
           />
           {paragraphs.map((paragraph) => (

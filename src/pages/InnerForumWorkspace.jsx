@@ -94,7 +94,7 @@ const MESSAGE_THREADS = [
         text: '你以为躲到这种地方发帖就没人能发现吗，烂菜叶～',
         time: '2026/05/14 19:03',
       },
-      { from: 'other', image: '/bully-photo.png', time: '2026/05/14 19:03' },
+      { from: 'other', image: '/bully-photo.jpg', time: '2026/05/14 19:03' },
       {
         from: 'other',
         text: '昨天的照片你好看吗？真后悔没把你的头发剪的更短一点啊哈哈哈',

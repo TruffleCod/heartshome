@@ -5,6 +5,7 @@ import HeartHomeHeader from '../components/HeartHomeHeader';
 import VerificationModal from '../components/VerificationModal';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
 import { publicPath } from '../utils/publicPath';
+import { preloadImage } from '../utils/preloadAssets';
 import {
   INNER_FORUM_LIGHT_ACCENT,
   INNER_FORUM_LIGHT_BG,
@@ -122,6 +123,10 @@ export default function InternalForum() {
   const [isCheckingSwitchAccount, setIsCheckingSwitchAccount] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const successTimerRef = useRef(null);
+
+  useEffect(() => {
+    preloadImage('images/blog/background.jpg');
+  }, []);
 
   useEffect(() => {
     return () => {

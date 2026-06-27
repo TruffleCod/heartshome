@@ -19,7 +19,7 @@ export default function NewsLiuXinyiBubbleHall() {
       date="2004-12-24"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/liu-xinyi-bubble-hall.png',
+        src: '/images/news/liu-xinyi-bubble-hall.jpg',
         alt: '明川市泡泡堂英雄大会报道配图',
         caption: '明川市首届《泡泡堂》英雄大会落幕，冠军队伍引发玩家关注。图源：明川新闻网',
       }}

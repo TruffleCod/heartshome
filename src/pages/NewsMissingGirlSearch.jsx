@@ -18,7 +18,7 @@ export default function NewsMissingGirlSearch() {
       date="2026-05-28"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/missing-girl-search.png',
+        src: '/images/news/missing-girl-search.jpg',
         alt: '赵某某失联事件相关报道配图',
         caption: '女生失联事件持续引发关注，警方仍在征集线索。图源：明川新闻网',
       }}

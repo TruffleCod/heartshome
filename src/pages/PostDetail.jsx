@@ -6,16 +6,16 @@ import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
 import posts from '../data/posts.json';
-import baiheImage from '../assets/flowers/baihe.png';
-import lianhuaImage from '../assets/flowers/lianhua.png';
-import meiguiImage from '../assets/flowers/meigui.png';
-import pugongyingImage from '../assets/flowers/pugongying.png';
-import sansejinImage from '../assets/flowers/sansejin.png';
-import xiangrikuiImage from '../assets/flowers/xiangrikui.png';
-import xianrenzhangImage from '../assets/flowers/xianrenzhang.png';
-import yuanweihuaImage from '../assets/flowers/yuanweihua.png';
-import yueguanghuaImage from '../assets/flowers/yueguanghua.png';
-import ziluolanImage from '../assets/flowers/ziluolan.png';
+import baiheImage from '../assets/flowers/baihe.jpg';
+import lianhuaImage from '../assets/flowers/lianhua.jpg';
+import meiguiImage from '../assets/flowers/meigui.jpg';
+import pugongyingImage from '../assets/flowers/pugongying.jpg';
+import sansejinImage from '../assets/flowers/sansejin.jpg';
+import xiangrikuiImage from '../assets/flowers/xiangrikui.jpg';
+import xianrenzhangImage from '../assets/flowers/xianrenzhang.jpg';
+import yuanweihuaImage from '../assets/flowers/yuanweihua.jpg';
+import yueguanghuaImage from '../assets/flowers/yueguanghua.jpg';
+import ziluolanImage from '../assets/flowers/ziluolan.jpg';
 
 const lifeFlowerMap = {
   0: {

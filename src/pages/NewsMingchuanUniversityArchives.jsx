@@ -17,7 +17,7 @@ export default function NewsMingchuanUniversityArchives() {
       date="2014-09-26"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/mingchuan-university-archives.png',
+        src: '/images/news/mingchuan-university-archives.jpg',
         alt: '明川大学地方文献整理工程资料图',
         caption: '明川大学地方文献整理工程公开部分旧志残卷资料。图源：明川新闻网',
       }}

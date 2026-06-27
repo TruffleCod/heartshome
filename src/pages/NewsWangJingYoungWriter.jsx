@@ -20,7 +20,7 @@ export default function NewsWangJingYoungWriter() {
       date="2004-11-18"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/wang-jing-young-writer.png',
+        src: '/images/news/wang-jing-young-writer.jpg',
         alt: '王静文学作品报道配图',
         caption: '王静的作品陆续在多家刊物发表，首部个人文集已正式出版。图源：明川新闻网',
       }}

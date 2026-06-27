@@ -224,7 +224,7 @@ export default function MingchuanThirdMiddleCaseFour() {
           <div className="dy-post-time">2005-05-25 22:04</div>
           <img
             className="dy-signature"
-            src={publicPath('images/blog/lihongyu-sign.png')}
+            src={publicPath('images/blog/lihongyu-sign.jpg')}
             alt="李宏宇签名"
           />
           {visibleParagraphs.map((paragraph) => (

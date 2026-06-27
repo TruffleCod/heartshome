@@ -15,7 +15,7 @@ export default function NewsChenJiAward() {
       date="2014-11-12"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/chenji.png',
+        src: '/images/news/chenji.jpg',
         alt: '陈霁在领奖典礼现场',
         caption: '陈霁在2014年全国大学生心理健康研究论坛领奖典礼现场。图源：明川新闻网',
       }}

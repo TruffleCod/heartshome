@@ -8,11 +8,11 @@ const BODY_GLITCH_CHANCE = 0.3;
 const NAV_GLITCH_CHANCE = 0.3;
 const IMAGE_GLITCH_CHANCE = 0.3;
 const GLITCH_IMAGE_SOURCES = [
-  '/images/news/glitch/glitch-news-1.png',
-  '/images/news/glitch/glitch-news-2.png',
-  '/images/news/glitch/glitch-news-3.png',
-  '/images/news/glitch/glitch-news-4.png',
-  '/images/news/glitch/glitch-news-5.png',
+  '/images/news/glitch/glitch-news-1.jpg',
+  '/images/news/glitch/glitch-news-2.jpg',
+  '/images/news/glitch/glitch-news-3.jpg',
+  '/images/news/glitch/glitch-news-4.jpg',
+  '/images/news/glitch/glitch-news-5.jpg',
 ];
 const NORMAL_NAV_ITEMS = ['首页', '要闻', '明川', '社会', '教育', '民生', '健康'];
 const NAV_GLITCH_ITEMS = Array.from({ length: 7 }, () => '正文');

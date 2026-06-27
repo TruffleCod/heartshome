@@ -24,7 +24,7 @@ export default function NewsHeartHomeFiveYears() {
       disableGlitches
       hideFloatingAds
       figure={{
-        src: '/images/news/guzhengqing-interview.png',
+        src: '/images/news/guzhengqing-interview.jpg',
         alt: '顾正清接受明川新闻网采访',
         caption: '顾正清在工作室接受明川新闻网记者采访。图源：明川新闻网',
       }}

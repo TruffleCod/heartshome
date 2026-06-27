@@ -54,7 +54,7 @@ const searchItems = [
     id: 'mingchuan-county-gazetteer',
     type: 'image',
     title: '（图片）',
-    paths: ['/images/明川县志1.png', '/images/明川县志2.png'],
+    paths: ['/images/明川县志1.jpg', '/images/明川县志2.jpg'],
     date: '明川县志',
     summary: '',
     keywords: ['明川县志'],
@@ -63,7 +63,7 @@ const searchItems = [
     id: 'mingchuan-waterways-addendum',
     type: 'image',
     title: '（图片）',
-    paths: ['/images/明川水经补遗1.png', '/images/明川水经补遗2.png'],
+    paths: ['/images/明川水经补遗1.jpg', '/images/明川水经补遗2.jpg'],
     date: '明川水经补遗',
     summary: '',
     keywords: ['明川水经补遗'],
@@ -72,7 +72,7 @@ const searchItems = [
     id: 'dongyang-strange-cults-study',
     type: 'image',
     title: '（图片）',
-    paths: ['/images/东阳异崇考1.png', '/images/东阳异崇考2.png'],
+    paths: ['/images/东阳异崇考1.jpg', '/images/东阳异崇考2.jpg'],
     downloadPath: '/images/复原译文.txt',
     downloadName: '复原译文.txt',
     date: '东阳异崇考',
@@ -83,7 +83,7 @@ const searchItems = [
     id: 'hidden-name-record',
     type: 'image',
     title: '（图片）',
-    path: '/images/幽名别录.png',
+    path: '/images/幽名别录.jpg',
     date: '幽名别录',
     summary: '',
     keywords: ['刘义庆'],
@@ -101,7 +101,7 @@ const searchItems = [
     id: 'candy-house-chat-screenshot',
     type: 'image',
     title: '（图片）',
-    path: '/images/聊天截图.png',
+    path: '/images/聊天截图.jpg',
     date: '聊天截图',
     summary: '',
     keywords: ['糖果屋'],
@@ -283,7 +283,7 @@ function InteractiveMap() {
       >
         <img
           className="dy-map-image"
-          src={publicPath('images/mingchuan-map.png')}
+          src={publicPath('images/mingchuan-map.jpg')}
           alt="明川市地图"
           draggable="false"
           style={{
@@ -1202,7 +1202,7 @@ export default function DongyangOldStoriesBlog() {
       <article className="dy-card">
         <div
           className="dy-cover"
-          style={{ '--dy-cover-image': `url("${publicPath('images/blog/LHY.png')}")` }}
+          style={{ '--dy-cover-image': `url("${publicPath('images/blog/LHY.jpg')}")` }}
           aria-hidden="true"
         />
         <div className="dy-card-body">

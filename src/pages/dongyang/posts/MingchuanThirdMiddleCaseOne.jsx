@@ -43,7 +43,7 @@ export default function MingchuanThirdMiddleCaseOne() {
           <div className="dy-post-time">2005-04-12 20:24</div>
           <img
             className="dy-signature"
-            src={publicPath('images/blog/lihongyu-sign.png')}
+            src={publicPath('images/blog/lihongyu-sign.jpg')}
             alt="李宏宇签名"
           />
           {paragraphs.map((paragraph) => (

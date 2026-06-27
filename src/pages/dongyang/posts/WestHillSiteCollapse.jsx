@@ -21,9 +21,9 @@ const paragraphs = [
 ];
 
 const investigationImages = [
-  '/images/blog/xishanjiuzhi-1.png',
-  '/images/blog/xishanjiuzhi-2.png',
-  '/images/blog/xishanjiuzhi-3.png',
+  '/images/blog/xishanjiuzhi-1.jpg',
+  '/images/blog/xishanjiuzhi-2.jpg',
+  '/images/blog/xishanjiuzhi-3.jpg',
 ];
 
 export default function WestHillSiteCollapse() {
@@ -35,7 +35,7 @@ export default function WestHillSiteCollapse() {
           <div className="dy-post-time">2005-03-04 22:17</div>
           <img
             className="dy-signature"
-            src={publicPath('images/blog/lihongyu-sign.png')}
+            src={publicPath('images/blog/lihongyu-sign.jpg')}
             alt="李宏宇签名"
           />
           {paragraphs.map((paragraph) => (

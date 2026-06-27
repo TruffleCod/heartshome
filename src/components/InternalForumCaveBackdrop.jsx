@@ -1,6 +1,12 @@
+import { useEffect } from 'react';
 import { publicPath } from '../utils/publicPath';
+import { preloadImage } from '../utils/preloadAssets';
 
 export default function InternalForumCaveBackdrop({ active }) {
+  useEffect(() => {
+    preloadImage('images/blog/background.jpg');
+  }, []);
+
   if (!active) {
     return null;
   }
@@ -48,7 +54,7 @@ export default function InternalForumCaveBackdrop({ active }) {
           style={{
             position: 'absolute',
             inset: '-2%',
-            backgroundImage: `url("${publicPath('images/blog/background.png')}")`,
+            backgroundImage: `url("${publicPath('images/blog/background.jpg')}")`,
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',

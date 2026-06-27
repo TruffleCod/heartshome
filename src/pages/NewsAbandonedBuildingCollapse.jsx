@@ -20,7 +20,7 @@ export default function NewsAbandonedBuildingCollapse() {
       date="2005-03-03"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/west-hill.png',
+        src: '/images/news/west-hill.jpg',
         alt: '西山旧址附近废弃建筑坍塌现场',
         caption: '西郊废弃建筑坍塌后，现场已被临时封锁。图源：明川新闻网',
       }}

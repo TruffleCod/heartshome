@@ -21,7 +21,7 @@ export default function NewsMingchuanThirdMiddleMissingGirls() {
       date="2005-05-22"
       paragraphs={paragraphs}
       figure={{
-        src: '/images/news/mingchuan-third-middle.png',
+        src: '/images/news/mingchuan-third-middle.jpg',
         alt: '明川三中校门外聚集的家长与记者',
         caption: '明川三中校门。 图源：明川新闻网',
       }}
