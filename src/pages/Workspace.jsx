@@ -5,6 +5,7 @@ import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import posts from '../data/posts.json';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
+import { publicPath } from '../utils/publicPath';
 
 const MENU_ITEMS = [
   { key: 'appointment', label: '预约咨询' },
@@ -349,7 +350,7 @@ export default function Workspace() {
     chatBodyRef.current.scrollTop += event.deltaY;
   };
   const handleOpenRecord = (path) => {
-    window.open(path, '_blank', 'noopener,noreferrer');
+    window.open(publicPath(path), '_blank', 'noopener,noreferrer');
   };
   const handleQueryRecordByInput = async () => {
     const normalized = normalizeInput(recordCodeInput).toUpperCase();
@@ -734,7 +735,7 @@ export default function Workspace() {
                         {message.image ? (
                           <button
                             type="button"
-                            onClick={() => setPreviewImageUrl(message.image)}
+                            onClick={() => setPreviewImageUrl(publicPath(message.image))}
                             style={{
                               border: 0,
                               background: 'transparent',
@@ -744,7 +745,7 @@ export default function Workspace() {
                             }}
                           >
                             <img
-                              src={message.image}
+                              src={publicPath(message.image)}
                               alt="聊天图片"
                               style={{
                                 display: 'block',

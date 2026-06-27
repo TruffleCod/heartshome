@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
+import { publicPath } from '../utils/publicPath';
 
 const CORRUPTION_START_MS = 30000;
 const CORRUPTION_STEP_MS = 5000;
@@ -495,7 +496,7 @@ export default function InnerForumWorkspace() {
   };
 
   const handleOpenRecord = (path) => {
-    window.open(path, '_blank', 'noopener,noreferrer');
+    window.open(publicPath(path), '_blank', 'noopener,noreferrer');
   };
 
   const handleQueryRecordByInput = async () => {
@@ -881,7 +882,7 @@ export default function InnerForumWorkspace() {
                         {message.image ? (
                           <button
                             type="button"
-                            onClick={() => setPreviewImageUrl(message.image)}
+                            onClick={() => setPreviewImageUrl(publicPath(message.image))}
                             style={{
                               border: 0,
                               background: 'transparent',
@@ -891,7 +892,7 @@ export default function InnerForumWorkspace() {
                             }}
                           >
                             <img
-                              src={message.image}
+                              src={publicPath(message.image)}
                               alt="聊天图片"
                               style={{
                                 display: 'block',
@@ -930,7 +931,7 @@ export default function InnerForumWorkspace() {
               {INNER_POSTS.map((post) => (
                 <a
                   key={post.id}
-                  href={post.to}
+                  href={publicPath(post.to)}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
