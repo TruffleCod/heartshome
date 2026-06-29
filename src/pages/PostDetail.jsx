@@ -327,7 +327,7 @@ export default function PostDetail({ postId: routedPostId }) {
                 <>
                   最离谱的是，我今天才发现，她居然还在心之家上发帖挂我们：
                   <Link
-                    to="/p/b80a4e6c1f"
+                    to="/p/b80a4e6c1e"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{

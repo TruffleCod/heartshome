@@ -10,7 +10,7 @@ const SOFT_GRAY = '#f3f3f3';
 const ADS = [
   {
     layout: 'split',
-    image: '/images/news/mingchuan-ad-0.png',
+    image: '/images/news/mingchuan-ad-0.jpg',
     eyebrow: '限时开放',
     brand: 'NAME FORTUNE',
     title: '姓名测试小工具',
@@ -21,7 +21,7 @@ const ADS = [
   },
   {
     layout: 'banner',
-    image: '/images/news/mingchuan-ad-1.png',
+    image: '/images/news/mingchuan-ad-1.jpg',
     eyebrow: '校友系统推荐',
     brand: 'CLASSMATE FINDER',
     title: '寻找多年未见的同学',
@@ -32,7 +32,7 @@ const ADS = [
   },
   {
     layout: 'poster',
-    image: '/images/news/mingchuan-ad-2.png',
+    image: '/images/news/mingchuan-ad-2.jpg',
     eyebrow: '今日体验名额',
     brand: 'GROWTH ARCHIVE',
     title: '青少年成长档案生成',
@@ -43,7 +43,7 @@ const ADS = [
   },
   {
     layout: 'notice',
-    image: '/images/news/mingchuan-ad-3.png',
+    image: '/images/news/mingchuan-ad-3.jpg',
     eyebrow: '明川旧闻订阅',
     brand: 'PUBLIC RECORD',
     title: '有人正在搜索你的名字',
@@ -54,7 +54,7 @@ const ADS = [
   },
   {
     layout: 'soft',
-    image: '/images/news/mingchuan-ad-4.png',
+    image: '/images/news/mingchuan-ad-4.jpg',
     eyebrow: '公益测试',
     brand: 'FLOWER REPORT',
     title: '你的名字适合哪种花？',

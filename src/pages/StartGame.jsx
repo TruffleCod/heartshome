@@ -62,7 +62,7 @@ export default function StartGame() {
         <section className="start-game-hero">
           <div>
             <p className="start-game-kicker">网页推理游戏</p>
-            <h1>心之家 少女失踪案</h1>
+            <h1>心之家 </h1>
           </div>
           <p>
             阅读以下故事背景与玩法说明后，点击“开始游戏”后，正式进入心之家的世界。

@@ -449,6 +449,7 @@ function AppRoutes() {
             />
           );
         })}
+        <Route path="/p/:postId" element={<PostDetail />} />
       </Routes>
     </>
   );
