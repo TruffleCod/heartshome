@@ -162,7 +162,7 @@ const searchItems = [
 ];
 
 function normalizeKeyword(value) {
-  return value.replace(/\s+/g, '').trim().toLowerCase();
+  return value.trim().toLowerCase();
 }
 
 function searchDongyangBlog(keyword) {
@@ -174,7 +174,7 @@ function searchDongyangBlog(keyword) {
 
   return searchItems.filter((item) =>
     item.keywords.some((keywordValue) =>
-      normalizeKeyword(keywordValue).includes(normalized)
+      normalizeKeyword(keywordValue) === normalized
     )
   );
 }

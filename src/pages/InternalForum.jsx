@@ -100,7 +100,7 @@ function matchesAccountPassword(accountId, normalizedPassword, candidateHash, ac
   }
 
   if (accountId === '园丁001') {
-    return normalizedPassword === 'hearmyheart';
+    return normalizedPassword === 'hearmyheart' || normalizedPassword === 'HEARMYHEART';
   }
 
   return false;

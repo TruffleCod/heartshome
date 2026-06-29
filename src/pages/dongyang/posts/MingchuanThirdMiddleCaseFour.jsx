@@ -176,6 +176,21 @@ export default function MingchuanThirdMiddleCaseFour() {
               outline: none;
             }
 
+            .dy-delete-cursor {
+              display: inline-block;
+              width: 0.62em;
+              height: 1.22em;
+              margin-left: 2px;
+              transform: translateY(0.18em);
+              background: #4a241d;
+              animation: dyDeleteCursorBlink 1s steps(1, end) infinite;
+            }
+
+            @keyframes dyDeleteCursorBlink {
+              0%, 45% { opacity: 1; }
+              46%, 100% { opacity: 0; }
+            }
+
             .dy-protocol-backdrop {
               position: fixed;
               inset: 0;
@@ -227,8 +242,13 @@ export default function MingchuanThirdMiddleCaseFour() {
             src={publicPath('images/blog/lihongyu-sign.jpg')}
             alt="李宏宇签名"
           />
-          {visibleParagraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {visibleParagraphs.map((paragraph, index) => (
+            <p key={`${paragraph}-${index}`}>
+              {paragraph}
+              {index === visibleParagraphs.length - 1 && remainingLength > 0 ? (
+                <span className="dy-delete-cursor" aria-hidden="true" />
+              ) : null}
+            </p>
           ))}
         </div>
       </article>
