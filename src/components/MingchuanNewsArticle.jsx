@@ -289,6 +289,7 @@ export default function MingchuanNewsArticle({
 
       if (event.key === '~' || event.key === '`' || event.code === 'Backquote') {
         event.preventDefault();
+        setKeyword('');
         setShowSearch(true);
         setError('');
       }

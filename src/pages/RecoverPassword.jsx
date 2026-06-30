@@ -237,6 +237,11 @@ export default function RecoverPassword() {
                       setMessage('');
                       setAccountChecked(false);
                     }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        handleCheckAccount();
+                      }
+                    }}
                     placeholder="请输入账户ID"
                     autoComplete="username"
                     style={{
@@ -327,6 +332,11 @@ export default function RecoverPassword() {
                         onChange={(event) => {
                           setSecurityAnswer(event.target.value);
                           setMessage('');
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            handleVerifySecurityAnswer();
+                          }
                         }}
                         placeholder="请输入答案"
                         style={{

@@ -2,7 +2,7 @@
 import { Link, useParams } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
-import PostInteractionPanel from '../components/PostInteractionPanel';
+import PostInteractionPanel, { getStoredPostLiked } from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
 import posts from '../data/posts.json';
@@ -136,8 +136,11 @@ export default function PostDetail({ postId: routedPostId }) {
   const { postId: paramPostId } = useParams();
   const postId = routedPostId || paramPostId;
   const post = posts.find((item) => String(item.id) === postId);
+  const likeStorageKey = post ? `post:${post.id}` : '';
   const [showVerification, setShowVerification] = useState(false);
-  const [likeCount, setLikeCount] = useState(Number(post?.likeCount || 0));
+  const [likeCount, setLikeCount] = useState(
+    () => Number(post?.likeCount || 0) + (getStoredPostLiked(likeStorageKey) ? 1 : 0)
+  );
   const [showReturnBubble, setShowReturnBubble] = useState(false);
   const [birthdayDigits, setBirthdayDigits] = useState('');
   const [lifeNumberResult, setLifeNumberResult] = useState(null);
@@ -363,6 +366,11 @@ export default function PostDetail({ postId: routedPostId }) {
                 onChange={(event) =>
                   setBirthdayDigits(String(event.target.value).replace(/\D/g, '').slice(0, 8))
                 }
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    onSubmitBirthday();
+                  }
+                }}
                 inputMode="numeric"
                 maxLength={10}
                 autoComplete="off"
@@ -405,6 +413,8 @@ export default function PostDetail({ postId: routedPostId }) {
           <PostInteractionPanel
             commentsDisabled={false}
             comments={comments}
+            likeCount={likeCount}
+            likeStorageKey={likeStorageKey}
             postAuthor={post.author}
             onLikeChange={(delta) => setLikeCount((current) => current + delta)}
           />

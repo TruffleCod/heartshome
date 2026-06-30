@@ -1,12 +1,28 @@
 ﻿import { useMemo, useState } from 'react';
 
+const POST_LIKE_STORAGE_PREFIX = 'heartHomePostLiked:';
+
+export function getStoredPostLiked(likeStorageKey) {
+  if (!likeStorageKey || typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    return window.localStorage.getItem(`${POST_LIKE_STORAGE_PREFIX}${likeStorageKey}`) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export default function PostInteractionPanel({
   commentsDisabled = false,
   onLikeChange,
+  likeCount = 0,
+  likeStorageKey = '',
   comments = [],
   postAuthor = '',
 }) {
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(() => getStoredPostLiked(likeStorageKey));
   const [isPressing, setIsPressing] = useState(false);
   const [isCommentPressing, setIsCommentPressing] = useState(false);
   const [showFakeEditor, setShowFakeEditor] = useState(false);
@@ -14,6 +30,16 @@ export default function PostInteractionPanel({
   const handleLike = () => {
     const nextLiked = !liked;
     setLiked(nextLiked);
+    if (likeStorageKey) {
+      try {
+        window.localStorage.setItem(
+          `${POST_LIKE_STORAGE_PREFIX}${likeStorageKey}`,
+          nextLiked ? 'true' : 'false'
+        );
+      } catch {
+        // Ignore storage failures; the visible like state still updates for this session.
+      }
+    }
     onLikeChange?.(nextLiked ? 1 : -1);
     setIsPressing(true);
     window.setTimeout(() => setIsPressing(false), 140);
@@ -99,7 +125,7 @@ export default function PostInteractionPanel({
               'transform 120ms ease, box-shadow 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease',
           }}
         >
-          {liked ? '已点赞' : '点赞'}
+          {liked ? `已点赞 ${likeCount}` : `点赞 ${likeCount}`}
         </button>
 
         <button

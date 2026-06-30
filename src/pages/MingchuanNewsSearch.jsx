@@ -190,6 +190,7 @@ export default function MingchuanNewsSearch() {
 
       if (event.key === '~' || event.key === '`' || event.code === 'Backquote') {
         event.preventDefault();
+        setSearchKeyword('');
         setShowSearch(true);
         setError('');
       }

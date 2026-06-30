@@ -2,11 +2,12 @@
 import { Link } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
-import PostInteractionPanel from '../components/PostInteractionPanel';
+import PostInteractionPanel, { getStoredPostLiked } from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
 
 const EMERGENCY_HELP_PATH = '/p/ad5f0c8b62';
+const LIKE_STORAGE_KEY = 'post:forum-rules';
 
 const ruleSections = [
   {
@@ -55,7 +56,9 @@ const ruleSections = [
 
 export default function ForumRulesPost() {
   const [showVerification, setShowVerification] = useState(false);
-  const [likeCount, setLikeCount] = useState(1280);
+  const [likeCount, setLikeCount] = useState(
+    () => 1280 + (getStoredPostLiked(LIKE_STORAGE_KEY) ? 1 : 0)
+  );
 
   const openForum = () => {
     setShowVerification(true);
@@ -215,6 +218,8 @@ export default function ForumRulesPost() {
 
           <PostInteractionPanel
             commentsDisabled
+            likeCount={likeCount}
+            likeStorageKey={LIKE_STORAGE_KEY}
             onLikeChange={(delta) => setLikeCount((current) => current + delta)}
           />
         </article>

@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
-import PostInteractionPanel from '../components/PostInteractionPanel';
+import PostInteractionPanel, { getStoredPostLiked } from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
 
@@ -27,10 +27,13 @@ const comments = [
     ],
   },
 ];
+const LIKE_STORAGE_KEY = 'post:bullied-help';
 
 export default function InternalForumBulliedHelpPost() {
   const [showVerification, setShowVerification] = useState(false);
-  const [likeCount, setLikeCount] = useState(128);
+  const [likeCount, setLikeCount] = useState(
+    () => 128 + (getStoredPostLiked(LIKE_STORAGE_KEY) ? 1 : 0)
+  );
   const [showReturnBubble, setShowReturnBubble] = useState(false);
 
   const openForum = () => {
@@ -199,6 +202,8 @@ export default function InternalForumBulliedHelpPost() {
           <PostInteractionPanel
             commentsDisabled={false}
             comments={comments}
+            likeCount={likeCount}
+            likeStorageKey={LIKE_STORAGE_KEY}
             postAuthor="孤独四叶草"
             onLikeChange={(delta) => setLikeCount((current) => current + delta)}
           />

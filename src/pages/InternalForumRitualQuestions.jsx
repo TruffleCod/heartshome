@@ -243,6 +243,7 @@ export default function InternalForumRitualQuestions() {
   const [endingContentOpacity, setEndingContentOpacity] = useState(0);
   const [isFinalConfirmOpen, setIsFinalConfirmOpen] = useState(false);
   const [isRecordNoticeOpen, setIsRecordNoticeOpen] = useState(false);
+  const [recordNoticeText, setRecordNoticeText] = useState('系统已记录下你的选择。');
   const [endingPopupText, setEndingPopupText] = useState('');
   const [typedIntroLength, setTypedIntroLength] = useState(0);
 
@@ -487,11 +488,16 @@ export default function InternalForumRitualQuestions() {
       return;
     }
 
-    if (normalizedInput !== currentQuestion.answer) {
-      setNoticeText('答案错误，请重新确认。');
+    if (!normalizedInput) {
+      setNoticeText('请输入答案。');
       return;
     }
 
+    setRecordNoticeText(
+      normalizedInput === currentQuestion.answer
+        ? '回答正确！系统已记录下你的选择。'
+        : '回答错误！系统已记录下你的选择。'
+    );
     setNoticeText('');
     setIsRecordNoticeOpen(true);
     if (recordNoticeTimerRef.current) {
@@ -759,7 +765,7 @@ export default function InternalForumRitualQuestions() {
   const renderRecordNoticeModal = () => (
     <div style={modalBackdropStyle}>
       <section role="status" aria-live="polite" style={recordNoticePanelStyle}>
-        <p style={modalTextStyle}>系统已记录下你的选择。</p>
+        <p style={recordNoticeTextStyle}>{recordNoticeText}</p>
       </section>
     </div>
   );
@@ -1030,7 +1036,7 @@ const modalPanelStyle = {
 
 const recordNoticePanelStyle = {
   ...modalPanelStyle,
-  width: 'min(520px, 88vw)',
+  width: 'min(820px, 92vw)',
   textAlign: 'center',
 };
 
@@ -1040,6 +1046,11 @@ const modalTextStyle = {
   fontSize: 'clamp(22px,2vw,30px)',
   lineHeight: 1.55,
   fontWeight: 700,
+};
+
+const recordNoticeTextStyle = {
+  ...modalTextStyle,
+  whiteSpace: 'nowrap',
 };
 
 const modalPrimaryButtonStyle = {
