@@ -37,6 +37,7 @@ const archivedMessages = [
     label: '暂存留言 3',
     author: 'LHY',
     paragraphs: [
+      '园丁的账号里有阻止仪式的唯一办法。我把线索藏在了新闻网的弹窗里，希望你能够破解它。',
       '一加一。',
       '我一半你一半。',
       '守门员。',

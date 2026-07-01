@@ -1376,7 +1376,13 @@ export function DongyangOldStoriesSearch() {
                 </div>
               </article>
             ) : (
-              <Link className="dy-result-card" to={item.path} key={item.id}>
+              <Link
+                className="dy-result-card"
+                to={item.path}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={item.id}
+              >
                 <p className="dy-result-type">博文链接 | {item.date}</p>
                 <h2>{item.title}</h2>
               </Link>

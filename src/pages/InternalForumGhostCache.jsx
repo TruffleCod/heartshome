@@ -659,7 +659,7 @@ export default function InternalForumGhostCache() {
                 lineHeight: 1.6,
               }}
             >
-              Oops, this page does not exist. Press space to start over.
+              Oops, this page does not exist. PRESS [SPACE] TO START OVER.
             </p>
           </div>
 
