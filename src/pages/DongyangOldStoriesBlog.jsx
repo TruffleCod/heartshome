@@ -95,7 +95,7 @@ const searchItems = [
     path: '/p/a0c8e37b5f',
     date: '2005-04-12',
     summary: '',
-    keywords: ['糖果屋'],
+    keywords: ['糖果屋','泡泡堂'],
   },
   {
     id: 'candy-house-chat-screenshot',
@@ -104,7 +104,7 @@ const searchItems = [
     path: '/images/聊天截图.jpg',
     date: '聊天截图',
     summary: '',
-    keywords: ['糖果屋'],
+    keywords: ['糖果屋','泡泡堂'],
   },
   {
     id: 'mingchuan-third-middle-case-two',
@@ -684,6 +684,76 @@ export function DongyangOldStoriesLayout({ children }) {
           line-height: 1.8;
         }
 
+        .dy-deleted-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 100;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+          background: rgba(42, 18, 15, 0.42);
+        }
+
+        .dy-deleted-modal {
+          width: min(420px, 92vw);
+          position: relative;
+          padding: 26px 28px 24px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,.22), transparent 45%),
+            repeating-linear-gradient(90deg, rgba(106, 22, 19, 0.05) 0 1px, transparent 1px 42px),
+            #ffeaa0;
+          border: 1px solid rgba(106, 22, 19, 0.52);
+          box-shadow: 9px 11px 0 rgba(106, 22, 19, 0.2), 0 18px 42px rgba(42, 18, 15, 0.26);
+          color: #2a120f;
+        }
+
+        .dy-deleted-modal::after {
+          content: "";
+          position: absolute;
+          inset: 9px;
+          border: 1px solid rgba(106, 22, 19, 0.12);
+          pointer-events: none;
+        }
+
+        .dy-deleted-modal h2 {
+          position: relative;
+          z-index: 1;
+          margin: 0 0 12px;
+          color: #6a1613;
+          font-size: 20px;
+          line-height: 1.45;
+        }
+
+        .dy-deleted-modal p {
+          position: relative;
+          z-index: 1;
+          margin: 0;
+          color: #4a241d;
+          font-family: Arial, "Microsoft YaHei", sans-serif;
+          font-size: 14px;
+          line-height: 1.9;
+        }
+
+        .dy-deleted-modal button {
+          position: relative;
+          z-index: 1;
+          height: 32px;
+          margin-top: 20px;
+          padding: 0 14px;
+          border: 1px solid rgba(106, 22, 19, 0.48);
+          background: #fff2bd;
+          color: #6a1613;
+          font-family: Arial, "Microsoft YaHei", sans-serif;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .dy-deleted-modal button:hover {
+          background: #6a1613;
+          color: #ffeaa0;
+        }
+
         .dy-card {
           position: relative;
         }
@@ -1248,6 +1318,7 @@ export function DongyangOldStoriesSearch() {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('q') || '';
   const results = searchDongyangBlog(keyword);
+  const [deletedResourceOpen, setDeletedResourceOpen] = useState(false);
 
   return (
     <DongyangOldStoriesLayout>
@@ -1298,7 +1369,7 @@ export function DongyangOldStoriesSearch() {
                   <button
                     className="dy-deleted-resource"
                     type="button"
-                    onClick={() => window.alert('该资源已被删除')}
+                    onClick={() => setDeletedResourceOpen(true)}
                   >
                     查看图片
                   </button>
@@ -1315,6 +1386,27 @@ export function DongyangOldStoriesSearch() {
           <div className="dy-no-results">没有检索到相关内容。</div>
         )}
       </section>
+      {deletedResourceOpen ? (
+        <div
+          className="dy-deleted-modal-backdrop"
+          role="presentation"
+          onClick={() => setDeletedResourceOpen(false)}
+        >
+          <section
+            className="dy-deleted-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dy-deleted-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="dy-deleted-modal-title">资源不可用</h2>
+            <p>该资源已被删除。</p>
+            <button type="button" onClick={() => setDeletedResourceOpen(false)}>
+              确定
+            </button>
+          </section>
+        </div>
+      ) : null}
     </DongyangOldStoriesLayout>
   );
 }

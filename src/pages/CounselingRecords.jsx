@@ -368,9 +368,9 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               <p className="hh-dialogue-line"><strong>花匠338：</strong>我写下她的名字以后没多久，人就不见了。而且，不只是她……这不是你第一次这么干了吧。</p>
               <p className="hh-dialogue-line"><strong>园丁001：</strong>……你查到了什么？</p>
               <p className="hh-dialogue-line"><strong>花匠338：</strong>
-                  我姐姐以前跟我说过，明川新闻网有一个隐藏的搜索功能，用电脑游戏常见的调出控制台的方法就可以解锁，像是有人故意留在系统里的后门。赵兰子失踪后，我用这个办法在明川新闻网上搜索了你们所有人的名字。结果我发现，二十多年前，明川也发生过类似的失踪案件。
+                  我姐姐以前跟我说过，明川新闻网有一个隐藏的搜索功能，用电脑游戏常见的调出控制台的方法就可以解锁，像是有人故意留在系统里的后门。赵兰子失踪后，我用这个办法在明川新闻网上追查了你们所有人。结果我发现，二十多年前，明川也发生过类似的失踪案件。
               </p>
-              <p className="hh-dialogue-line"><strong>园丁001：</strong>那又怎么样？旧新闻写得很夸张罢了。</p>
+              <p className="hh-dialogue-line"><strong>园丁001：</strong>那又怎么样？是那个记者写得太夸张了。而且他已经死了。</p>
               <p className="hh-dialogue-line"><strong>花匠338：</strong>你对那些女孩做了什么？栽种仪式是什么意思？你到底是谁？</p>
               <p className="hh-dialogue-line"><strong>园丁001：</strong>别在这里假装正义了。这不是你最想要的结果吗？</p>
               <p className="hh-dialogue-line"><strong>花匠338：</strong>我……</p>
