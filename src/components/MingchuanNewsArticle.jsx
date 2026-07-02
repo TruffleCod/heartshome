@@ -3,8 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import MingchuanFloatingAds from './MingchuanFloatingAds';
 import { publicPath } from '../utils/publicPath';
 
-const GLITCH_TEXT = '请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名';
-const BODY_GLITCH_CHANCE = 0.3;
+const GLITCH_TEXT_OPTIONS = [
+  '请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名',
+  '都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的',
+  '吵死了吵死了吵死了吵死了吵死了吵死了吵死了吵死了吵死了吵死了吵死了',
+  '加入我们了解更多，详情请见蹇冧箣瀹跺績鐞嗘湇鍔″钩鍙�',
+  '花卉生长期间若水肥过量易引起枝叶徒长营养物质多用于营养器官的根茎叶上去了而花果实或种子缺乏养分影响花芽形成导致不开花或开花很少',
+];
+const BODY_GLITCH_CHANCE = 0.6;
 const NAV_GLITCH_CHANCE = 0.3;
 const IMAGE_GLITCH_CHANCE = 0.3;
 const GLITCH_IMAGE_SOURCES = [
@@ -15,8 +21,8 @@ const GLITCH_IMAGE_SOURCES = [
   '/images/news/glitch/glitch-news-5.jpg',
 ];
 const NORMAL_NAV_ITEMS = ['首页', '要闻', '明川', '社会', '教育', '民生', '健康'];
-const NAV_GLITCH_ITEMS = Array.from({ length: 7 }, () => '正文');
-const NAV_GLITCH_BREADCRUMB = '正文>正文>正文>正文>正文>正文>正文';
+const NAV_GLITCH_ITEMS = Array.from({ length: 7 }, () => '\u8981\u95fb');
+const NAV_GLITCH_BREADCRUMB = '\u8981\u95fb>\u8981\u95fb>\u8981\u95fb>\u8981\u95fb>\u8981\u95fb>\u8981\u95fb>\u8981\u95fb';
 
 function renderFigure(figure) {
   if (!figure?.src) {
@@ -86,9 +92,12 @@ function buildParagraphsWithGlitch(paragraphs) {
   const insertAt =
     firstBodyIndex + Math.floor(Math.random() * (paragraphs.length - firstBodyIndex + 1));
 
+  const glitchText =
+    GLITCH_TEXT_OPTIONS[Math.floor(Math.random() * GLITCH_TEXT_OPTIONS.length)];
+
   return [
     ...paragraphs.slice(0, insertAt),
-    GLITCH_TEXT,
+    glitchText,
     ...paragraphs.slice(insertAt),
   ];
 }
@@ -468,7 +477,7 @@ export default function MingchuanNewsArticle({
             >
               {displayParagraphs.map((paragraph, index) => {
                 const isSpecialLead = paragraph.startsWith('__NEWS_LEAD__');
-                const isGlitch = paragraph === GLITCH_TEXT;
+                const isGlitch = GLITCH_TEXT_OPTIONS.includes(paragraph);
                 const content = isSpecialLead
                   ? paragraph.replace('__NEWS_LEAD__', '')
                   : paragraph;

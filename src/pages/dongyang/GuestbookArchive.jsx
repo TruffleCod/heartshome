@@ -4,8 +4,9 @@ import { DongyangOldStoriesLayout } from '../DongyangOldStoriesBlog';
 const archivedMessages = [
   {
     id: 'hidden-message-1',
-    label: '暂存留言 1',
+    label: '留言 1',
     author: '访客357',
+    archivedAt: '2021-11-18 02:13',
     paragraphs: [
       '显示器在念我的名字。拔了插头也念。丢了也念。丢在楼下绿色垃圾桶里。有人往花盆里放种子，花盆以为是礼物。花盆不知道自己是花盆。花盆以为自己是人。',
       '花在我的手机里。我删过，删不掉。拔了手机卡也不行。',
@@ -17,8 +18,9 @@ const archivedMessages = [
   },
   {
     id: 'hidden-message-2',
-    label: '暂存留言 2',
+    label: '留言 2',
     author: '访客787',
+    archivedAt: '2026-06-14 23:58',
     paragraphs: [
       '规则一：圣君是绝对公正的。它会看到被栽种者的一切罪行，并予以裁决。',
       '规则二：向圣君祈愿时，献上的必须是被栽种者的本名。如果使用假名、代号、昵称进行祈愿，会遭到反噬。',
@@ -34,8 +36,9 @@ const archivedMessages = [
   },
   {
     id: 'hidden-message-3',
-    label: '暂存留言 3',
+    label: '留言 3',
     author: 'LHY',
+    archivedAt: '2016-04-16 00:12',
     paragraphs: [
       '园丁的账号里有阻止仪式的唯一办法。我把线索藏在了新闻网的弹窗里，希望你能够破解它。',
       '一加一。',
@@ -95,6 +98,14 @@ export default function DongyangGuestbookArchive() {
             text-underline-offset: 3px;
           }
 
+          .dy-archive-time {
+            margin: 2px 0 0;
+            color: rgba(74, 36, 29, 0.66);
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            font-size: 12px;
+            line-height: 1.45;
+          }
+
           .dy-archive-panel {
             max-height: 0;
             overflow: hidden;
@@ -131,6 +142,7 @@ export default function DongyangGuestbookArchive() {
               >
                 <p className="dy-result-type">隐藏留言 | {message.author}</p>
                 <h2>{message.label}</h2>
+                <p className="dy-archive-time">暂存于 {message.archivedAt}</p>
               </button>
               <div
                 className={`dy-archive-panel${

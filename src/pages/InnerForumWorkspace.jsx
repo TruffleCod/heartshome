@@ -248,10 +248,6 @@ function isInBookingRange(dateKey) {
 }
 
 function getAvailableCounselorsByDate(dateKey) {
-  if (!isInBookingRange(dateKey)) {
-    return [];
-  }
-
   const date = new Date(`${dateKey}T00:00:00`);
   const weekday = date.getDay();
 
@@ -308,6 +304,23 @@ function MarkerIcon({ shape, color }) {
         }}
       />
     </span>
+  );
+}
+
+function CounselorColorBar({ color, active, stretch = false }) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        width: stretch ? '100%' : 18,
+        maxWidth: '100%',
+        height: 4,
+        flex: stretch ? '0 1 auto' : '0 0 18px',
+        borderRadius: 999,
+        background: color,
+        boxShadow: active ? '0 0 0 1px rgba(255,255,255,0.24)' : 'none',
+      }}
+    />
   );
 }
 
@@ -602,59 +615,87 @@ export default function InnerForumWorkspace() {
                 </button>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, marginBottom: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
                 {WEEK_HEADERS.map((item) => (
-                  <div key={item} style={{ textAlign: 'center', color: '#807c6b', fontSize: 13 }}>
+                  <div key={item} style={{ textAlign: 'center', color: '#807c6b', fontSize: 16, lineHeight: 1.8 }}>
                     {item}
                   </div>
                 ))}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10 }}>
                 {cells.map((day, index) => {
                   if (!day) {
-                    return <div key={`empty-${index}`} style={{ minHeight: 62, background: '#f7f1e8', borderRadius: 8 }} />;
+                    return <div key={`empty-${index}`} style={{ width: '100%', minWidth: 0, aspectRatio: '1 / 1', background: '#f7f1e8', borderRadius: 10 }} />;
                   }
 
                   const dateKey = formatDateKey(visibleYear, visibleMonth, day);
                   const availableCounselors = getAvailableCounselorsByDate(dateKey);
-                  const canBook = availableCounselors.length > 0;
+                  const hasSchedule = availableCounselors.length > 0;
+                  const canBook = isInBookingRange(dateKey);
                   const active = selectedDate === dateKey;
+                  const calendarCellBackground = active
+                    ? '#2f372b'
+                    : canBook
+                      ? '#fff'
+                      : hasSchedule
+                        ? '#f8f4ec'
+                        : '#f7f1e8';
+                  const calendarCellBorder = active
+                    ? '2px solid #151b13'
+                    : canBook
+                      ? '1px solid #d9e4dc'
+                      : '1px solid #ece6da';
 
                   return (
                     <button
                       key={dateKey}
                       type="button"
-                      disabled={!canBook}
+                      disabled={!hasSchedule}
                       onClick={() => {
                         setSelectedDate(dateKey);
                         setSelectedCounselorId('');
                         setSelectedSlot('');
                       }}
                       style={{
-                        minHeight: 62,
-                        borderRadius: 8,
-                        border: active ? '1px solid #4b5342' : '1px solid #e0e9e4',
-                        background: active ? '#2f372b' : '#fff',
-                        color: active ? '#fff' : canBook ? '#3c4436' : '#b3c2ba',
-                        cursor: canBook ? 'pointer' : 'not-allowed',
-                        fontWeight: active ? 700 : 500,
+                        aspectRatio: '1 / 1',
+                        width: '100%',
+                        minWidth: 0,
+                        borderRadius: 10,
+                        border: calendarCellBorder,
+                        background: calendarCellBackground,
+                        color: active ? '#fff' : canBook ? '#3c4436' : hasSchedule ? '#807c6b' : '#b3c2ba',
+                        cursor: hasSchedule ? 'pointer' : 'not-allowed',
+                        fontWeight: active ? 800 : 500,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        justifyContent: 'space-between',
                         gap: 6,
-                        padding: '4px 0',
+                        padding: '12px 8px 10px',
+                        boxShadow: active ? '0 8px 18px rgba(47, 55, 43, 0.2)' : '0 2px 8px rgba(47, 55, 43, 0.04)',
                       }}
                     >
-                      <div style={{ display: 'flex', gap: 4, minHeight: 8 }}>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: `repeat(${Math.max(availableCounselors.length, 1)}, minmax(0, 1fr))`,
+                          gap: 3,
+                          minHeight: 8,
+                          justifyContent: 'center',
+                          width: '100%',
+                          maxWidth: 76,
+                          overflow: 'hidden',
+                          opacity: canBook || active ? 1 : 0.72,
+                        }}
+                      >
                         {availableCounselors.map((counselor) => (
-                          <span key={counselor.id} style={{ opacity: active ? 0.95 : 1 }}>
-                            <MarkerIcon shape={counselor.marker} color={counselor.color} />
+                          <span key={counselor.id} style={{ opacity: active ? 0.95 : 1, minWidth: 0 }}>
+                            <CounselorColorBar color={counselor.color} active={active} stretch />
                           </span>
                         ))}
                       </div>
-                      <span>{day}</span>
+                      <span style={{ fontSize: 18, lineHeight: 1 }}>{day}</span>
                     </button>
                   );
                 })}
@@ -693,7 +734,7 @@ export default function InnerForumWorkspace() {
                           gap: 6,
                         }}
                       >
-                        <MarkerIcon shape={counselor.marker} color={counselor.color} />
+                        <CounselorColorBar color={counselor.color} active={active} />
                         {counselor.name}
                       </button>
                     );
@@ -709,23 +750,33 @@ export default function InnerForumWorkspace() {
                 {daySlots.length > 0 ? (
                   daySlots.map((slot) => {
                     const active = selectedSlot === slot;
+                    const canBookSelectedDate = isInBookingRange(selectedDate);
                     return (
                       <button
                         key={slot}
                         type="button"
+                        disabled={!canBookSelectedDate}
                         onClick={() => {
+                          if (!canBookSelectedDate) {
+                            return;
+                          }
                           setSelectedSlot(slot);
                           handleSlotClick();
                         }}
                         style={{
                           height: 44,
                           border: active ? '1px solid #4b5342' : '1px solid #8fd0a6',
-                          background: active ? '#4b5342' : '#8a957f',
+                          background: canBookSelectedDate
+                            ? active
+                              ? '#4b5342'
+                              : '#8a957f'
+                            : '#ddd5c5',
                           color: '#fff',
                           borderRadius: 8,
                           fontSize: 18,
                           fontWeight: 700,
-                          cursor: 'pointer',
+                          cursor: canBookSelectedDate ? 'pointer' : 'not-allowed',
+                          opacity: canBookSelectedDate ? 1 : 0.72,
                         }}
                       >
                         {slot}
