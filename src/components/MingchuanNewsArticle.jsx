@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MingchuanFloatingAds from './MingchuanFloatingAds';
 import { publicPath } from '../utils/publicPath';
+import '../styles/mingchuanNews.css';
 
 const GLITCH_TEXT_OPTIONS = [
   '请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名请输入姓名',
@@ -324,6 +325,7 @@ export default function MingchuanNewsArticle({
 
   return (
     <div
+      className="mingchuan-news-page"
       style={{
         minHeight: '100vh',
         background: '#f2f2f2',

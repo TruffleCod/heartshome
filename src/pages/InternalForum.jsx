@@ -32,7 +32,6 @@ const forumPosts = [
 
 const INNER_FORUM_LOGIN_PEPPER = 'heart_home_inner_forum_login_v1::';
 const INNER_FORUM_NAME_PEPPER = 'heart_home_inner_forum_name_v1::';
-const INNER_FORUM_CREDENTIAL_PEPPER = 'heart_home_inner_forum_credential_v1::';
 const INNER_FORUM_CURRENT_ID = '花匠338';
 const INNER_FORUM_ACCOUNTS = {
   花匠338: {
@@ -41,23 +40,7 @@ const INNER_FORUM_ACCOUNTS = {
       '40c4a567c95d4916b355687f3598bf52c71b7e29552a53797f904d6736964b7b',
     targetPath: '/p/94dc1b7e03',
   },
-  园丁001: {
-    nameHashes: [
-      '83e2cf78b6d5bcec0c30124a29e4915a8eeed00b07379215bc3e9847d8d1b6e9',
-      '97f24734133bbafce31ec17c4b04092a8af3be3f8ce0a1c67fde5605d84121d0',
-    ],
-    passwordHash:
-      'e25e45c05ef5e8831e28f34246505f5b18efb19242a7b151411b919ab6921580',
-    targetPath: '/p/6c9f02a7bd',
-  },
 };
-
-function canonicalizeInnerForumId(value) {
-  return normalizeInput(value)
-    .normalize('NFKC')
-    .replace(/[\u200B-\u200D\uFEFF]/g, '')
-    .replace(/\s+/g, '');
-}
 
 function canonicalizeInnerForumName(value) {
   return normalizeInput(value)
@@ -83,10 +66,6 @@ function matchesAccountName(accountId, normalizedName, candidateHash, account) {
     return true;
   }
 
-  if (accountId === '园丁001') {
-    return normalizedName === '陆心音';
-  }
-
   if (accountId === '花匠338') {
     return normalizedName === '叶诗遥';
   }
@@ -99,10 +78,6 @@ function matchesAccountPassword(accountId, normalizedPassword, candidateHash, ac
     return true;
   }
 
-  if (accountId === '园丁001') {
-    return normalizedPassword === 'hearmyheart' || normalizedPassword === 'HEARMYHEART';
-  }
-
   return false;
 }
 
@@ -110,17 +85,11 @@ export default function InternalForum() {
   const navigate = useNavigate();
   const [showVerification, setShowVerification] = useState(false);
   const [showInnerLoginModal, setShowInnerLoginModal] = useState(false);
-  const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
   const [innerForumName, setInnerForumName] = useState('');
   const [innerForumPassword, setInnerForumPassword] = useState('');
   const [innerForumMessage, setInnerForumMessage] = useState('');
   const [isCheckingInnerForumPassword, setIsCheckingInnerForumPassword] =
     useState(false);
-  const [switchAccountId, setSwitchAccountId] = useState('');
-  const [switchAccountName, setSwitchAccountName] = useState('');
-  const [switchAccountPassword, setSwitchAccountPassword] = useState('');
-  const [switchAccountMessage, setSwitchAccountMessage] = useState('');
-  const [isCheckingSwitchAccount, setIsCheckingSwitchAccount] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const successTimerRef = useRef(null);
 
@@ -153,15 +122,6 @@ export default function InternalForum() {
     setIsCheckingInnerForumPassword(false);
   };
 
-  const closeSwitchAccountModal = () => {
-    setShowSwitchAccountModal(false);
-    setSwitchAccountId('');
-    setSwitchAccountName('');
-    setSwitchAccountPassword('');
-    setSwitchAccountMessage('');
-    setIsCheckingSwitchAccount(false);
-  };
-
   const handleInnerForumLoginSuccess = (
     identity = INNER_FORUM_CURRENT_ID,
     targetPath = '/p/94dc1b7e03'
@@ -169,19 +129,8 @@ export default function InternalForum() {
     localStorage.setItem('heartHomeInnerForumLoggedIn', 'true');
     localStorage.setItem('heartHomeInnerForumIdentity', identity);
     closeInnerLoginModal();
-    closeSwitchAccountModal();
     setShowSuccessModal(true);
     successTimerRef.current = window.setTimeout(() => {
-      if (targetPath === '/p/6c9f02a7bd') {
-        window.open(
-          'https://trufflecod.github.io/heartshome/p/6c9f02a7bd',
-          '_blank',
-          'noopener,noreferrer'
-        );
-        setShowSuccessModal(false);
-        return;
-      }
-
       navigate(targetPath);
     }, 3000);
   };
@@ -250,97 +199,16 @@ export default function InternalForum() {
       }
 
       setInnerForumMessage('姓名或密码错误。');
-    } catch (error) {
+    } catch {
       setInnerForumMessage('登录验证失败，请稍后再试。');
     } finally {
       setIsCheckingInnerForumPassword(false);
     }
   };
 
-  const handleSwitchAccountLogin = async () => {
-    const normalizedId = canonicalizeInnerForumId(switchAccountId);
-    const normalizedName = canonicalizeInnerForumName(switchAccountName);
-    const normalizedPassword = canonicalizeInnerForumPassword(switchAccountPassword);
-
-    if (!normalizedId || !normalizedName || !normalizedPassword) {
-      setSwitchAccountMessage('请输入登陆ID、你的姓名和密码。');
-      return;
-    }
-
-    const targetAccount = INNER_FORUM_ACCOUNTS[normalizedId];
-
-    if (!targetAccount) {
-      setSwitchAccountMessage('登陆信息有误。');
-      return;
-    }
-
-    setIsCheckingSwitchAccount(true);
-
-    try {
-      const nameHash = await hashWithPepper(normalizedName, INNER_FORUM_NAME_PEPPER);
-      const passwordHash = await hashWithPepper(
-        normalizedPassword,
-        INNER_FORUM_LOGIN_PEPPER
-      );
-      if (
-        !matchesAccountName(
-          normalizedId,
-          normalizedName,
-          nameHash,
-          targetAccount
-        )
-      ) {
-        setSwitchAccountMessage('登陆信息有误。');
-        return;
-      }
-
-      if (
-        !matchesAccountPassword(
-          normalizedId,
-          normalizedPassword,
-          passwordHash,
-          targetAccount
-        )
-      ) {
-        setSwitchAccountMessage('登陆信息有误。');
-        return;
-      }
-
-      if (
-        matchesAccountName(
-          normalizedId,
-          normalizedName,
-          nameHash,
-          targetAccount
-        ) &&
-        matchesAccountPassword(
-          normalizedId,
-          normalizedPassword,
-          passwordHash,
-          targetAccount
-        )
-      ) {
-        handleInnerForumLoginSuccess(normalizedId, targetAccount.targetPath);
-        return;
-      }
-
-      setSwitchAccountMessage('登陆信息有误。');
-    } catch (error) {
-      setSwitchAccountMessage('登录验证失败，请稍后再试。');
-    } finally {
-      setIsCheckingSwitchAccount(false);
-    }
-  };
-
   const handleInnerForumKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleInnerForumLogin();
-    }
-  };
-
-  const handleSwitchAccountKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSwitchAccountLogin();
     }
   };
 
@@ -526,7 +394,7 @@ export default function InternalForum() {
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: 'flex-start',
                   alignItems: 'center',
                   gap: 16,
                   marginBottom: 24,
@@ -544,27 +412,6 @@ export default function InternalForum() {
                 >
                   当前登陆身份：{INNER_FORUM_CURRENT_ID}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setInnerForumMessage('');
-                    setShowInnerLoginModal(false);
-                    setShowSwitchAccountModal(true);
-                  }}
-                  style={{
-                    border: `1px solid ${INNER_FORUM_LIGHT_BORDER}`,
-                    background: INNER_FORUM_LIGHT_SURFACE,
-                    color: INNER_FORUM_LIGHT_MUTED,
-                    borderRadius: 999,
-                    padding: '8px 14px',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  切换账号
-                </button>
               </div>
 
               <div
@@ -737,243 +584,6 @@ export default function InternalForum() {
                   }}
                 >
                   {isCheckingInnerForumPassword ? '验证中...' : '登陆'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {showSwitchAccountModal ? (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 220,
-            background: 'rgba(32, 35, 27, 0.34)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 24,
-            backdropFilter: 'blur(3px)',
-          }}
-        >
-          <div
-            onClick={(event) => event.stopPropagation()}
-            style={{
-              width: 'min(720px, 92vw)',
-              background: 'rgba(255, 253, 248, 0.97)',
-              color: INNER_FORUM_LIGHT_TEXT,
-              borderRadius: 18,
-              border: '1px solid rgba(207, 222, 211, 0.9)',
-              boxShadow: '0 26px 80px rgba(21, 48, 32, 0.2)',
-              overflow: 'hidden',
-              boxSizing: 'border-box',
-            }}
-          >
-            <div
-              style={{
-                height: 10,
-                background:
-                  'linear-gradient(90deg, #3f4737 0%, #6c7560 52%, #d9d2c3 100%)',
-              }}
-            />
-
-            <div style={{ padding: '34px 40px 36px' }}>
-              <p
-                style={{
-                  margin: '0 0 24px',
-                  color: INNER_FORUM_LIGHT_ACCENT,
-                  fontSize: 28,
-                  fontWeight: 700,
-                  lineHeight: 1.35,
-                  letterSpacing: '0.02em',
-                }}
-              >
-                切换账号
-              </p>
-
-              <div style={{ display: 'grid', gap: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <label
-                    htmlFor="switch-account-id"
-                    style={{
-                      color: INNER_FORUM_LIGHT_ACCENT,
-                      fontSize: 18,
-                      fontWeight: 600,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    登陆ID：
-                  </label>
-                  <input
-                    id="switch-account-id"
-                    type="text"
-                    value={switchAccountId}
-                    onChange={(event) => {
-                      setSwitchAccountId(event.target.value);
-                      setSwitchAccountMessage('');
-                    }}
-                    onKeyDown={handleSwitchAccountKeyDown}
-                    autoComplete="username"
-                    style={{
-                      flex: 1,
-                      height: 52,
-                      border: switchAccountMessage
-                        ? '1px solid #c9857e'
-                        : `1px solid ${INNER_FORUM_LIGHT_BORDER}`,
-                      borderRadius: 10,
-                      background: INNER_FORUM_LIGHT_SURFACE,
-                      color: INNER_FORUM_LIGHT_TEXT,
-                      fontSize: 18,
-                      padding: '0 14px',
-                      boxSizing: 'border-box',
-                      outline: 'none',
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <label
-                    htmlFor="switch-account-name"
-                    style={{
-                      color: INNER_FORUM_LIGHT_ACCENT,
-                      fontSize: 18,
-                      fontWeight: 600,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    姓名：
-                  </label>
-                  <input
-                    id="switch-account-name"
-                    type="text"
-                    value={switchAccountName}
-                    onChange={(event) => {
-                      setSwitchAccountName(event.target.value);
-                      setSwitchAccountMessage('');
-                    }}
-                    onKeyDown={handleSwitchAccountKeyDown}
-                    autoComplete="off"
-                    style={{
-                      flex: 1,
-                      height: 52,
-                      border: switchAccountMessage
-                        ? '1px solid #c9857e'
-                        : `1px solid ${INNER_FORUM_LIGHT_BORDER}`,
-                      borderRadius: 10,
-                      background: INNER_FORUM_LIGHT_SURFACE,
-                      color: INNER_FORUM_LIGHT_TEXT,
-                      fontSize: 18,
-                      padding: '0 14px',
-                      boxSizing: 'border-box',
-                      outline: 'none',
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <label
-                    htmlFor="switch-account-password"
-                    style={{
-                      color: INNER_FORUM_LIGHT_ACCENT,
-                      fontSize: 18,
-                      fontWeight: 600,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    密码：
-                  </label>
-                  <input
-                    id="switch-account-password"
-                    type="password"
-                    value={switchAccountPassword}
-                    onChange={(event) => {
-                      setSwitchAccountPassword(event.target.value);
-                      setSwitchAccountMessage('');
-                    }}
-                    onKeyDown={handleSwitchAccountKeyDown}
-                    autoComplete="current-password"
-                    style={{
-                      flex: 1,
-                      height: 52,
-                      border: switchAccountMessage
-                        ? '1px solid #c9857e'
-                        : `1px solid ${INNER_FORUM_LIGHT_BORDER}`,
-                      borderRadius: 10,
-                      background: INNER_FORUM_LIGHT_SURFACE,
-                      color: INNER_FORUM_LIGHT_TEXT,
-                      fontSize: 18,
-                      padding: '0 14px',
-                      boxSizing: 'border-box',
-                      outline: 'none',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {switchAccountMessage && (
-                <div
-                  style={{
-                    marginTop: 16,
-                    padding: '12px 14px',
-                    borderRadius: 10,
-                    background: INNER_FORUM_LIGHT_SURFACE_ALT,
-                    border: `1px solid ${INNER_FORUM_LIGHT_BORDER_SOFT}`,
-                    color: '#9b3f37',
-                    fontSize: 14,
-                    lineHeight: 1.7,
-                  }}
-                >
-                  {switchAccountMessage}
-                </div>
-              )}
-
-              <div
-                style={{
-                  marginTop: 24,
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: 12,
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={closeSwitchAccountModal}
-                  style={{
-                    minWidth: 94,
-                    border: `1px solid ${INNER_FORUM_LIGHT_BORDER}`,
-                    background: INNER_FORUM_LIGHT_SURFACE,
-                    color: INNER_FORUM_LIGHT_MUTED,
-                    borderRadius: 999,
-                    padding: '11px 18px',
-                    cursor: 'pointer',
-                    fontSize: 14,
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  取消
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleSwitchAccountLogin}
-                  disabled={isCheckingSwitchAccount}
-                  style={{
-                    minWidth: 108,
-                    border: `1px solid ${INNER_FORUM_LIGHT_ACCENT}`,
-                    background: isCheckingSwitchAccount ? '#7f8a73' : INNER_FORUM_LIGHT_ACCENT,
-                    color: INNER_FORUM_LIGHT_HEADER_TEXT,
-                    borderRadius: 999,
-                    padding: '11px 20px',
-                    cursor: isCheckingSwitchAccount ? 'not-allowed' : 'pointer',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    fontFamily: 'inherit',
-                    boxShadow: '0 8px 18px rgba(47, 122, 74, 0.18)',
-                  }}
-                >
-                  {isCheckingSwitchAccount ? '验证中...' : '登陆'}
                 </button>
               </div>
             </div>

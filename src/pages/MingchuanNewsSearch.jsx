@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { searchMingchuanNews } from '../data/mingchuanNewsIndex';
+import '../styles/mingchuanNews.css';
 
 function normalizeKeyword(value) {
   return value.replace(/\s+/g, '').trim();
@@ -216,6 +217,7 @@ export default function MingchuanNewsSearch() {
 
   return (
     <div
+      className="mingchuan-news-page mingchuan-news-search-page"
       style={{
         minHeight: '100vh',
         background: '#f2f2f2',
@@ -261,6 +263,35 @@ export default function MingchuanNewsSearch() {
           >
             MINGCHUAN NEWS NETWORK
           </p>
+        </div>
+
+        <div style={{ background: '#8b0000' }}>
+          <div
+            style={{
+              maxWidth: 1080,
+              margin: '0 auto',
+              padding: '0 24px',
+              display: 'flex',
+              alignItems: 'center',
+              color: '#ffffff',
+              fontSize: 15,
+              fontWeight: 700,
+              flexWrap: 'wrap',
+            }}
+          >
+            {['首页', '要闻', '明川', '社会', '教育', '民生', '健康'].map((item, index) => (
+              <span
+                key={`${item}-${index}`}
+                style={{
+                  padding: '12px 18px',
+                  borderLeft: '1px solid rgba(255,255,255,0.18)',
+                  userSelect: 'none',
+                }}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
       </header>
 

@@ -307,6 +307,12 @@ const siteProfiles = {
   },
 };
 
+const ordinaryNotFoundCopy = {
+  title: '抱歉，页面无法访问…',
+  description: '网址已失效：可能页面已删除，地址变更等',
+  instruction: 'Oops, this page does not exist. Please go back to previous page.',
+};
+
 const routerBasename =
   import.meta.env.BASE_URL === '/'
     ? undefined
@@ -413,6 +419,10 @@ function AppRoutes() {
       <ScrollToTop />
       <Routes>
         <Route path="/start-game" element={<StartGame />} />
+        <Route
+          path="/404-page-not-found"
+          element={<InternalForumGhostCache showGame={false} copy={ordinaryNotFoundCopy} />}
+        />
         <Route path={paths.mingchuanSearch} element={<MingchuanNewsSearch />} />
         <Route path={paths.dongyangSearch} element={<DongyangOldStoriesSearch />} />
         {pageRoutes.map((route, index) => {

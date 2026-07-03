@@ -1,0 +1,284 @@
+.mingchuan-news-page {
+  min-height: 100vh !important;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.045) 1px, transparent 0),
+    linear-gradient(#f5f5f2, #ecece8) !important;
+  background-size: 4px 4px, auto !important;
+  color: #111 !important;
+  font-family: "SimSun", "Songti SC", "Noto Serif SC", serif !important;
+  padding: 8px 0 26px !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page header,
+.mingchuan-news-page main {
+  width: min(1120px, calc(100vw - 28px)) !important;
+  max-width: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page header {
+  background: #fbfbfa !important;
+  border: 1px solid #888 !important;
+  border-bottom: 0 !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.65) inset !important;
+}
+
+.mingchuan-news-page header > div:first-child {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 17px 22px 12px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 30px !important;
+}
+
+.mingchuan-news-page header h1 {
+  margin: 0 !important;
+  color: #970909 !important;
+  font-family: "SimSun", "Songti SC", "Noto Serif SC", serif !important;
+  font-size: 40px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.12em !important;
+  line-height: 1 !important;
+  text-shadow: 1px 1px 0 #fff !important;
+  white-space: nowrap !important;
+}
+
+.mingchuan-news-page header h1 + p {
+  margin: 0 0 4px !important;
+  color: #333 !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 15px !important;
+  letter-spacing: 0.08em !important;
+  white-space: nowrap !important;
+}
+
+.mingchuan-news-page header h1 + p::after {
+  content: "　　权威发布　服务明川";
+  margin-left: 18px;
+  color: #111;
+  font-family: "SimSun", "Songti SC", serif;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+.mingchuan-news-page header > div:nth-child(2) {
+  background: #9b0000 !important;
+  border-top: 1px solid #bdbdbd !important;
+  border-bottom: 1px solid #750000 !important;
+  margin: 0 4px 6px !important;
+}
+
+.mingchuan-news-page header > div:nth-child(2) > div {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  color: #fff !important;
+  font-family: "SimSun", "Songti SC", serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.mingchuan-news-page header > div:nth-child(2) span {
+  min-width: 82px !important;
+  padding: 7px 0 8px !important;
+  text-align: center !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.72) !important;
+  border-right: 1px solid rgba(70, 0, 0, 0.38) !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page main {
+  margin-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mingchuan-news-page article,
+.mingchuan-news-page main > section {
+  background: #fff !important;
+  border: 1px solid #888 !important;
+  box-shadow: none !important;
+}
+
+.mingchuan-news-page article > div:first-child,
+.mingchuan-news-page main > section > div:first-child {
+  padding: 7px 12px !important;
+  border-bottom: 1px solid #aaa !important;
+  background: linear-gradient(#f7f7f7, #ededed) !important;
+  color: #222 !important;
+  font-family: "SimSun", "Songti SC", serif !important;
+  font-size: 15px !important;
+}
+
+.mingchuan-news-page article > div:nth-child(2),
+.mingchuan-news-page main > section > div:nth-child(2) {
+  max-width: none !important;
+  width: auto !important;
+  padding: 18px 0 0 !important;
+}
+
+.mingchuan-news-page article > div:nth-child(2) > h2,
+.mingchuan-news-page article > div:nth-child(2) > h2 + div,
+.mingchuan-news-page article > div:nth-child(2) > section {
+  max-width: 920px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page h2 {
+  color: #050505 !important;
+  font-family: "SimSun", "Songti SC", "Noto Serif SC", serif !important;
+  font-size: 29px !important;
+  font-weight: 900 !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+  letter-spacing: 0.02em !important;
+}
+
+.mingchuan-news-search-page h2 {
+  text-align: left !important;
+}
+
+.mingchuan-news-search-page main > section > div:nth-child(2) {
+  max-width: 920px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 24px 22px 36px !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page h2 + div {
+  margin-top: 12px !important;
+  padding: 7px 0 !important;
+  border-top: 1px dotted #aaa !important;
+  border-bottom: 1px dotted #aaa !important;
+  color: #333 !important;
+  font-family: "SimSun", "Songti SC", serif !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+.mingchuan-news-page figure {
+  width: min(780px, calc(100% - 44px)) !important;
+  margin: 18px auto 14px !important;
+  padding: 3px !important;
+  border: 1px solid #999 !important;
+  background: #f7f7f7 !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page figure img {
+  width: 100% !important;
+  display: block !important;
+  border: 0 !important;
+}
+
+.mingchuan-news-page figcaption {
+  margin-top: 3px !important;
+  color: #111 !important;
+  font-family: "SimSun", "Songti SC", serif !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.mingchuan-news-page section {
+  margin-top: 16px !important;
+  color: #111 !important;
+  font-family: "SimSun", "Songti SC", "Noto Serif SC", serif !important;
+  font-size: 18px !important;
+  line-height: 2 !important;
+}
+
+.mingchuan-news-page section p {
+  margin: 0 0 10px !important;
+  text-indent: 2em !important;
+}
+
+.mingchuan-news-page article > div:nth-child(2) > div:last-child {
+  margin: 20px 0 0 !important;
+  padding: 10px 18px 14px !important;
+  border-top: 1px solid #aaa !important;
+  background: #f6f6f4 !important;
+  color: #222 !important;
+  text-align: center !important;
+  font-family: "SimSun", "Songti SC", serif !important;
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  box-sizing: border-box !important;
+}
+
+.mingchuan-news-page article > div:nth-child(2) > div:last-child a {
+  color: #8b0000 !important;
+}
+
+.mingchuan-news-page main > section a {
+  background: #fbfbfa !important;
+  border: 1px solid #aaa !important;
+  color: #111 !important;
+}
+
+.mingchuan-news-page main > section a h3 {
+  color: #111 !important;
+  font-family: "SimSun", "Songti SC", serif !important;
+  font-size: 22px !important;
+}
+
+.mingchuan-news-page main > section a p {
+  font-family: "SimSun", "Songti SC", serif !important;
+}
+
+@media (max-width: 720px) {
+  .mingchuan-news-page {
+    padding-top: 0 !important;
+  }
+
+  .mingchuan-news-page header,
+  .mingchuan-news-page main {
+    width: 100% !important;
+  }
+
+  .mingchuan-news-page header > div:first-child {
+    display: block !important;
+    padding: 16px 14px 10px !important;
+  }
+
+  .mingchuan-news-page header h1 {
+    font-size: 32px !important;
+    white-space: normal !important;
+  }
+
+  .mingchuan-news-page header h1 + p {
+    margin-top: 7px !important;
+    white-space: normal !important;
+  }
+
+  .mingchuan-news-page header h1 + p::after {
+    display: block;
+    margin: 6px 0 0;
+  }
+
+  .mingchuan-news-page header > div:nth-child(2) span {
+    min-width: 25% !important;
+  }
+
+  .mingchuan-news-page article > div:nth-child(2),
+  .mingchuan-news-page main > section > div:nth-child(2) {
+    padding: 18px 14px 8px !important;
+  }
+
+  .mingchuan-news-page h2 {
+    font-size: 24px !important;
+  }
+
+  .mingchuan-news-page section {
+    font-size: 17px !important;
+  }
+}

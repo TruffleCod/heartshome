@@ -1,6 +1,7 @@
-﻿import { useEffect, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { publicPath } from '../utils/publicPath';
+import { useNavigate } from 'react-router-dom';
 import { preloadImages } from '../utils/preloadAssets';
 
 const RUNNER_WIDTH = 126;
@@ -14,6 +15,19 @@ const GAME_SPEED = 335;
 const SCORE_TARGET = 31;
 const CLOUD_SPEED = GAME_SPEED;
 const ANIMATION_INTERVAL_MS = 180;
+const INITIAL_GAME_STATE = {
+  phase: 'idle',
+  runnerY: 0,
+  velocityY: 0,
+  obstacles: [],
+  score: 0,
+  width: 880,
+  locked: false,
+  hasStarted: false,
+  cloudOffset: 0,
+  animationFrame: 0,
+  backgroundTravel: 0,
+};
 const LETTER_SEQUENCE = ['U', 'R', 'N', 'E', 'Z', 'L', 'U', 'R', 'N', 'E', 'G'];
 const FLOWER_SOURCES = [
   '/images/followup/flower-1.png',
@@ -29,6 +43,12 @@ const GAME_IMAGE_SOURCES = [
   '/images/followup/heart.png',
   ...FLOWER_SOURCES,
 ];
+const DEFAULT_PAGE_COPY = {
+  title: '抱歉，页面无法访问…',
+  description: '网址已失效：可能页面已删除，地址变更等',
+  instruction: 'Oops, this page does not exist. PRESS [SPACE] TO START OVER.',
+  restartPrompt: 'Press space to restart',
+};
 
 const GROUND_LIBRARY = [
   {
@@ -196,36 +216,48 @@ function createObstacle(id, width) {
   };
 }
 
-export default function InternalForumGhostCache() {
+export default function InternalForumGhostCache({ showGame = true, copy = {} }) {
+  const navigate = useNavigate();
   const gameShellRef = useRef(null);
   const frameRef = useRef(null);
   const spawnTimeoutRef = useRef(0);
   const obstacleIdRef = useRef(0);
-  const gameStateRef = useRef({
-    phase: 'idle',
-    runnerY: 0,
-    velocityY: 0,
-    obstacles: [],
-    score: 0,
-    width: 880,
-    locked: false,
-    hasStarted: false,
-    cloudOffset: 0,
-    animationFrame: 0,
-    backgroundTravel: 0,
-  });
+  const gameStateRef = useRef({ ...INITIAL_GAME_STATE });
 
-  const [gameState, setGameState] = useState(gameStateRef.current);
+  const [gameState, setGameState] = useState(() => ({ ...INITIAL_GAME_STATE }));
+  const pageCopy = { ...DEFAULT_PAGE_COPY, ...copy };
 
   useEffect(() => {
-    preloadImages(GAME_IMAGE_SOURCES);
-  }, []);
+    if (!showGame) {
+      return;
+    }
 
-  const handleCloseTab = () => {
-    window.close();
-    window.open('', '_self');
-    window.close();
+    preloadImages(GAME_IMAGE_SOURCES);
+  }, [showGame]);
+
+  const handleContinueToRitual = () => {
+    navigate('/p/6c9f02a7bd');
   };
+
+  const scheduleSpawn = useCallback(function scheduleNextSpawn() {
+    const delay = 520 + Math.random() * 1560 + (Math.random() < 0.32 ? 420 : 0);
+    spawnTimeoutRef.current = window.setTimeout(() => {
+      const current = gameStateRef.current;
+      if (current.phase !== 'running') {
+        return;
+      }
+
+      const nextObstacle = createObstacle(obstacleIdRef.current + 1, current.width);
+      obstacleIdRef.current += 1;
+      const nextState = {
+        ...current,
+        obstacles: [...current.obstacles, nextObstacle],
+      };
+      gameStateRef.current = nextState;
+      setGameState(nextState);
+      scheduleNextSpawn();
+    }, delay);
+  }, []);
 
   useEffect(() => {
     const syncWidth = () => {
@@ -246,6 +278,10 @@ export default function InternalForumGhostCache() {
   }, []);
 
   useEffect(() => {
+    if (!showGame) {
+      return undefined;
+    }
+
     const startRun = () => {
       window.clearTimeout(spawnTimeoutRef.current);
       obstacleIdRef.current = 0;
@@ -298,9 +334,13 @@ export default function InternalForumGhostCache() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [scheduleSpawn, showGame]);
 
   useEffect(() => {
+    if (!showGame) {
+      return undefined;
+    }
+
     let lastFrame = performance.now();
 
     const tick = (now) => {
@@ -444,31 +484,10 @@ export default function InternalForumGhostCache() {
       }
       window.clearTimeout(spawnTimeoutRef.current);
     };
-  }, []);
+  }, [showGame]);
 
-  const scheduleSpawn = () => {
-    const delay = 520 + Math.random() * 1560 + (Math.random() < 0.32 ? 420 : 0);
-    spawnTimeoutRef.current = window.setTimeout(() => {
-      const current = gameStateRef.current;
-      if (current.phase !== 'running') {
-        return;
-      }
-
-      const nextObstacle = createObstacle(obstacleIdRef.current + 1, current.width);
-      obstacleIdRef.current += 1;
-      const nextState = {
-        ...current,
-        obstacles: [...current.obstacles, nextObstacle],
-      };
-      gameStateRef.current = nextState;
-      setGameState(nextState);
-      scheduleSpawn();
-    }, delay);
-  };
-
-  const isIdle = gameState.phase === 'idle';
-  const isGameOver = gameState.phase === 'gameover';
-  const isSuccess = gameState.phase === 'success';
+  const isGameOver = showGame && gameState.phase === 'gameover';
+  const isSuccess = showGame && gameState.phase === 'success';
   const showScore = gameState.hasStarted;
   const cloudSpan = gameState.width + 180;
   const cloudOneX = ((gameState.width * 0.1 - gameState.cloudOffset) % cloudSpan + cloudSpan) % cloudSpan - 90;
@@ -512,121 +531,121 @@ export default function InternalForumGhostCache() {
             position: 'relative',
           }}
         >
-          <div
-            style={{
-              opacity: isSuccess ? 0.08 : 1,
-              transition: 'opacity 180ms ease',
-            }}
-          >
-          <div
-            style={{
-              width: 'min(860px, 100%)',
-              margin: '0 auto 18px',
-              height: GAME_HEIGHT,
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
             <div
               style={{
-                position: 'absolute',
-                left: cloudOneX,
-                top: 28,
-                opacity: 0.8,
+                opacity: isSuccess ? 0.08 : 1,
+                transition: 'opacity 180ms ease',
               }}
             >
-              {renderCloud(70)}
-            </div>
-            <div
-              style={{
-                position: 'absolute',
-                left: cloudTwoX,
-                top: 48,
-                opacity: 0.85,
-              }}
-            >
-              {renderCloud(82)}
-            </div>
-            {showLetter && (
               <div
                 style={{
-                  position: 'absolute',
-                  left: letterX,
-                  top: 14,
-                  width: 32,
-                  textAlign: 'center',
-                  color: 'rgba(110, 114, 122, 0.4)',
-                  fontSize: 28,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  letterSpacing: '0.04em',
-                  userSelect: 'none',
-                  zIndex: 2,
+                  width: 'min(860px, 100%)',
+                  margin: '0 auto 18px',
+                  height: GAME_HEIGHT,
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
-                {currentLetter}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: showGame ? cloudOneX : '9%',
+                    top: 28,
+                    opacity: 0.8,
+                  }}
+                >
+                  {renderCloud(70)}
+                </div>
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: showGame ? cloudTwoX : '62%',
+                    top: 48,
+                    opacity: 0.85,
+                  }}
+                >
+                  {renderCloud(82)}
+                </div>
+                {showGame && showLetter && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: letterX,
+                      top: 14,
+                      width: 32,
+                      textAlign: 'center',
+                      color: 'rgba(110, 114, 122, 0.4)',
+                      fontSize: 28,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      letterSpacing: '0.04em',
+                      userSelect: 'none',
+                      zIndex: 2,
+                    }}
+                  >
+                    {currentLetter}
+                  </div>
+                )}
+
+                {showGame && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: RUNNER_X,
+                      bottom: GROUND_HEIGHT + gameState.runnerY,
+                      width: RUNNER_WIDTH,
+                      height: RUNNER_HEIGHT,
+                      transform: gameState.phase === 'running' ? 'translateY(0)' : 'translateY(1px)',
+                      zIndex: 3,
+                    }}
+                  >
+                    {renderRunner(gameState.phase, gameState.animationFrame)}
+                  </div>
+                )}
+
+                {showGame &&
+                  gameState.obstacles.map((obstacle) => (
+                    <div
+                      key={obstacle.id}
+                      style={{
+                        position: 'absolute',
+                        left: obstacle.x,
+                        bottom: GROUND_HEIGHT + obstacle.baseY,
+                        width: obstacle.width,
+                        height: obstacle.height,
+                        zIndex: 1,
+                      }}
+                    >
+                      {obstacle.render(gameState.animationFrame)}
+                    </div>
+                  ))}
+
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    bottom: GROUND_HEIGHT - 2,
+                    borderTop: '2px solid #7c8088',
+                  }}
+                />
+
+                {showGame && showScore && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 8,
+                      top: 8,
+                      color: '#696e77',
+                      fontSize: 18,
+                      fontWeight: 700,
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    {String(gameState.score).padStart(2, '0')}
+                  </div>
+                )}
               </div>
-            )}
-
-            <div
-              style={{
-                position: 'absolute',
-                left: RUNNER_X,
-                bottom: GROUND_HEIGHT + gameState.runnerY,
-                width: RUNNER_WIDTH,
-                height: RUNNER_HEIGHT,
-                transform: gameState.phase === 'running' ? 'translateY(0)' : 'translateY(1px)',
-                zIndex: 3,
-              }}
-            >
-              {renderRunner(gameState.phase, gameState.animationFrame)}
-            </div>
-
-            {gameState.obstacles.map((obstacle) => (
-              <div
-                key={obstacle.id}
-                style={{
-                  position: 'absolute',
-                  left: obstacle.x,
-                  bottom:
-                    obstacle.kind === 'bonus'
-                      ? GROUND_HEIGHT + obstacle.baseY
-                      : GROUND_HEIGHT + obstacle.baseY,
-                  width: obstacle.width,
-                  height: obstacle.height,
-                  zIndex: 1,
-                }}
-              >
-                {obstacle.render(gameState.animationFrame)}
-              </div>
-            ))}
-
-            <div
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: GROUND_HEIGHT - 2,
-                borderTop: '2px solid #7c8088',
-              }}
-            />
-
-            {showScore && (
-              <div
-                style={{
-                  position: 'absolute',
-                  right: 8,
-                  top: 8,
-                  color: '#696e77',
-                  fontSize: 18,
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                }}
-              >
-                {String(gameState.score).padStart(2, '0')}
-              </div>
-            )}
-          </div>
 
           <div style={{ marginTop: 20 }}>
             <h1
@@ -639,7 +658,7 @@ export default function InternalForumGhostCache() {
                 letterSpacing: 0,
               }}
             >
-              抱歉，页面无法访问…
+              {pageCopy.title}
             </h1>
             <p
               style={{
@@ -649,7 +668,7 @@ export default function InternalForumGhostCache() {
                 lineHeight: 1.5,
               }}
             >
-              网址已失效：可能页面已删除，地址变更等
+              {pageCopy.description}
             </p>
             <p
               style={{
@@ -659,7 +678,7 @@ export default function InternalForumGhostCache() {
                 lineHeight: 1.6,
               }}
             >
-              Oops, this page does not exist. PRESS [SPACE] TO START OVER.
+              {pageCopy.instruction}
             </p>
           </div>
 
@@ -686,7 +705,7 @@ export default function InternalForumGhostCache() {
                   textTransform: 'uppercase',
                 }}
               >
-                Press space to restart
+                {pageCopy.restartPrompt}
               </div>
             </div>
           )}
@@ -738,7 +757,7 @@ export default function InternalForumGhostCache() {
                 </div>
                 <button
                   type="button"
-                  onClick={handleCloseTab}
+                  onClick={handleContinueToRitual}
                   style={{
                     marginTop: 22,
                     minWidth: 128,
@@ -751,7 +770,7 @@ export default function InternalForumGhostCache() {
                     cursor: 'pointer',
                   }}
                 >
-                  退出
+                  继续
                 </button>
               </div>
             </div>

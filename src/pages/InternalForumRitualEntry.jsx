@@ -1,6 +1,11 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Balatro from '../components/Balatro';
+import { hashWithPepper, normalizeInput } from '../utils/hash';
+
+const RITUAL_ENTRY_PASSWORD_PEPPER = 'heart_home_ritual_entry_password_v1::';
+const RITUAL_ENTRY_PASSWORD_HASH =
+  '16f78f48203e0a4aed31383e36c5421948805adb5f6c10010908023c575a9924';
 
 function pad2(value) {
   return String(value).padStart(2, '0');
@@ -17,10 +22,19 @@ function formatDateParts(date) {
   };
 }
 
+function canonicalizeRitualPassword(value) {
+  return normalizeInput(value)
+    .normalize('NFKC')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+}
+
 export default function InternalForumRitualEntry() {
   const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
   const [gardenerName, setGardenerName] = useState('');
+  const [ritualPassword, setRitualPassword] = useState('');
   const [noticeText, setNoticeText] = useState('');
 
   useEffect(() => {
@@ -32,10 +46,26 @@ export default function InternalForumRitualEntry() {
 
   const timeParts = useMemo(() => formatDateParts(now), [now]);
 
-  const handleVerify = (event) => {
+  const handleVerify = async (event) => {
     event.preventDefault();
     const normalized = gardenerName.trim().replace(/\s+/g, '');
+    const normalizedPassword = canonicalizeRitualPassword(ritualPassword);
     if (normalized !== '顾意') {
+      setNoticeText('身份校验失败');
+      return;
+    }
+
+    if (!normalizedPassword) {
+      setNoticeText('身份校验失败');
+      return;
+    }
+
+    const passwordHash = await hashWithPepper(
+      normalizedPassword,
+      RITUAL_ENTRY_PASSWORD_PEPPER
+    );
+
+    if (passwordHash !== RITUAL_ENTRY_PASSWORD_HASH) {
       setNoticeText('身份校验失败');
       return;
     }
@@ -249,7 +279,7 @@ export default function InternalForumRitualEntry() {
                     maxWidth: 'calc(100vw - 48px)',
                   }}
                 >
-                  栽种期间仅<span style={{ color: '#ff1d25' }}>园丁001</span>可操作。如遇<span style={{ color: '#ff1d25' }}>紧急情况</span>需要中断仪式，请输入<span style={{ color: '#ff1d25' }}>园丁001</span>的真名进行校验：
+                  栽种期间仅<span style={{ color: '#ff1d25' }}>园丁001</span>可操作。如遇<span style={{ color: '#ff1d25' }}>紧急情况</span>需要中断仪式，请登陆<span style={{ color: '#ff1d25' }}>园丁001</span>的账号进行校验：
                 </label>
             </div>
                 <input
@@ -257,12 +287,39 @@ export default function InternalForumRitualEntry() {
                   type="text"
                   placeholder="请输入姓名"
                   value={gardenerName}
-                  onChange={(event) => setGardenerName(event.target.value)}
+                  onChange={(event) => {
+                    setGardenerName(event.target.value);
+                    setNoticeText('');
+                  }}
                   autoComplete="off"
                   style={{
                     width: '100%',
                     height: 74,
                     border: '2px solid rgba(22, 207, 107, 0.96)',
+                    borderRadius: 6,
+                    background: 'rgba(0, 0, 0, 0.36)',
+                    padding: '0 26px',
+                    fontSize: 'clamp(22px, 2vw, 30px)',
+                    color: '#f4faf7',
+                    fontWeight: 700,
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                  }}
+                />
+                <input
+                  id="ritual-password"
+                  type="password"
+                  placeholder="请输入密码"
+                  value={ritualPassword}
+                  onChange={(event) => {
+                    setRitualPassword(event.target.value);
+                    setNoticeText('');
+                  }}
+                  autoComplete="off"
+                  style={{
+                    width: '100%',
+                    height: 74,
+                    border: '2px solid rgba(255, 29, 37, 0.78)',
                     borderRadius: 6,
                     background: 'rgba(0, 0, 0, 0.36)',
                     padding: '0 26px',
