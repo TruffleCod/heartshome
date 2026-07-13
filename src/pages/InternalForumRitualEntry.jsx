@@ -285,7 +285,7 @@ export default function InternalForumRitualEntry() {
                 <input
                   id="gardener-name"
                   type="text"
-                  placeholder="请输入姓名"
+                  placeholder="请输入真实姓名"
                   value={gardenerName}
                   onChange={(event) => {
                     setGardenerName(event.target.value);

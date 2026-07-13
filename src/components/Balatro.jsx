@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const DEFAULT_OFFSET = [0.0, 0.0];
 
@@ -157,11 +157,11 @@ export default function Balatro({
   style,
 }) {
   const containerRef = useRef(null);
-  const [isSupported, setIsSupported] = useState(true);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return undefined;
+    container.style.background = '#000';
 
     const canvas = document.createElement('canvas');
     canvas.style.width = '100%';
@@ -280,8 +280,9 @@ export default function Balatro({
         gl.getExtension('WEBGL_lose_context')?.loseContext();
         canvas.remove();
       };
-    } catch (error) {
-      setIsSupported(false);
+    } catch {
+      container.style.background =
+        'linear-gradient(135deg, #7b0704 0%, #112522 52%, #040807 100%)';
       canvas.remove();
       return undefined;
     }
@@ -309,7 +310,7 @@ export default function Balatro({
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        background: isSupported ? '#000' : 'linear-gradient(135deg, #7b0704 0%, #112522 52%, #040807 100%)',
+        background: '#000',
         ...style,
       }}
     />

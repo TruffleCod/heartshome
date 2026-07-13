@@ -174,6 +174,7 @@ export default function MingchuanNewsSearch() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Mirror the query string into the hidden search dialog input.
     setSearchKeyword(keyword);
   }, [keyword]);
 

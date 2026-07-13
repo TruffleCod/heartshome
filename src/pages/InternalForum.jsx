@@ -431,7 +431,7 @@ export default function InternalForum() {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  姓名：
+                  真实姓名：
                 </label>
                 <input
                   id="inner-forum-name"

@@ -109,6 +109,7 @@ export default function ConsultantCarousel() {
     }, 7000);
 
     return () => window.clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- The interval should use the current carousel state without resetting on every index change.
   }, [isPaused, isTransitioning]);
 
   useEffect(() => {

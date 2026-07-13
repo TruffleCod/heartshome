@@ -90,7 +90,7 @@ export default function InternalForumRulesPost() {
     if (lightsOn) return text;
     return String(text)
       .split(keywordPattern)
-      .map((part, index) =>
+      .map((part) =>
         isMaskedKeyword(part) ? null : (
           part
         )

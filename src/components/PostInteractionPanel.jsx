@@ -1,18 +1,8 @@
 ﻿import { useMemo, useState } from 'react';
 
-const POST_LIKE_STORAGE_PREFIX = 'heartHomePostLiked:';
+import { getStoredPostLiked, setStoredPostLiked } from '../utils/postLikes';
 
-export function getStoredPostLiked(likeStorageKey) {
-  if (!likeStorageKey || typeof window === 'undefined') {
-    return false;
-  }
-
-  try {
-    return window.localStorage.getItem(`${POST_LIKE_STORAGE_PREFIX}${likeStorageKey}`) === 'true';
-  } catch {
-    return false;
-  }
-}
+const officialCounselors = ['陈霁', '袁知夏', '陆心音', '顾正清'];
 
 export default function PostInteractionPanel({
   commentsDisabled = false,
@@ -32,10 +22,7 @@ export default function PostInteractionPanel({
     setLiked(nextLiked);
     if (likeStorageKey) {
       try {
-        window.localStorage.setItem(
-          `${POST_LIKE_STORAGE_PREFIX}${likeStorageKey}`,
-          nextLiked ? 'true' : 'false'
-        );
+        setStoredPostLiked(likeStorageKey, nextLiked);
       } catch {
         // Ignore storage failures; the visible like state still updates for this session.
       }
@@ -50,8 +37,6 @@ export default function PostInteractionPanel({
     setIsCommentPressing(true);
     window.setTimeout(() => setIsCommentPressing(false), 140);
   };
-  
-  const officialCounselors = ['陈霁', '袁知夏', '陆心音', '顾正清'];
   const normalizedComments = useMemo(() => {
     return comments
       .map((comment, index) => {

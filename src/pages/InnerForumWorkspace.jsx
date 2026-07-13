@@ -79,7 +79,7 @@ const MESSAGE_THREADS = [
     messages: [
       {
         from: 'other',
-        text: '亲爱的花匠，你好。你已成功预约线上文字咨询（临时）。\n咨询师：∞瑶< 坍浦琼鉴敬哐\n预约时间：慰撩涶摙く 漓浦ぐ妩：乏く\n预约编号：□□□□□-□□□□-□□□□□\n\n本站线上咨询内容滑ㄧ悸洪演稿，缃撤潆后仅本人和鍂メ 霄可在工作台中镻亍。\n注：本次临时咨询室由管理员手动确认。',
+        text: '亲爱的花匠，你好。你已成功预约线上文字咨询（临时）。\n咨询师：∞瑶< 坍浦琼鉴敬哐\n预约时间：慰撩涶摙く 漓浦ぐ妩：乏く\n预约编号：□□□38-□5□□-YD□□□\n\n本站线上咨询内容滑ㄧ悸洪演稿，缃撤潆后仅本人和鍂メ 霄可在工作台中镻亍。\n注：本次临时咨询室由管理员手动确认。',
         time: '2026/05/28 20:34',
       },
     ],
@@ -173,22 +173,22 @@ const MESSAGE_THREADS = [
       {
         from: 'self',
         text: '陆老师，你在吗？',
-        time: '2026/05/13 00:58:12',
+        time: '2026/05/14 00:58:12',
       },
       {
         from: 'self',
         text: '我有急事，能立刻和你聊吗？我感觉我呼吸不上来了。',
-        time: '2026/05/13 00:58:44',
+        time: '2026/05/14 00:58:44',
       },
       {
         from: 'other',
         text: '我在：）你先深呼吸，不着急',
-        time: '2026/05/13 00:59:07',
+        time: '2026/05/14 00:59:07',
       },
       {
         from: 'other',
         text: '现在不是常规的咨询时间，但我可以帮你申请开通一个临时咨询室，你进来慢慢说。',
-        time: '2026/05/13 01:00:11',
+        time: '2026/05/14 01:00:11',
       },
     ],
   },
@@ -252,59 +252,6 @@ function getAvailableCounselorsByDate(dateKey) {
   const weekday = date.getDay();
 
   return COUNSELORS.filter((counselor) => !counselor.offWeekdays.includes(weekday));
-}
-
-function MarkerIcon({ shape, color }) {
-  const wrapperStyle = {
-    width: 10,
-    height: 10,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: '0 0 10px',
-  };
-
-  if (shape === 'triangle') {
-    return (
-      <span style={wrapperStyle}>
-        <span
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: '4px solid transparent',
-            borderRight: '4px solid transparent',
-            borderBottom: `7px solid ${color}`,
-          }}
-        />
-      </span>
-    );
-  }
-
-  if (shape === 'star') {
-    return (
-      <span style={wrapperStyle}>
-        <svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M12 2.2L14.9 8.1L21.4 9L16.7 13.5L17.9 20L12 16.9L6.1 20L7.3 13.5L2.6 9L9.1 8.1L12 2.2Z"
-            fill={color}
-          />
-        </svg>
-      </span>
-    );
-  }
-
-  return (
-    <span style={wrapperStyle}>
-      <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: shape === 'circle' ? 999 : 1,
-          background: color,
-        }}
-      />
-    </span>
-  );
 }
 
 function CounselorColorBar({ color, active, stretch = false }) {
@@ -443,7 +390,7 @@ export default function InnerForumWorkspace() {
   const chatBodyRef = useRef(null);
   const chatDragRef = useRef({ startY: 0, startScrollTop: 0 });
   const workspaceRootRef = useRef(null);
-  const corruptionSeedRef = useRef(Math.floor(Math.random() * 0xffffffff));
+  const [corruptionSeed] = useState(() => Math.floor(Math.random() * 0xffffffff));
   const currentIdentity = localStorage.getItem('heartHomeInnerForumIdentity') || '花匠338';
 
   useEffect(() => {
@@ -469,7 +416,7 @@ export default function InnerForumWorkspace() {
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
-      applyWorkspaceCorruption(workspaceRootRef.current, corruptionLevel, corruptionSeedRef.current);
+      applyWorkspaceCorruption(workspaceRootRef.current, corruptionLevel, corruptionSeed);
     });
 
     return () => window.cancelAnimationFrame(frameId);
@@ -853,7 +800,6 @@ export default function InnerForumWorkspace() {
               <h2 style={{ margin: 0, padding: '14px 14px 10px', fontSize: 20, color: '#2f372b' }}>站内私信</h2>
               <div style={{ display: 'grid' }}>
                 {MESSAGE_THREADS.map((thread) => {
-                  const active = thread.id === activeThread.id;
                   return (
                     <button
                       key={thread.id}

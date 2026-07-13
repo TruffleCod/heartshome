@@ -159,6 +159,15 @@ const searchItems = [
     summary: '',
     keywords: ['GUESTBOOK'],
   },
+  {
+    id: 'clay-idol-heart-case',
+    type: 'post',
+    title: '独家秘闻！城隍庙“泥像吞心”奇案——短短七日三条人命 胸口无伤竟藏一捧湿泥',
+    path: '/p/d8b3f2a6c0',
+    date: '2003-04-05',
+    summary: '',
+    keywords: ['泥像吞心案'],
+  },
 ];
 
 function normalizeKeyword(value) {
@@ -260,6 +269,7 @@ function InteractiveMap() {
           event.currentTarget.releasePointerCapture(event.pointerId);
         }
       } catch {
+        // Pointer capture can disappear if the gesture is cancelled by the browser.
       }
       dragState.current = null;
     }
@@ -1418,6 +1428,27 @@ export function DongyangOldStoriesSearch() {
 }
 
 export function DongyangOldStoriesMessages() {
+  const [visitorName, setVisitorName] = useState('');
+  const [messageText, setMessageText] = useState('');
+  const [messageModal, setMessageModal] = useState(null);
+
+  const handleMessageSubmit = (event) => {
+    event.preventDefault();
+
+    if (!visitorName.trim() || !messageText.trim()) {
+      setMessageModal({
+        title: '称呼或正文为空',
+        text: '请输入完成后再提交。',
+      });
+      return;
+    }
+
+    setMessageModal({
+      title: '留言已暂存！',
+      text: '感谢你的留言，内容已写入暂存箱。',
+    });
+  };
+
   return (
     <DongyangOldStoriesLayout>
       <section className="dy-message-section archive" aria-label="地图与历史留言">
@@ -1451,13 +1482,44 @@ export function DongyangOldStoriesMessages() {
           <span className="dy-card-stamp">读者来信</span>
           <h1>留言板</h1>
           <p>如果你知道某条旧闻的补充线索，可以先写在这里。本站不会公开真实联系方式。</p>
-          <form className="dy-message-form" onSubmit={(event) => event.preventDefault()}>
-            <input type="text" placeholder="称呼" />
-            <textarea placeholder="留言内容" />
+          <form className="dy-message-form" onSubmit={handleMessageSubmit}>
+            <input
+              type="text"
+              placeholder="称呼"
+              value={visitorName}
+              onChange={(event) => setVisitorName(event.target.value)}
+            />
+            <textarea
+              placeholder="留言内容"
+              value={messageText}
+              onChange={(event) => setMessageText(event.target.value)}
+            />
             <button className="dy-read-more" type="submit">暂存留言</button>
           </form>
         </article>
       </section>
+
+      {messageModal ? (
+        <div
+          className="dy-deleted-modal-backdrop"
+          role="presentation"
+          onClick={() => setMessageModal(null)}
+        >
+          <section
+            className="dy-deleted-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dy-message-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="dy-message-modal-title">{messageModal.title}</h2>
+            <p>{messageModal.text}</p>
+            <button type="button" onClick={() => setMessageModal(null)}>
+              确定
+            </button>
+          </section>
+        </div>
+      ) : null}
     </DongyangOldStoriesLayout>
   );
 }

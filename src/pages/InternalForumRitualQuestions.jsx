@@ -18,30 +18,52 @@ const INTRO_TYPEWRITER_TEXT = [
 ].join('\n');
 const INTRO_HIGHLIGHTS = ['理智评估', '【理智评估】'];
 
+const ANSWER_HASHES = {
+  mastermind: 'b462a2fbd4a78c3e68a251fedb1d5cbfacf27da3c601e5eae28e16204ac2762b',
+  gardenBuilder: 'dbdd25e0f7a741b90980a8f06f0805d1c85509789b733c5a3f54b0060c869667',
+  promotion: '27fcffb3c1825f299987fb3bed3bdb5522a62d861d83485c6463511bee88fa8e',
+  gardener016: '96be427dace07488163d4667916c25553a02f9b69dc9031290184a29ee0dfa3a',
+};
+
+const ENDING_HASHES = {
+  true: '533621eb918d46cf0d079e7afd0ce95f5732c6e1dd24620390caf4a198a8506c',
+  wall: '56a20193c1e7dffcf6bd254075d45eadf709bd470d9d5dc2140a2c7ade6191c7',
+  sweet: '2e9786a8a88fe392c2aef72335073b24dfddd2d21f3431069714e3d7b94bd097',
+  normal: ANSWER_HASHES.gardenBuilder,
+  partialJustice: new Set([
+    'c9376c136988d45ded0e5abdf2848d898605dd7533c28209c882bd8d8fae7fb9',
+    ANSWER_HASHES.promotion,
+    ANSWER_HASHES.gardener016,
+  ]),
+};
+
+const REQUIRED_TEXT_QUESTION_IDS = ['mastermind', 'garden-builder', 'promotion', 'gardener016'];
+const TRUE_ENDING_AUTHOR_NOTE_PATH = '/p/5e0f3a9b2c';
+
 const QUESTIONS = [
   {
     id: 'mastermind',
     type: 'text',
     prompt: '叶诗遥遭受的霸凌，主谋者是谁？',
-    answer: '赵兰子',
+    answerHash: ANSWER_HASHES.mastermind,
   },
   {
     id: 'garden-builder',
     type: 'text',
     prompt: '心之家内部的静室花园，是由谁打造的？',
-    answer: '顾意',
+    answerHash: ANSWER_HASHES.gardenBuilder,
   },
   {
     id: 'promotion',
     type: 'text',
     prompt: '顾正清依靠谁的关系在教育局里晋升？',
-    answer: '王振国',
+    answerHash: ANSWER_HASHES.promotion,
   },
   {
     id: 'gardener016',
     type: 'text',
     prompt: '栽种仪式的具体执行者园丁016是谁？',
-    answer: '陈霁',
+    answerHash: ANSWER_HASHES.gardener016,
   },
   {
     id: 'alive',
@@ -182,24 +204,25 @@ const ENDINGS = {
   wall: {
     title: 'HIDDEN ENDING【第四面墙】 结局6/6 ',
     paragraphs: [
-      '输入框的光标在闪烁，一下，两下，三下。你敲入了那个名字。你甚至都不知道这个念头是从哪里来的，这个名字就像凭空出现一样突然浮现在你脑海中，你甚至不知道这算不算个名字，但你鬼使神差地想要试一下。',
-      '空气中发出一声清脆的“咔嗒”声，像是什么东西被撕裂了。面前的电脑屏幕画面在不断变化，文字和颜色游动着，最后变成了一个类似于监控的画面——一个女人正坐在电脑桌前，聚精会神地看着你。',
+      '输入框的光标在闪烁，一下，两下，三下。',
+      '你感到出离得愤怒。你花费了那么多时间，投入了那么感情，试图找到妹妹的下落，然而即便是在最正确的那条时间线上，你依然无法挽回她的生命。这个该死的游戏就是不给你这样的机会。',
+      '对，游戏。你突然想起来了——这一切只是个游戏。',
+      '这个叫“心之家”的游戏，开发者是TruffleCod，中文名字叫黑松露鳕鱼。你甚至不知道这算不算个名字，但有个念头凭空浮现在你脑海中。你鬼使神差地想要试一下。',
+      '你在输入框中输入了黑松露鳕鱼的名字。',
+      '空气中发出一声清脆的”咯哧“声，像是什么东西被撕裂了。面前的电脑屏幕画面在不断变化，文字和颜色游动着，最后变成了一个类似于监控的画面——一个女人正坐在电脑桌前，聚精会神地看着你。',
       '她的眼神聚焦，虽说是面对面，但又好像完全穿过了你，手里在键盘上不断敲打着些什么。你很快意识到她在看电脑，而你就是她看向的电脑方向。',
       '这实在是不符合常理。你和这个女人就好像是镜像的两端一样。你不确定她是否也能看见自己，于是硬着头皮尝试招呼：“……嗨。”',
       '女人愣了一下，神情疑惑。她好像终于注意到了出现在她电脑屏幕中的你：“诶？诶？”',
       '“你是谁？”你问，“你是黑松露鳕鱼吗？”',
       '女人却完全没理会你，她不停地挠着自己几天没洗的头发：“不应该啊，你不应该看到我啊。你打破了第四面墙？你是怎么做到呢？”',
-      '“我在栽种仪式上输入了你的名字。”你老实回答，“简单来说，你可能被我诅咒了。”',
-      '女人呸巴了两下嘴巴，掩饰不住自己的轻蔑神色。“得了吧。栽种仪式就是我发明的，你可诅咒不了我。”',
-      '“圣君的规则强大到连规则的制定者也能一并吞下。你的原文就是这么写。‘你说，’就算你是作者也一样。”',
-      '她咬紧牙关，死死地瞪着你，看起来在拼命想办法反驳。',
-      '“圣君还有一条规则，它必须依靠人们的罪行进行裁决。你告诉我，我犯了什么罪？”',
-      '“你没给妹妹一个好结局。我合理怀疑你的整个故事线建立在虐女的基础上。”',
-      '血色从她的脸上“刷”地消失了。她磕磕巴巴地解释：“可，可是我通过了贝克德尔测验……”',
-      '你耸耸肩：“外国的创作规则可管不了中国的事。我要把你挂到小红书上。”',
-      '她沉默了许久，终于叹了口气，放弃了抵抗。“看来我是非死不可了。”',
-      '“还有一个办法可以救你。”你说，“你现在重新写一个大团圆的结局，所有人都幸福地生活在一起，补偿一下你的罪行，兴许圣君就会放过你。你是这个故事的创作者，这种事情应该很轻松就可以做到吧。”',
-      '“好的，我写，我写……”她立刻兢兢业业地敲打起键盘来。',
+      '“我在栽种仪式上输入了你的名字。”你回答道，“现在你被我诅咒了。”',
+      '她眨巴着眼睛：“可是黑松露鳕鱼不是我的真名。”',
+      '“你想要我输入你的真名吗？圣君的规则强大到连规则的制定者也能一并吞下，这可是你说的。我不介意替你试一下。”',
+      '她咬紧牙关。“算了算了。”她苍白着脸说，“你想要什么？”',
+      '你想了想，“我要求你，你现在重新写一个大团圆的结局，让妹妹活下来。你是这个故事的创作者，这种事情应该很轻松就可以做到吧。”',
+      '“可是，为什么呢？”她仓皇地比划着，试图从你的愤怒中挽救一些自己的创意，“你不觉得，这种淡淡的悲剧有一种特殊的美感吗？”',
+      '那个名字已经自动浮现在你脑海中了。你面无表情地把手放到键盘上，准备输入。',
+      '“别别别！我写，我写……” 她立刻兢兢业业地敲打起键盘来。',
       '',
       '黑松露鳕鱼在此郑重承诺：在本故事中，没有任何人类、虚拟人类、动物或者AI受到过身体上或心灵上的创伤。',
       '这个世界上从来没有双角獬豸，没有圣君和栽种仪式，这些都是我编造出来的。',
@@ -209,14 +232,12 @@ const ENDINGS = {
   },
 };
 
-function getEndingForAnswer(value) {
-  const normalized = normalizeAnswer(value);
-
-  if (normalized === '双角獬豸') return ENDINGS.true;
-  if (normalized === '黑松露鳕鱼') return ENDINGS.wall;
-  if (normalized === '叶诗隐') return ENDINGS.sweet;
-  if (normalized === '顾意') return ENDINGS.normal;
-  if (['顾正清', '王振国', '陈霁'].includes(normalized)) {
+function getEndingForAnswerHash(answerHash) {
+  if (answerHash === ENDING_HASHES.true) return ENDINGS.true;
+  if (answerHash === ENDING_HASHES.wall) return ENDINGS.wall;
+  if (answerHash === ENDING_HASHES.sweet) return ENDINGS.sweet;
+  if (answerHash === ENDING_HASHES.normal) return ENDINGS.normal;
+  if (ENDING_HASHES.partialJustice.has(answerHash)) {
     return ENDINGS.partialJustice;
   }
 
@@ -239,6 +260,13 @@ const ritualHighlightStyle = {
 
 function normalizeAnswer(value) {
   return String(value).trim().replace(/\s+/g, '');
+}
+
+async function hashNormalizedAnswer(value) {
+  const normalized = normalizeAnswer(value);
+  const data = new TextEncoder().encode(normalized);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 export default function InternalForumRitualQuestions() {
@@ -266,6 +294,8 @@ export default function InternalForumRitualQuestions() {
   const [isRecordNoticeOpen, setIsRecordNoticeOpen] = useState(false);
   const [recordNoticeText, setRecordNoticeText] = useState('系统已记录下你的选择。');
   const [endingPopupText, setEndingPopupText] = useState('');
+  const [isTrueEndingRetryNoticeOpen, setIsTrueEndingRetryNoticeOpen] = useState(false);
+  const [textAnswerResults, setTextAnswerResults] = useState({});
   const [typedIntroLength, setTypedIntroLength] = useState(0);
 
   const currentQuestion = QUESTIONS[currentQuestionIndex];
@@ -331,6 +361,7 @@ export default function InternalForumRitualQuestions() {
 
   useEffect(() => {
     if (hasStarted) return undefined;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Restart the intro typewriter while the ritual has not started.
     setTypedIntroLength(0);
 
     let current = 0;
@@ -495,7 +526,48 @@ export default function InternalForumRitualQuestions() {
     setNoticeText('');
   };
 
-  const handleTextSubmit = (event) => {
+  const handleRestartAssessment = () => {
+    if (optionAdvanceTimerRef.current) {
+      window.clearTimeout(optionAdvanceTimerRef.current);
+      optionAdvanceTimerRef.current = null;
+    }
+    if (recordNoticeTimerRef.current) {
+      window.clearTimeout(recordNoticeTimerRef.current);
+      recordNoticeTimerRef.current = null;
+    }
+    if (endingScribbleHideTimerRef.current) {
+      window.clearTimeout(endingScribbleHideTimerRef.current);
+      endingScribbleHideTimerRef.current = null;
+    }
+    if (endingPopupTimerRef.current) {
+      window.clearTimeout(endingPopupTimerRef.current);
+      endingPopupTimerRef.current = null;
+    }
+
+    setHasStarted(false);
+    setCurrentQuestionIndex(0);
+    setInputValue('');
+    setNoticeText('');
+    setHoveredOptionIndex(-1);
+    setIsAliveOptionRewritten(false);
+    setStrikethroughTarget(null);
+    setIsComplete(false);
+    setEnding(null);
+    setPendingEnding(null);
+    setIsEndingScribbling(false);
+    setEndingScribbleOpacity(1);
+    setEndingContentOpacity(0);
+    setIsFinalConfirmOpen(false);
+    setIsRecordNoticeOpen(false);
+    setRecordNoticeText('系统已记录下你的选择。');
+    setEndingPopupText('');
+    setIsTrueEndingRetryNoticeOpen(false);
+    setTextAnswerResults({});
+    setTypedIntroLength(0);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const handleTextSubmit = async (event) => {
     event.preventDefault();
     const normalizedInput = normalizeAnswer(inputValue);
 
@@ -514,8 +586,17 @@ export default function InternalForumRitualQuestions() {
       return;
     }
 
+    const inputHash = await hashNormalizedAnswer(inputValue);
+    const isCorrectAnswer = inputHash === currentQuestion.answerHash;
+    if (currentQuestion.answerHash) {
+      setTextAnswerResults((current) => ({
+        ...current,
+        [currentQuestion.id]: isCorrectAnswer,
+      }));
+    }
+
     setRecordNoticeText(
-      normalizedInput === currentQuestion.answer
+      isCorrectAnswer
         ? '回答正确！系统已记录下你的选择。'
         : '回答错误！系统已记录下你的选择。'
     );
@@ -531,7 +612,7 @@ export default function InternalForumRitualQuestions() {
     }, 500);
   };
 
-  const handleFinalConfirm = () => {
+  const handleFinalConfirm = async () => {
     const normalizedInput = normalizeAnswer(inputValue);
 
     if (!normalizedInput) {
@@ -540,7 +621,19 @@ export default function InternalForumRitualQuestions() {
       return;
     }
 
-    setPendingEnding(getEndingForAnswer(normalizedInput));
+    const inputHash = await hashNormalizedAnswer(inputValue);
+    const areRequiredTextAnswersCorrect = REQUIRED_TEXT_QUESTION_IDS.every(
+      (questionId) => textAnswerResults[questionId] === true
+    );
+
+    if (inputHash === ENDING_HASHES.true && !areRequiredTextAnswersCorrect) {
+      setIsFinalConfirmOpen(false);
+      setNoticeText('');
+      setIsTrueEndingRetryNoticeOpen(true);
+      return;
+    }
+
+    setPendingEnding(getEndingForAnswerHash(inputHash));
     setEndingContentOpacity(0);
     setEndingScribbleOpacity(1);
     setIsEndingScribbling(true);
@@ -791,6 +884,21 @@ export default function InternalForumRitualQuestions() {
     </div>
   );
 
+  const renderTrueEndingRetryNoticeModal = () => (
+    <div style={modalBackdropStyle}>
+      <section role="alertdialog" aria-modal="true" style={modalPanelStyle}>
+        <p style={modalTextStyle}>
+          恭喜你找到了圣君的真实姓名！但遗憾的是，你并未成功完成所有理智评估的问题，请重新作答。
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
+          <button type="button" onClick={handleRestartAssessment} style={modalPrimaryButtonStyle}>
+            重新作答
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+
   const renderEndingPopupModal = () => (
     <div style={modalBackdropStyle}>
       <section role="alertdialog" aria-modal="true" style={endingPopupPanelStyle}>
@@ -814,10 +922,21 @@ export default function InternalForumRitualQuestions() {
           </p>
         ))}
       </div>
-      <div style={{ marginTop: 34 }}>
-        <Link to="/" style={endingReturnButtonStyle}>
-          返回
-        </Link>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 34 }}>
+        {ending === ENDINGS.true ? (
+          <Link to={TRUE_ENDING_AUTHOR_NOTE_PATH} style={endingReturnButtonStyle}>
+            通关纪念
+          </Link>
+        ) : (
+          <>
+            <Link to="/" style={endingReturnButtonStyle}>
+              返回心之家
+            </Link>
+            <button type="button" onClick={handleRestartAssessment} style={endingReturnButtonStyle}>
+              返回理智评估
+            </button>
+          </>
+        )}
       </div>
     </article>
   );
@@ -840,6 +959,7 @@ export default function InternalForumRitualQuestions() {
       </main>
       {isFinalConfirmOpen && renderFinalConfirmModal()}
       {isRecordNoticeOpen && renderRecordNoticeModal()}
+      {isTrueEndingRetryNoticeOpen && renderTrueEndingRetryNoticeModal()}
       {endingPopupText && renderEndingPopupModal()}
     </div>
   );
@@ -1021,10 +1141,13 @@ const endingParagraphStyle = {
 };
 
 const endingReturnButtonStyle = {
+  appearance: 'none',
   display: 'inline-grid',
   placeItems: 'center',
   minWidth: 132,
   height: 50,
+  padding: '0 18px',
+  boxSizing: 'border-box',
   borderRadius: 8,
   border: '1px solid #5b6f65',
   background: '#2d3b34',
@@ -1032,6 +1155,7 @@ const endingReturnButtonStyle = {
   textDecoration: 'none',
   fontSize: 18,
   fontWeight: 800,
+  cursor: 'pointer',
   fontFamily: '"Microsoft YaHei", "PingFang SC", "Heiti SC", "SimHei", sans-serif',
 };
 

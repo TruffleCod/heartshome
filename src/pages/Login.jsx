@@ -58,7 +58,7 @@ export default function Login() {
       }
 
       setLoginMessage('账号或密码不正确。');
-    } catch (error) {
+    } catch {
       setLoginMessage('登录验证失败，请稍后再试。');
     } finally {
       setIsChecking(false);

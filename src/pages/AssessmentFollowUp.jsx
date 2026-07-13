@@ -688,6 +688,7 @@ export default function AssessmentFollowUp() {
 
   useEffect(() => {
     if (!showErrorStorm) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset storm windows immediately when leaving this staged effect.
       setErrorWindows([]);
       return;
     }
@@ -715,6 +716,7 @@ export default function AssessmentFollowUp() {
 
   useEffect(() => {
     if (!showBlueScreen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset the staged progress bar before the next blue-screen run.
       setBlueScreenPercent(0);
       return undefined;
     }
@@ -905,6 +907,7 @@ export default function AssessmentFollowUp() {
 
   useEffect(() => {
     if (!isComplete) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Restart the completion typewriter whenever the ending is hidden.
       setTypedCompleteLength(0);
       return undefined;
     }

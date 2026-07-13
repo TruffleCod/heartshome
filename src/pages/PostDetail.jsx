@@ -2,10 +2,11 @@
 import { Link, useParams } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
-import PostInteractionPanel, { getStoredPostLiked } from '../components/PostInteractionPanel';
+import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
 import posts from '../data/posts.json';
+import { getStoredPostLiked } from '../utils/postLikes';
 import baiheImage from '../assets/flowers/baihe.jpg';
 import lianhuaImage from '../assets/flowers/lianhua.jpg';
 import meiguiImage from '../assets/flowers/meigui.jpg';

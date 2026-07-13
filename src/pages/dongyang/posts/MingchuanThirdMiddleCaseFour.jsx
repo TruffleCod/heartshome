@@ -119,7 +119,7 @@ export default function MingchuanThirdMiddleCaseFour() {
           .join('')
       )
       .filter(Boolean);
-  }, [characterRows, remainingLength, totalDeletableLength]);
+  }, [characterRows, remainingLength]);
 
   useEffect(() => {
     articleRef.current?.focus();

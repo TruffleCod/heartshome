@@ -2,9 +2,10 @@
 import { Link } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
-import PostInteractionPanel, { getStoredPostLiked } from '../components/PostInteractionPanel';
+import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
 import { publicPath } from '../utils/publicPath';
+import { getStoredPostLiked } from '../utils/postLikes';
 
 const EMERGENCY_HELP_PATH = '/p/ad5f0c8b62';
 const LIKE_STORAGE_KEY = 'post:forum-rules';
