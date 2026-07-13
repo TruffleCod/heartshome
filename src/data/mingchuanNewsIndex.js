@@ -2,7 +2,7 @@
   {
     id: 'heart-home-five-years',
     path: '/p/86f1c4b0ed',
-    title: '从“危机干预”到长期陪伴：心理服务平台“心之家”上线五周年',
+    title: '从“危机干预”到长期陪伴：心理服务平台“心之家”上线十周年',
     date: '2026-01-30',
     category: '教育',
     source: '明川新闻网',

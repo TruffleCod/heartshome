@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import PageProgressBanner from './components/PageProgressBanner';
 import ScrollToTop from './components/ScrollToTop';
 import StartGame from './pages/StartGame';
 import HomeNew from './pages/HomeNew';
@@ -96,7 +97,15 @@ function AppRoutes() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<HomeNew />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <HomeNew />
+              <PageProgressBanner current="01" total={46} projectName="心之家 Project" />
+            </>
+          }
+        />
         <Route path="/start-game" element={<StartGame />} />
         <Route
           path="/404-page-not-found"

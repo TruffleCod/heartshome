@@ -88,22 +88,22 @@ const MESSAGE_THREADS = [
     id: 'fm001',
     name: '未知用户',
     messages: [
-      { from: 'other', text: '看看我发现了谁～', time: '2026/05/14 19:02' },
+      { from: 'other', text: '看看我发现了谁～', time: '2026/05/14 00:02' },
       {
         from: 'other',
         text: '你以为躲到这种地方发帖就没人能发现吗，烂菜叶～',
-        time: '2026/05/14 19:03',
+        time: '2026/05/14 00:03',
       },
-      { from: 'other', image: '/bully-photo.jpg', time: '2026/05/14 19:03' },
+      { from: 'other', image: '/bully-photo.jpg', time: '2026/05/14 00:03' },
       {
         from: 'other',
         text: '昨天的照片你好看吗？真后悔没把你的头发剪的更短一点啊哈哈哈',
-        time: '2026/05/14 19:03',
+        time: '2026/05/14 00:03',
       },
       {
         from: 'other',
         text: '你到网上发帖求助又能怎么样呢？你真以为这些弱智网友能帮到你？我有一百种方式可以让你过得更凄惨。',
-        time: '2026/05/14 19:03',
+        time: '2026/05/14 00:03',
       },
       { from: 'self', text: '闭嘴！闭嘴闭嘴闭嘴闭嘴闭嘴！！！！', time: '2026/05/16 23:46' },
       { from: 'self', text: '如果谁能让你消失就好了。', time: '2026/05/16 23:47' },
