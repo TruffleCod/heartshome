@@ -1,6 +1,12 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
+import {
+  readSearchHistory,
+  recordSearchHistory,
+} from '../utils/searchHistory';
+
+const SEARCH_HISTORY_KEY = 'heart-home:dongyang-old-stories-search-history';
 
 const menuItems = [
   { label: '首页', icon: '⌂', href: '/p/71a6d0e2bf' },
@@ -239,6 +245,31 @@ function searchDongyangBlog(keyword) {
     item.keywords.some((keywordValue) =>
       normalizeKeyword(keywordValue) === normalized
     )
+  );
+}
+
+function SearchHistoryPanel({ history, onSearch }) {
+  if (history.length === 0) {
+    return null;
+  }
+
+  return (
+    <article className="dy-search-history" aria-label="东阳旧事搜索历史">
+      <h2>搜索历史（至多显示20条）</h2>
+      <div className="dy-search-history-list">
+        {history.map((item) => (
+          <button
+            className={`dy-search-history-item ${item.found ? 'found' : 'missing'}`}
+            type="button"
+            key={`${item.keyword}-${item.searchedAt}`}
+            title="搜索"
+            onClick={() => onSearch(item.keyword)}
+          >
+            {item.keyword}
+          </button>
+        ))}
+      </div>
+    </article>
   );
 }
 
@@ -668,6 +699,46 @@ export function DongyangOldStoriesLayout({ children }) {
           color: #4a241d;
           font-size: 13px;
           line-height: 1.8;
+        }
+
+        .dy-search-history {
+          padding: 12px 0 14px;
+          border-bottom: 1px dotted rgba(106, 22, 19, 0.34);
+        }
+
+        .dy-search-history h2 {
+          margin: 0 0 8px;
+          color: #4a241d;
+          font-size: 14px;
+          line-height: 1.4;
+        }
+
+        .dy-search-history-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+        }
+
+        .dy-search-history-item {
+          display: inline-flex;
+          align-items: center;
+          max-width: 100%;
+          padding: 2px 7px;
+          border: 1px solid currentColor;
+          background: rgba(255, 242, 189, 0.48);
+          font-family: Arial, "Microsoft YaHei", sans-serif;
+          font-size: 12px;
+          line-height: 1.6;
+          word-break: break-all;
+          cursor: pointer;
+        }
+
+        .dy-search-history-item.found {
+          color: #7b1713;
+        }
+
+        .dy-search-history-item.missing {
+          color: rgba(74, 36, 29, 0.58);
         }
 
         .dy-result-card,
@@ -1283,6 +1354,7 @@ export function DongyangOldStoriesLayout({ children }) {
                   type="button"
                   key={item.label}
                   onClick={() => {
+                    setSearchKeyword('');
                     setSearchOpen(true);
                     setSidebarOpen(false);
                   }}
@@ -1381,10 +1453,30 @@ export function DongyangOldStoriesAlbum() {
 }
 
 export function DongyangOldStoriesSearch() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('q') || '';
   const results = searchDongyangBlog(keyword);
+  const resultCount = results.length;
   const [deletedResourceOpen, setDeletedResourceOpen] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(() =>
+    readSearchHistory(SEARCH_HISTORY_KEY)
+  );
+
+  useEffect(() => {
+    const normalized = keyword.trim();
+
+    if (!normalized) {
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reflect the localStorage write immediately after this query resolves.
+    setSearchHistory(recordSearchHistory(SEARCH_HISTORY_KEY, normalized, resultCount > 0));
+  }, [keyword, resultCount]);
+
+  const handleSearchHistoryItem = (historyKeyword) => {
+    navigate(`/p/71a6d0e2bf/search?q=${encodeURIComponent(historyKeyword)}`);
+  };
 
   return (
     <DongyangOldStoriesLayout>
@@ -1393,6 +1485,8 @@ export function DongyangOldStoriesSearch() {
           <h1>搜索结果</h1>
           <p>检索对象：{keyword || '未输入'}</p>
         </article>
+
+        <SearchHistoryPanel history={searchHistory} onSearch={handleSearchHistoryItem} />
 
         {results.length > 0 ? (
           results.map((item) =>

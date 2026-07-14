@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import VerificationModal from '../components/VerificationModal';
-import { publicPath } from '../utils/publicPath';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 
 const questions = [
   {
@@ -176,12 +176,12 @@ export default function Assessment() {
   const shuffledQuestions = useMemo(() => shuffleQuestionOptions(questions), []);
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   const handleChange = (questionId, value) => {

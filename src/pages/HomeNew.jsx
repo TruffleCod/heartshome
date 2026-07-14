@@ -1,22 +1,22 @@
 ﻿import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import VerificationModal from '../components/VerificationModal';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import LogoPng from '../assets/logo.png';
 import ConsultantCarousel from '../components/ConsultantCarousel';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
-import { publicPath } from '../utils/publicPath';
 
 export default function HomeNew() {
   const [showVerification, setShowVerification] = useState(false);
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   return (

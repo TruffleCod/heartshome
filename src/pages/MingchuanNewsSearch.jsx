@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { searchMingchuanNews } from '../data/mingchuanNewsIndex';
+import {
+  readSearchHistory,
+  recordSearchHistory,
+} from '../utils/searchHistory';
 import '../styles/mingchuanNews.css';
+
+const SEARCH_HISTORY_KEY = 'heart-home:mingchuan-news-search-history';
 
 function normalizeKeyword(value) {
   return value.replace(/\s+/g, '').trim();
@@ -169,14 +175,27 @@ export default function MingchuanNewsSearch() {
   const rawQuery = searchParams.get('q') || '';
   const keyword = normalizeKeyword(rawQuery);
   const results = searchMingchuanNews(keyword);
+  const resultCount = results.length;
   const [showSearch, setShowSearch] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState(keyword);
   const [error, setError] = useState('');
+  const [searchHistory, setSearchHistory] = useState(() =>
+    readSearchHistory(SEARCH_HISTORY_KEY)
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Mirror the query string into the hidden search dialog input.
     setSearchKeyword(keyword);
   }, [keyword]);
+
+  useEffect(() => {
+    if (!keyword) {
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reflect the localStorage write immediately after this query resolves.
+    setSearchHistory(recordSearchHistory(SEARCH_HISTORY_KEY, keyword, resultCount > 0));
+  }, [keyword, resultCount]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -214,6 +233,10 @@ export default function MingchuanNewsSearch() {
     setShowSearch(false);
     setError('');
     navigate(`/news/search?q=${encodeURIComponent(normalized)}`);
+  };
+
+  const handleSearchHistoryItem = (historyKeyword) => {
+    navigate(`/news/search?q=${encodeURIComponent(historyKeyword)}`);
   };
 
   return (
@@ -351,6 +374,30 @@ export default function MingchuanNewsSearch() {
             >
               检索对象：{keyword || '未输入'}
             </p>
+
+            {searchHistory.length > 0 ? (
+              <section
+                className="mingchuan-search-history"
+                aria-label="明川新闻网搜索历史"
+              >
+                <h3>搜索历史（至多显示20条）</h3>
+                <div className="mingchuan-search-history-list">
+                  {searchHistory.map((item) => (
+                    <button
+                      type="button"
+                      className={`mingchuan-search-history-item ${
+                        item.found ? 'found' : 'missing'
+                      }`}
+                      key={`${item.keyword}-${item.searchedAt}`}
+                      title="搜索"
+                      onClick={() => handleSearchHistoryItem(item.keyword)}
+                    >
+                      {item.keyword}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             <div
               style={{

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import VerificationModal from '../components/VerificationModal';
-import { publicPath } from '../utils/publicPath';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 
 const infoSections = [
   {
@@ -53,12 +53,12 @@ export default function DiseaseInfo() {
   const [showVerification, setShowVerification] = useState(false);
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   return (

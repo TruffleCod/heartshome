@@ -4,7 +4,7 @@ import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
-import { publicPath } from '../utils/publicPath';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import { getStoredPostLiked } from '../utils/postLikes';
 
 const comments = [
@@ -38,12 +38,12 @@ export default function InternalForumBulliedHelpPost() {
   const [showReturnBubble, setShowReturnBubble] = useState(false);
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   useEffect(() => {

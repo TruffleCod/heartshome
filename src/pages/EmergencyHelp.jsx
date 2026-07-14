@@ -2,7 +2,7 @@
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import VerificationModal from '../components/VerificationModal';
-import { publicPath } from '../utils/publicPath';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 
 const hotlineResources = [
   {
@@ -46,12 +46,12 @@ export default function EmergencyHelp() {
   const bodySize = 18;
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   return (

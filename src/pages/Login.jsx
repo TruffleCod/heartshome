@@ -6,9 +6,17 @@ import { hashWithPepper, normalizeInput } from '../utils/hash';
 
 const CORRECT_USERNAME = '孤独四叶草';
 const LOGIN_PASSWORD_PEPPER = 'heart_home_login_v1::';
+const WORKSPACE_PATH = '/p/1b9c60e4fa';
 
 const CORRECT_PASSWORD_HASH =
   'e90c93253c64f9855ea6449f9ef18d6d32ecb60cc33d7e2fc10ace6eb684b5c9';
+
+function isLoggedIn() {
+  return (
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem('heartHomeLoggedIn') === 'true'
+  );
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,6 +30,23 @@ export default function Login() {
   const successTimerRef = useRef(null);
 
   useEffect(() => {
+    const redirectIfAlreadyLoggedIn = () => {
+      if (isLoggedIn()) {
+        navigate(WORKSPACE_PATH, { replace: true });
+      }
+    };
+
+    redirectIfAlreadyLoggedIn();
+    window.addEventListener('pageshow', redirectIfAlreadyLoggedIn);
+    window.addEventListener('focus', redirectIfAlreadyLoggedIn);
+
+    return () => {
+      window.removeEventListener('pageshow', redirectIfAlreadyLoggedIn);
+      window.removeEventListener('focus', redirectIfAlreadyLoggedIn);
+    };
+  }, [navigate]);
+
+  useEffect(() => {
     return () => {
       if (successTimerRef.current) {
         window.clearTimeout(successTimerRef.current);
@@ -30,6 +55,11 @@ export default function Login() {
   }, []);
 
   const handleLogin = async () => {
+    if (isLoggedIn()) {
+      navigate(WORKSPACE_PATH, { replace: true });
+      return;
+    }
+
     const normalizedUsername = normalizeInput(username);
     const normalizedPassword = normalizeInput(password);
 
@@ -52,7 +82,7 @@ export default function Login() {
         localStorage.setItem('heartHomeCurrentUser', CORRECT_USERNAME);
         setShowSuccessModal(true);
         successTimerRef.current = window.setTimeout(() => {
-          navigate('/p/1b9c60e4fa');
+          navigate(WORKSPACE_PATH);
         }, 2000);
         return;
       }

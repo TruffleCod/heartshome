@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import posts from '../data/posts.json';
+import { WORKSPACE_PATH, markHeartHomeLoggedIn } from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
 
 const FORUM_ACCOUNT_IDS = Array.from(
@@ -136,9 +137,10 @@ export default function RecoverPassword() {
     if (normalizedAccountId === SPECIAL_ACCOUNT_ID) {
       const answerHash = await hashWithPepper(normalizedAnswer, RECOVER_SECURITY_PEPPER);
       if (answerHash === selectedQuestion.answerHash) {
+        markHeartHomeLoggedIn(SPECIAL_ACCOUNT_ID);
         setShowSuccessModal(true);
         successTimerRef.current = window.setTimeout(() => {
-          navigate('/p/1b9c60e4fa');
+          navigate(WORKSPACE_PATH);
         }, 2000);
         return;
       }

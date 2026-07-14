@@ -4,6 +4,7 @@ import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import PostInteractionPanel from '../components/PostInteractionPanel';
 import VerificationModal from '../components/VerificationModal';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import { publicPath } from '../utils/publicPath';
 import posts from '../data/posts.json';
 import { getStoredPostLiked } from '../utils/postLikes';
@@ -149,12 +150,12 @@ export default function PostDetail({ postId: routedPostId }) {
   const [birthInputError, setBirthInputError] = useState('');
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { markVisitorForumVerified } from '../utils/forumAccess';
 
 const CORRECT_ANSWERS = ['温暖照亮'];
 
@@ -31,7 +32,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
     }
 
     setError('');
-    localStorage.setItem('heartHomeForumVerified', 'true');
+    markVisitorForumVerified();
     onSuccess();
   };
 

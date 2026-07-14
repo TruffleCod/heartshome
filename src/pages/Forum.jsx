@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import VerificationModal from '../components/VerificationModal';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import { publicPath } from '../utils/publicPath';
 
 const forumPosts = [
@@ -30,16 +31,39 @@ const forumPosts = [
   },
 ];
 
+function isForumLoggedIn() {
+  return (
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem('heartHomeLoggedIn') === 'true'
+  );
+}
+
 export default function Forum() {
   const [showVerification, setShowVerification] = useState(false);
+  const loginTargetPath = isForumLoggedIn() ? '/p/1b9c60e4fa' : '/p/6e58c2b9a1';
+
+  const handleLoginLinkClick = (event) => {
+    const currentTargetPath = isForumLoggedIn()
+      ? '/p/1b9c60e4fa'
+      : '/p/6e58c2b9a1';
+
+    if (currentTargetPath !== loginTargetPath) {
+      event.preventDefault();
+      window.open(
+        publicPath(currentTargetPath),
+        '_blank',
+        'noopener,noreferrer'
+      );
+    }
+  };
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   return (
@@ -110,9 +134,10 @@ export default function Forum() {
           </div>
 
           <Link
-            to="/p/6e58c2b9a1"
+            to={loginTargetPath}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleLoginLinkClick}
             style={{
               flex: '0 0 auto',
               color: '#1f4d33',

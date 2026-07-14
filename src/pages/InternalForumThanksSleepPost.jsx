@@ -5,7 +5,7 @@ import HeartHomeHeader from '../components/HeartHomeHeader';
 import InternalForumCaveBackdrop from '../components/InternalForumCaveBackdrop';
 import InternalForumEyesBackground from '../components/InternalForumEyesBackground';
 import VerificationModal from '../components/VerificationModal';
-import { publicPath } from '../utils/publicPath';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import {
   INTERNAL_FORUM_BLACK,
   INTERNAL_FORUM_DARK_SURFACE,
@@ -86,12 +86,12 @@ export default function InternalForumThanksSleepPost() {
   const [showReturnBubble, setShowReturnBubble] = useState(false);
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   useEffect(() => {

@@ -931,19 +931,13 @@ export default function AssessmentFollowUp() {
   const handleDateSubmit = (event) => {
     event.preventDefault();
     if (!isValidBirthdayInput(birthdayDigits)) {
-      setNoticeText('输入错误，自动返回上一页');
-      window.setTimeout(() => {
-        navigate('/p/c70a5e1d92');
-      }, 900);
+      setNoticeText('输入错误，请重新输入。');
       return;
     }
 
     const normalizedDigits = String(birthdayDigits).replace(/\D/g, '').slice(0, 8);
     if (normalizedDigits !== '20260513') {
-      setNoticeText('输入错误，自动返回上一页');
-      window.setTimeout(() => {
-        navigate('/p/c70a5e1d92');
-      }, 900);
+      setNoticeText('输入错误，请重新输入。');
       return;
     }
     setNoticeText('');

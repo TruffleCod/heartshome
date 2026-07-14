@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import VerificationModal from '../components/VerificationModal';
+import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
-import { publicPath } from '../utils/publicPath';
 import { preloadImage } from '../utils/preloadAssets';
 import {
   INNER_FORUM_LIGHT_ACCENT,
@@ -81,6 +81,13 @@ function matchesAccountPassword(accountId, normalizedPassword, candidateHash, ac
   return false;
 }
 
+function isInnerForumLoggedIn() {
+  return (
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem('heartHomeInnerForumLoggedIn') === 'true'
+  );
+}
+
 export default function InternalForum() {
   const navigate = useNavigate();
   const [showVerification, setShowVerification] = useState(false);
@@ -106,12 +113,12 @@ export default function InternalForum() {
   }, []);
 
   const openForum = () => {
-    setShowVerification(true);
+    openVisitorForumOrVerify(() => setShowVerification(true));
   };
 
   const onVerifySuccess = () => {
     setShowVerification(false);
-    window.open(publicPath('p/b12e8f40a6'), '_blank', 'noopener,noreferrer');
+    openVisitorForumWindow();
   };
 
   const closeInnerLoginModal = () => {
@@ -120,6 +127,15 @@ export default function InternalForum() {
     setInnerForumPassword('');
     setInnerForumMessage('');
     setIsCheckingInnerForumPassword(false);
+  };
+
+  const openInnerLoginOrWorkspace = () => {
+    if (isInnerForumLoggedIn()) {
+      navigate(INNER_FORUM_ACCOUNTS[INNER_FORUM_CURRENT_ID].targetPath);
+      return;
+    }
+
+    setShowInnerLoginModal(true);
   };
 
   const handleInnerForumLoginSuccess = (
@@ -136,6 +152,11 @@ export default function InternalForum() {
   };
 
   const handleInnerForumLogin = async () => {
+    if (isInnerForumLoggedIn()) {
+      navigate(INNER_FORUM_ACCOUNTS[INNER_FORUM_CURRENT_ID].targetPath);
+      return;
+    }
+
     const normalizedName = canonicalizeInnerForumName(innerForumName);
     const normalizedPassword = canonicalizeInnerForumPassword(innerForumPassword);
 
@@ -327,7 +348,7 @@ export default function InternalForum() {
           花匠可
             <button
               type="button"
-              onClick={() => setShowInnerLoginModal(true)}
+              onClick={openInnerLoginOrWorkspace}
               style={{
                 border: 'none',
                 background: 'transparent',
