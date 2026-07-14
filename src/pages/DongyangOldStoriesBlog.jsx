@@ -1316,8 +1316,8 @@ export function DongyangOldStoriesAlbum() {
     <DongyangOldStoriesLayout>
       <section className="dy-album-empty" aria-label="东阳旧事相册">
         <p className="dy-album-slogan">
-          本网收录本邑历代方志、舆图、碑刻及民间文献，兼存考辨异闻、案狱旧档，供文史研究者参考。
-          请务必了解相关历史资料。请务必了解相关历史资料。请务必了解相关历史资料。请务必了解相关历史资料。
+          本博客收录了明川市历代方志、舆图、碑刻及民间文献，兼存考辨异闻、案狱旧档，供文史研究者参考。
+          如需了解相关历史资料，可通过搜索功能查询，也欢迎历史爱好者参与讨论。
         </p>
       </section>
     </DongyangOldStoriesLayout>

@@ -17,7 +17,7 @@ export default function NewsAbandonedBuildingCollapse() {
     <MingchuanNewsArticle
       category="社会"
       title="明川市郊废弃建筑坍塌　一学生被困后获救"
-      date="2005-03-03"
+      date="2005-03-05"
       paragraphs={paragraphs}
       figure={{
         src: '/images/news/west-hill.jpg',

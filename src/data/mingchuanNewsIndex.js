@@ -36,7 +36,7 @@
     id: 'abandoned-building-collapse',
     path: '/p/2ad87e50c9',
     title: '明川市郊废弃建筑坍塌　一学生被困后获救',
-    date: '2005-03-03',
+    date: '2005-03-05',
     category: '社会',
     source: '明川新闻网',
     summary:

@@ -172,7 +172,7 @@ function HiddenSearchModal({ keyword, onChange, onClose, onSubmit, error }) {
           </p>
 
           <p style={helperTextStyle}>
-            当前搜索功能测试中，如遇故障，可尝试刷新解决。
+            当前搜索功能测试中，如遇文字乱码、图片错误等故障，可尝试刷新解决。
           </p>
 
           <input
