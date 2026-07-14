@@ -364,6 +364,8 @@ export default function MingchuanNewsSearch() {
                   <Link
                     key={item.id}
                     to={item.path}
+                    target="_blank"
+                    rel="noreferrer"
                     style={{
                       display: 'block',
                       border: '1px solid #e0e0e0',

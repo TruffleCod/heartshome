@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import PageProgressBanner from './components/PageProgressBanner';
 import ScrollToTop from './components/ScrollToTop';
@@ -75,7 +75,7 @@ function AppRoutes() {
     return () => window.removeEventListener('inner-forum-theme-change', handleThemeChange);
   }, [location.pathname]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     updateSiteChrome(getSiteKeyForPathname(location.pathname));
   }, [location.pathname]);
 
