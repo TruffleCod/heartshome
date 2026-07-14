@@ -483,6 +483,7 @@ export default function MingchuanNewsArticle({
                 const content = isSpecialLead
                   ? paragraph.replace('__NEWS_LEAD__', '')
                   : paragraph;
+                const isLiHongyuLead = content === '本报讯（记者 李宏宇）';
 
                 return (
                   <p
@@ -491,11 +492,11 @@ export default function MingchuanNewsArticle({
                       isSpecialLead
                         ? {
                             margin: '0 0 22px',
-                            color: '#222',
-                            fontSize: 19,
-                            lineHeight: 1.9,
-                            fontWeight: 700,
-                            letterSpacing: '0.04em',
+                            color: isLiHongyuLead ? '#8b0000' : '#222',
+                            fontSize: 23,
+                            lineHeight: 2.0,
+                            fontWeight: 900,
+                            letterSpacing: '0.01em',
                             textIndent: '2em',
                           }
                         : {
