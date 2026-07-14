@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import PageProgressBanner from '../components/PageProgressBanner';
 import { isInnerForumLightToggleRoute, updateSiteChrome } from './routeChrome';
 
@@ -28,8 +28,10 @@ export default function PageRouteFrame({ route, fallbackPageNumber, innerForumLi
         : 'innerDark'
       : route.progressTheme || 'dark';
 
-  useEffect(() => {
-    updateSiteChrome(route.site);
+  useLayoutEffect(() => {
+    if (route.site) {
+      updateSiteChrome(route.site);
+    }
   }, [route.site]);
 
   return (
