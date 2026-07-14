@@ -6,8 +6,8 @@ import StartGame from './pages/StartGame';
 import HomeNew from './pages/HomeNew';
 import InternalForumGhostCache from './pages/InternalForumGhostCache';
 import {
+  getSiteKeyForPathname,
   isInnerForumLightToggleRoute,
-  updateFavicon,
   updateSiteChrome,
 } from './routes/routeChrome';
 
@@ -76,22 +76,8 @@ function AppRoutes() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === SEARCH_PATHS.mingchuan) {
-      updateSiteChrome('mingchuanNews');
-      return;
-    }
-
-    if (location.pathname === SEARCH_PATHS.dongyang) {
-      updateSiteChrome('dongyangBlog');
-      return;
-    }
-
-    updateSiteChrome('heartHome');
+    updateSiteChrome(getSiteKeyForPathname(location.pathname));
   }, [location.pathname]);
-
-  useEffect(() => {
-    updateFavicon('favicon-heart-home.svg');
-  }, []);
 
   return (
     <>
