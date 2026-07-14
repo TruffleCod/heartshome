@@ -1,4 +1,4 @@
-﻿import { useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
 
@@ -30,6 +30,60 @@ const messageItems = [
     text: '泥像吞心案怎么不更新了啊啊啊啊啊啊啊',
   },
 ];
+
+const preloadedImageResources = new Set();
+
+function preloadImageResource(path) {
+  if (typeof window === 'undefined' || !path || preloadedImageResources.has(path)) {
+    return;
+  }
+
+  preloadedImageResources.add(path);
+  const image = new Image();
+  image.decoding = 'async';
+  image.src = path;
+}
+
+function ImageResourceLink({ path, children }) {
+  const href = publicPath(path);
+  const linkRef = useRef(null);
+
+  useEffect(() => {
+    const node = linkRef.current;
+
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          preloadImageResource(href);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '360px 0px' }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [href]);
+
+  return (
+    <a
+      ref={linkRef}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => preloadImageResource(href)}
+      onFocus={() => preloadImageResource(href)}
+      onTouchStart={() => preloadImageResource(href)}
+    >
+      {children}
+    </a>
+  );
+}
 
 const searchItems = [
   {
@@ -501,7 +555,7 @@ export function DongyangOldStoriesLayout({ children }) {
           display: inline-flex;
           justify-content: center;
           color: #6a1613;
-          font-size: 13px;
+          font-size: 26px;
         }
 
         .dy-search-panel,
@@ -918,7 +972,7 @@ export function DongyangOldStoriesLayout({ children }) {
           border-top: 1px dotted rgba(106, 22, 19, 0.34);
           color: #4a241d;
           font-family: Arial, "Microsoft YaHei", sans-serif;
-          font-size: 13px;
+          font-size: 22px;
           line-height: 1.9;
           font-weight: 400;
           text-align: left;
@@ -1185,7 +1239,7 @@ export function DongyangOldStoriesLayout({ children }) {
           .dy-message { padding: 22px 20px 24px; }
           .dy-card h1 { font-size: 23px; }
           .dy-card p { font-size: 13px; }
-          .dy-album-slogan { font-size: 13px; }
+          .dy-album-slogan { font-size: 26px; }
         }
       `}</style>
 
@@ -1316,8 +1370,10 @@ export function DongyangOldStoriesAlbum() {
     <DongyangOldStoriesLayout>
       <section className="dy-album-empty" aria-label="东阳旧事相册">
         <p className="dy-album-slogan">
-          本博客收录了明川市历代方志、舆图、碑刻及民间文献，兼存考辨异闻、案狱旧档，供文史研究者参考。
-          如需了解相关历史资料，可通过搜索功能查询，也欢迎历史爱好者参与讨论。
+          本博客收录了明川市历代方志、舆图、碑刻及民间文献，兼存考辨异闻、案狱旧档，供文史研究者参考，也欢迎历史爱好者参与讨论。
+        </p>
+        <p className="dy-album-slogan">
+          如需了解相关历史资料，可通过搜索功能查询。
         </p>
       </section>
     </DongyangOldStoriesLayout>
@@ -1345,14 +1401,9 @@ export function DongyangOldStoriesSearch() {
                 <p className="dy-result-type">图片资源 | {item.date}</p>
                 <div className="dy-image-links">
                   {(item.paths || [item.path]).map((path, index) => (
-                    <a
-                      href={publicPath(path)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      key={path}
-                    >
+                    <ImageResourceLink path={path} key={path}>
                       查看图片{(item.paths || []).length > 1 ? index + 1 : ''}
-                    </a>
+                    </ImageResourceLink>
                   ))}
                   {item.downloadPath ? (
                     <a href={publicPath(item.downloadPath)} download={item.downloadName || true}>
