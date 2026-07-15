@@ -26,7 +26,10 @@ const ANSWER_HASHES = {
 };
 
 const ENDING_HASHES = {
-  true: '533621eb918d46cf0d079e7afd0ce95f5732c6e1dd24620390caf4a198a8506c',
+  true: new Set([
+    '533621eb918d46cf0d079e7afd0ce95f5732c6e1dd24620390caf4a198a8506c',
+    '434ff1c8e95f554e63e97996354997e6ec86a31075d16d8fa6083c8f4c006648',
+  ]),
   wall: '56a20193c1e7dffcf6bd254075d45eadf709bd470d9d5dc2140a2c7ade6191c7',
   sweet: '2e9786a8a88fe392c2aef72335073b24dfddd2d21f3431069714e3d7b94bd097',
   normal: ANSWER_HASHES.gardenBuilder,
@@ -156,7 +159,8 @@ const ENDINGS = {
       '很快你就会知道了。',
       '你收到了一封没有发件人的匿名邮件，内容只有一行：第三十三届栽种仪式将于下月举行，请提前准备名单。',
       '你熄灭了手机屏幕，祈祷这只是一封垃圾邮件的恶作剧。但很快，你开始收到相同内容的短信和邮件，甚至所有社交平台都被发送了未知用户的私信。你会在深夜接到电话，像是有人在很远的地方呼唤你的姓名。当你挂断后，却找不到任何的通话记录。',
-      '你感到困惑，愤怒，和恐惧。「陆心音」死了，由她开启的罪恶循环却没有死去。那个神秘的地底洞穴，被互联网赋予了全新的生命，以字符、代码和电波频段的形式永生。你开始意识到，只要人类活着一天，圣君就会永远存在。圣君是不可战胜的，你无法与这样的存在对抗。',
+      '你感到困惑，愤怒，和恐惧。「陆心音」死了，由她开启的罪恶循环却没有死去。那个神秘的双角石兽，和它所在的地底洞穴一起，被互联网赋予了全新的生命，以字符、代码和电波频段的形式永生。你开始意识到，只要人类活着一天，只要人类的心中还有仇恨，“圣君”就会永远存在，除非……',
+      '不，没有什么除非。圣君是不可战胜的，你无法与这样的存在对抗。',
       '那么，你能做的事情只剩下一件。',
       '你注册了一个新的心之家ID。从此以后，你有了全新的称呼和身份，他们叫你——园丁。',
       '恨意在你胸中熊熊地灼烧，再多的名字也无法将它填满。你逐渐忘了自己当初为什么加入静室，但你记得一件事：花需要园丁，园丁需要花，维护神圣的栽种仪式是你的责任，公平和正义就是你的信仰。所有的邪恶和不公，都需要被圣君裁决。',
@@ -233,7 +237,7 @@ const ENDINGS = {
 };
 
 function getEndingForAnswerHash(answerHash) {
-  if (answerHash === ENDING_HASHES.true) return ENDINGS.true;
+  if (ENDING_HASHES.true.has(answerHash)) return ENDINGS.true;
   if (answerHash === ENDING_HASHES.wall) return ENDINGS.wall;
   if (answerHash === ENDING_HASHES.sweet) return ENDINGS.sweet;
   if (answerHash === ENDING_HASHES.normal) return ENDINGS.normal;
@@ -626,7 +630,7 @@ export default function InternalForumRitualQuestions() {
       (questionId) => textAnswerResults[questionId] === true
     );
 
-    if (inputHash === ENDING_HASHES.true && !areRequiredTextAnswersCorrect) {
+    if (ENDING_HASHES.true.has(inputHash) && !areRequiredTextAnswersCorrect) {
       setIsFinalConfirmOpen(false);
       setNoticeText('');
       setIsTrueEndingRetryNoticeOpen(true);

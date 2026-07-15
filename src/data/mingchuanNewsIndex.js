@@ -25,7 +25,7 @@
     id: 'mingchuan-third-middle-missing-girls',
     path: '/p/9fe021c7ad',
     title: '明川三中接连发生女生失踪事件 警方已介入调查',
-    date: '2005-05-22',
+    date: '2005-05-20',
     category: '社会',
     source: '明川新闻网',
     summary:

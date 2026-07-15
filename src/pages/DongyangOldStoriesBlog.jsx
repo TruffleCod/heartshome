@@ -231,7 +231,7 @@ const searchItems = [
 ];
 
 function normalizeKeyword(value) {
-  return value.trim().toLowerCase();
+  return String(value).trim().toLowerCase().replace(/\s+/g, '');
 }
 
 function searchDongyangBlog(keyword) {

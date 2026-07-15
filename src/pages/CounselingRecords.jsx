@@ -257,7 +257,7 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
                 <strong>孤独四叶草：</strong>我告诉老师了。老师让我先冷静，说已经联系她们家长。可是她们下午还在笑。有人问我是不是换发型了，她们就在旁边笑。
               </p>
               <p className="hh-dialogue-line">
-                <strong>咨询师-陆心音：</strong>所以你不只是被伤害了，你还在伤害发生后继续被放回那个环境里。这会让人觉得非常无助。
+                <strong>咨询师-陆心音：</strong>因为你不只是被伤害了，你还在伤害发生后继续被放回那个环境里。这会让人觉得非常无助。
               </p>
               <p className="hh-dialogue-line">
                 <strong>孤独四叶草：</strong>我妈也来了学校。她很生气，可是老师一直说快期末考试了，不要扩大影响，说学校会处理。最后变成大家都在劝我别太激动。为什么每次都要我冷静？

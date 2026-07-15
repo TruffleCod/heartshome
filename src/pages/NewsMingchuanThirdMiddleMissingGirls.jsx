@@ -18,7 +18,7 @@ export default function NewsMingchuanThirdMiddleMissingGirls() {
     <MingchuanNewsArticle
       category="社会"
       title="明川三中接连发生女生失踪事件 警方已介入调查"
-      date="2005-05-22"
+      date="2005-05-20"
       paragraphs={paragraphs}
       figure={{
         src: '/images/news/mingchuan-third-middle.jpg',

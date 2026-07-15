@@ -468,7 +468,7 @@ export default function MingchuanNewsSearch() {
                     lineHeight: 1.9,
                   }}
                 >
-                  未检索到与该关键词相关的公开报道。
+                  未检索到与该人名或机构相关的公开报道。请检查输入是否正确，或尝试使用其他检索对象。
                 </div>
               )}
             </div>
