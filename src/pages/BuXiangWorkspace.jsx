@@ -1,13 +1,12 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
+import posts from '../data/posts.json';
+import { LOGIN_PATH, clearHeartHomeLogin } from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
 import { publicPath } from '../utils/publicPath';
-
-const CORRUPTION_START_MS = 30000;
-const CORRUPTION_STEP_MS = 5000;
-const MOJIBAKE_FRAGMENTS = ['锟ソ', '鈻�', '銆å', '闂ѧ', '鍚�', '娑Ҫ', '鏂鐢', '妗悜', '锛½', '锝�','ç','æ','花','『鍒╁惎鍔�','眾鏍界浠'];
 
 const MENU_ITEMS = [
   { key: 'appointment', label: '预约咨询' },
@@ -18,8 +17,8 @@ const MENU_ITEMS = [
 ];
 
 const CARD_STYLE = {
-  background: '#fffdf8',
-  border: '1px solid #ddd5c5',
+  background: '#ffffff',
+  border: '1px solid #d9e5de',
   borderRadius: 10,
   padding: '16px 18px',
 };
@@ -28,7 +27,7 @@ const COUNSELORS = [
   {
     id: 'yuan-zhixia',
     name: '袁知夏',
-    color: '#5f9bb3',
+    color: '#2d9fd4',
     marker: 'square',
     offWeekdays: [],
     slots: ['09:30', '11:00', '13:30', '15:00'],
@@ -36,7 +35,7 @@ const COUNSELORS = [
   {
     id: 'chen-ji',
     name: '陈霁',
-    color: '#c88ca6',
+    color: '#f28db7',
     marker: 'triangle',
     offWeekdays: [0],
     slots: ['10:00', '14:00', '16:30', '19:30'],
@@ -44,7 +43,7 @@ const COUNSELORS = [
   {
     id: 'gu-zhengqing',
     name: '顾正清',
-    color: '#c4a251',
+    color: '#d9a51f',
     marker: 'circle',
     offWeekdays: [1, 2, 3, 4, 5],
     slots: ['09:30', '13:00', '15:30', '18:30'],
@@ -52,7 +51,7 @@ const COUNSELORS = [
   {
     id: 'lu-xinyin',
     name: '陆心音',
-    color: '#8daa7e',
+    color: '#7bc27d',
     marker: 'star',
     offWeekdays: [4],
     slots: ['10:30', '13:30', '16:00', '20:00'],
@@ -71,180 +70,94 @@ const RECORD_HASH_TO_PATH = {
   '0d6ba888e22ac8a6ad02b8c71a6e1b1e3f7b528ff355b0e0dcbaa239880e9e3d':
     '/p/c5a18f0e9d',
 };
-
 const MESSAGE_THREADS = [
   {
-    id: 'unknown-mail',
-    name: '未知用户',
-    messages: [
-      {
-        from: 'other',
-        text: '亲爱的花匠，你好。你已成功预约线上文字咨询（临时）。\n咨询师：∞瑶< 坍浦琼鉴敬哐\n预约时间：慰撩涶摙く 漓浦ぐ妩：乏く\n预约编号：□□□38-□5□□-YD□□□\n\n本站线上咨询内容滑ㄧ悸洪演稿，缃撤潆后仅本人和鍂メ 霄可在工作台中镻亍。\n注：本次临时咨询室由管理员手动确认。',
-        time: '2026/05/28 20:34',
-      },
-             {
-        from: 'other',
-        text: '亲爱的花匠，你好。栽种期间本页功能可能不稳定，如遇异常，请勿惊慌，尝试刷新解决。',
-        time: '2026/06/28 00:00',
-      },
-    ],
-  },
-  {
-    id: 'fm001',
-    name: '未知用户',
-    messages: [
-      { from: 'other', text: '看看我发现了谁～', time: '2026/05/14 00:02' },
-      {
-        from: 'other',
-        text: '你以为躲到这种地方发帖就没人能发现吗，烂菜叶～',
-        time: '2026/05/14 00:03',
-      },
-      { from: 'other', image: '/bully-photo.jpg', time: '2026/05/14 00:03' },
-      {
-        from: 'other',
-        text: '昨天的照片你好看吗？真后悔没把你的头发剪的更短一点啊哈哈哈',
-        time: '2026/05/14 00:03',
-      },
-      {
-        from: 'other',
-        text: '你到网上发帖求助又能怎么样呢？你真以为这些弱智网友能帮到你？我有一百种方式可以让你过得更凄惨。',
-        time: '2026/05/14 00:03',
-      },
-      { from: 'self', text: '闭嘴！闭嘴闭嘴闭嘴闭嘴闭嘴！！！！', time: '2026/05/16 23:46' },
-      { from: 'self', text: '如果谁能让你消失就好了。', time: '2026/05/16 23:47' },
-      { type: 'divider', text: '2026/05/24 19:02' },
-      { from: 'other', text: '你去哪里了', time: '2026/05/24 19:02' },
-      { from: 'other', text: '能看见的话回我一下', time: '2026/05/24 19:14' },
-      { from: 'other', text: '我知道你还在看。', time: '2026/05/24 20:30' },
-      {
-        from: 'other',
-        text: '我知道你还是很恨我，我不是来骂你的。我只是想跟你说，对不起。我真的知道错了。',
-        time: '2026/05/24 20:30',
-      },
-      { from: 'other', text: '你是不是跟谁说了什么？求你了，放过我', time: '2026/05/24 20:31' },
-      {
-        from: 'other',
-        text: '它在我身后。它在对我说话。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n',
-        time: '2026/05/24 23:49',
-      },
-      {
-        from: 'other',
-        text: '花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n花。\n',
-        time: '2026/05/24 23:49',
-      },
-       {
-        from: 'other',
-        text: '。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n',
-        time: '2026/05/24 23:49',
-      },
-      { from: 'self', text: '对不起，我不知道事情会变成这样……对不起……', time: '2026/05/28 22:24' },
-      {
-        from: 'other',
-        text: '。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n。\n',
-        time: '2026/05/28 23:24',
-      },
-      {
-        from: 'other',
-        text: '都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的都是你害的',
-        time: '2026/05/28 22:28',
-      },
-    ],
-  },
-  {
-    id: 'system',
-    name: '系统助手',
-    messages: [
-      {
-        from: 'other',
-        text: '亲爱的孤独四叶草，你好。\n你的咨询师由【袁知夏】转介成【陆心音】。\n与原咨询师的记录已封存。\n感谢你一如既往地支持心之家。',
-        time: '2026/03/18 20:56',
-      },
-      {
-        from: 'other',
-        text: '亲爱的孤独四叶草，你好。你已成功预约正念练习（回访）。\n咨询师：陈霁\n预约时间：2026/04/21 21:00\n预约编号：GDSYC-0428-CJ\n\n本站线上咨询内容严格保密，结束后仅本人和咨询师可在工作台中查阅。',
-        time: '2026/04/21 22:34',
-      },
-      {
-        from: 'other',
-        text: '亲爱的孤独四叶草，你好。你已成功预约线上文字咨询（临时）。\n咨询师：陆心音\n预约时间：2026/05/14 01:00\n预约编号：GDSYC-0514-LXY\n\n本站线上咨询内容严格保密，结束后仅本人和咨询师可在工作台中查阅。\n注：本次临时咨询室由管理员手动确认。',
-        time: '2026/05/14 20:34',
-      },
-    ],
-  },
-  {
-    id: 'lu-xinyin',
-    name: '陆心音',
-    messages: [
-      {
-        from: 'self',
-        text: '陆老师，你在吗？',
-        time: '2026/05/14 00:58:12',
-      },
-      {
-        from: 'self',
-        text: '我有急事，能立刻和你聊吗？我感觉我呼吸不上来了。',
-        time: '2026/05/14 00:58:44',
-      },
-      {
-        from: 'other',
-        text: '我在：）你先深呼吸，不着急',
-        time: '2026/05/14 00:59:07',
-      },
-      {
-        from: 'other',
-        text: '现在不是常规的咨询时间，但我可以帮你申请开通一个临时咨询室，你进来慢慢说。',
-        time: '2026/05/14 01:00:11',
-      },
-    ],
-  },
-  {
-    id: 'yuan',
-    name: '袁知夏',
-    messages: [
-      {
-        from: 'self',
-        text: '袁老师，是不是因为我说得太多了？\n我知道自己最近状态很差，也知道有些话别人听了会不舒服。\n如果你觉得为难的话，其实不用勉强。',
-        time: '2026/03/06 21:31:09',
-      },
-      {
-        from: 'other',
-        text: '不是的。我判断你现在需要的支持不是我最擅长的领域，这次转介只是为了让你得到更合适的支持。\n对你来说这也是更合适的安排。',
-        time: '2026/03/06 21:36:27',
-      },
-      {
-        from: 'other',
-        text: '转介不是说我们的咨询失败了，很多来访者都会在不同阶段更换咨询师。\n我主要负责校园适应、人际关系和情绪支持，你最近描述的一些经历，已经涉及比较明显的创伤反应，我确实觉得需要由更有相关经验的老师来陪你走下去。\n\n如果你同意，我今天晚上就提交申请。陆老师可能会在 24 小时内联系你。',
-        time: '2026/03/06 21:38:42',
-      },
-      {
-        from: 'self',
-        text: '好的。那麻烦你了QAQ。',
-        time: '2026/03/06 21:42:58',
-      },
-    ],
-  },
-];
 
-const INNER_POSTS = [
-  {
-    id: 'bullied-help',
-    title: '【求助】被80了怎么办',
-    to: '/p/b80a4e6c1f',
+    id: 'other',
+    name: '未知用户',
+    preview: '账户资料同步完成，请查看工作台。',
+    messages: [
+      {
+        from: 'self',
+        text: '靠，我的号被她举报封了。',
+        time: '2026/04/28 22:56',
+      },
+      {
+        from: 'other',
+        text: '无所谓了，反正目的已经达到了。',
+        time: '2026/04/28 22:57',
+      },
+      {
+        from: 'other',
+        text: '叫她以后再乱说话。真以为到网上挂人，我们就拿她没办法了吗？',
+        time: '2026/04/28 22:57',
+      },
+    ],
   },
   {
-    id: 'reply-holiday-flower',
-    title: '回复：【置顶】【节日活动】发现你的专属「心灵之花」',
-    to: '/p/7c1e4a9f08',
+    id: 'review',
+    name: '系统助手',
+    preview: '关于你最近的帖子，有一条系统提醒。',
+    messages: [
+      {
+        from: 'other',
+        text: '你发布的部分内容被用户举报。管理员会在核查后决定是否恢复账户功能。',
+        time: '2026/04/28 20:11',
+      },
+    ],
   },
   {
-    id: 'reply-moral-kidnapping-rant',
-    title: '回复：【吐槽】天天拿抑郁症道德绑架真的很烦',
-    to: '/p/8a04e6d3f2',
-  },
-  {
-    id: 'reply-planting-ceremony',
-    title: '回复：【公告】第三十一届栽种仪式顺利完成',
-    to: '/p/5a1f90d7c3',
+
+    id: 'argue',
+    name: '孤独四叶草',
+    preview: '账户资料同步完成，请查看工作台。',
+    messages: [
+      {
+        from: 'other',
+        text: '你好，请你把帖子删掉。',
+        time: '2026/04/26 01:14',
+      },
+      {
+        from: 'self',
+        text: '我凭什么要删？我说的都是事实啊。就许你在网上挂人，就不许别人说你吗？',
+        time: '2026/04/26 01:15',
+      },
+      {
+        from: 'other',
+        text: '可是你把很多事情都说得不一样，我没有想引起别人注意，也没有想让大家觉得你们欺负我。',
+        time: '2026/04/26 01:15',
+      },
+      {
+        from: 'self',
+        text: '那你为什么要发那个帖子？你知道现在班里多少人在讨论这件事吗？\n本来什么都没有，被你一说，好像我们所有人都是坏人。',
+        time: '2026/04/26 01:15',
+      },
+      {
+        from: 'other',
+        text: '我……只是觉得很难受。我已经把帖子隐藏了，拜托你也删掉。',
+        time: '2026/04/26 01:17',
+      },
+      {
+        from: 'self',
+        text: '叶大小姐，你是不是觉得自己特委屈？\n你家里条件好，从小又有姐姐护着你，有人帮你出头，所以你才觉得所有人都应该站在你这边。',
+        time: '2026/04/26 01:17',
+      },
+      {
+        from: 'other',
+        text: '不要提我姐姐，和我姐没关系。',
+        time: '2026/04/26 01:17',
+      },
+      {
+        from: 'self',
+        text: '怎么没有关系？你不是最喜欢提你姐姐吗？咱们学校的大红人，成绩好，考上名牌大学，看在她的面子上，所有老师都高看你一眼。\n你是不是觉得只要有她在，大家就都要宠着你护着你？\n说真的，你姐那么优秀，你要是真和她一样牛逼，也没人敢叫你小公主吧。',
+        time: '2026/04/26 01:19',
+      },
+      {
+        from: 'other',
+        text: '你不许说我姐姐！你们根本不了解她，也不了解我。',
+        time: '2026/04/26 01:19',
+      },
+    ],
   },
 ];
 
@@ -291,99 +204,10 @@ function getThreadPreview(thread) {
   return (lastMessage.text || '').replace(/\s+/g, ' ').trim();
 }
 
-function createSeededRandom(seed) {
-  let value = seed >>> 0;
-  return () => {
-    value += 0x6d2b79f5;
-    let next = value;
-    next = Math.imul(next ^ (next >>> 15), next | 1);
-    next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
-    return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function collectCorruptibleTextNodes(root) {
-  if (!root) {
-    return [];
-  }
-
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      const parent = node.parentElement;
-      const text = node.textContent || '';
-
-      if (!parent || !text.trim()) {
-        return NodeFilter.FILTER_REJECT;
-      }
-
-      if (parent.closest('script, style, textarea, input')) {
-        return NodeFilter.FILTER_REJECT;
-      }
-
-      return NodeFilter.FILTER_ACCEPT;
-    },
-  });
-
-  const nodes = [];
-  let currentNode = walker.nextNode();
-
-  while (currentNode) {
-    nodes.push(currentNode);
-    currentNode = walker.nextNode();
-  }
-
-  return nodes;
-}
-
-function applyWorkspaceCorruption(root, level, seed) {
-  const textNodes = collectCorruptibleTextNodes(root);
-  const slots = [];
-
-  textNodes.forEach((node) => {
-    const originalText = node.__hhOriginalText ?? node.textContent ?? '';
-    node.__hhOriginalText = originalText;
-    node.textContent = originalText;
-
-    Array.from(originalText).forEach((char, index) => {
-      if (/\S/.test(char)) {
-        slots.push({ node, index });
-      }
-    });
-  });
-
-  if (!slots.length || level <= 0) {
-    return;
-  }
-
-  const rng = createSeededRandom(seed);
-  const shuffledSlots = [...slots];
-
-  for (let index = shuffledSlots.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(rng() * (index + 1));
-    [shuffledSlots[index], shuffledSlots[swapIndex]] = [shuffledSlots[swapIndex], shuffledSlots[index]];
-  }
-
-  const mutatedByNode = new Map();
-  const appliedCount = Math.min(level, shuffledSlots.length);
-
-  for (let index = 0; index < appliedCount; index += 1) {
-    const { node, index: charIndex } = shuffledSlots[index];
-    const originalText = node.__hhOriginalText ?? '';
-    const chars = mutatedByNode.get(node) ?? Array.from(originalText);
-    const fragment = MOJIBAKE_FRAGMENTS[Math.floor(rng() * MOJIBAKE_FRAGMENTS.length)];
-
-    chars[charIndex] = fragment;
-    mutatedByNode.set(node, chars);
-  }
-
-  mutatedByNode.forEach((chars, node) => {
-    node.textContent = chars.join('');
-  });
-}
-
-export default function InnerForumWorkspace() {
+export default function BuXiangWorkspace() {
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState('appointment');
+  const [showPassword, setShowPassword] = useState(false);
   const [selectedDate, setSelectedDate] = useState('2026-06-15');
   const [selectedCounselorId, setSelectedCounselorId] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
@@ -395,41 +219,13 @@ export default function InnerForumWorkspace() {
   const [visibleMonth, setVisibleMonth] = useState(5);
   const [recordCodeInput, setRecordCodeInput] = useState('');
   const [isDraggingChat, setIsDraggingChat] = useState(false);
-  const [corruptionLevel, setCorruptionLevel] = useState(0);
   const chatBodyRef = useRef(null);
   const chatDragRef = useRef({ startY: 0, startScrollTop: 0 });
-  const workspaceRootRef = useRef(null);
-  const [corruptionSeed] = useState(() => Math.floor(Math.random() * 0xffffffff));
-  const currentIdentity = localStorage.getItem('heartHomeInnerForumIdentity') || '花匠338';
 
-  useEffect(() => {
-    const mountedAt = Date.now();
-
-    const syncCorruptionLevel = () => {
-      const elapsed = Date.now() - mountedAt;
-      const nextLevel =
-        elapsed <= CORRUPTION_START_MS
-          ? 0
-          : Math.floor((elapsed - CORRUPTION_START_MS - 1) / CORRUPTION_STEP_MS) + 1;
-
-      setCorruptionLevel((previousLevel) =>
-        previousLevel === nextLevel ? previousLevel : nextLevel,
-      );
-    };
-
-    syncCorruptionLevel();
-    const timer = window.setInterval(syncCorruptionLevel, 1000);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const frameId = window.requestAnimationFrame(() => {
-      applyWorkspaceCorruption(workspaceRootRef.current, corruptionLevel, corruptionSeed);
-    });
-
-    return () => window.cancelAnimationFrame(frameId);
-  });
+  const myPosts = useMemo(
+    () => posts.filter((post) => post.author === '不想再背锅'),
+    [],
+  );
 
   const counselorsOnSelectedDate = useMemo(
     () => getAvailableCounselorsByDate(selectedDate),
@@ -446,11 +242,9 @@ export default function InnerForumWorkspace() {
     () => MESSAGE_THREADS.find((thread) => thread.id === selectedThreadId) || MESSAGE_THREADS[0],
     [selectedThreadId],
   );
-
   const handleSlotClick = () => {
     setShowAppointmentBlockedModal(true);
   };
-
   const handleChatDragStart = (event) => {
     if (!chatBodyRef.current) {
       return;
@@ -469,7 +263,6 @@ export default function InnerForumWorkspace() {
       startScrollTop: chatBodyRef.current.scrollTop,
     };
   };
-
   const handleChatDragMove = (event) => {
     if (!isDraggingChat || !chatBodyRef.current) {
       return;
@@ -478,11 +271,9 @@ export default function InnerForumWorkspace() {
     const deltaY = event.clientY - chatDragRef.current.startY;
     chatBodyRef.current.scrollTop = chatDragRef.current.startScrollTop - deltaY;
   };
-
   const handleChatDragEnd = () => {
     setIsDraggingChat(false);
   };
-
   const handleChatWheel = (event) => {
     if (!chatBodyRef.current) {
       return;
@@ -491,11 +282,9 @@ export default function InnerForumWorkspace() {
     event.preventDefault();
     chatBodyRef.current.scrollTop += event.deltaY;
   };
-
   const handleOpenRecord = (path) => {
     window.open(publicPath(path), '_blank', 'noopener,noreferrer');
   };
-
   const handleQueryRecordByInput = async () => {
     const normalized = normalizeInput(recordCodeInput).toUpperCase();
     if (!normalized) {
@@ -511,6 +300,10 @@ export default function InnerForumWorkspace() {
     }
     handleOpenRecord(matchedPath);
   };
+  const handleLogout = () => {
+    clearHeartHomeLogin();
+    navigate(LOGIN_PATH, { replace: true });
+  };
 
   const monthLabel = `${visibleYear}年${visibleMonth + 1}月`;
   const firstDayOffset = new Date(visibleYear, visibleMonth, 1).getDay();
@@ -524,7 +317,7 @@ export default function InnerForumWorkspace() {
     if (activeKey === 'appointment') {
       return (
         <div style={{ ...CARD_STYLE, padding: 18 }}>
-          <h2 style={{ margin: '0 0 14px', fontSize: 22, color: '#2f372b' }}>预约咨询</h2>
+          <h2 style={{ margin: '0 0 14px', fontSize: 22, color: '#1f3f2d' }}>预约咨询</h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
             <div>
@@ -549,7 +342,7 @@ export default function InnerForumWorkspace() {
                     }
                     setVisibleMonth(prevMonth);
                   }}
-                  style={{ border: 0, background: '#f4efe5', color: '#6f7463', cursor: 'pointer' }}
+                  style={{ border: 0, background: '#f2f6f3', color: '#5c7269', cursor: 'pointer' }}
                 >
                   {'<'}
                 </button>
@@ -565,7 +358,7 @@ export default function InnerForumWorkspace() {
                     }
                     setVisibleMonth(nextMonth);
                   }}
-                  style={{ border: 0, background: '#f4efe5', color: '#6f7463', cursor: 'pointer' }}
+                  style={{ border: 0, background: '#f2f6f3', color: '#5c7269', cursor: 'pointer' }}
                 >
                   {'>'}
                 </button>
@@ -573,7 +366,7 @@ export default function InnerForumWorkspace() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
                 {WEEK_HEADERS.map((item) => (
-                  <div key={item} style={{ textAlign: 'center', color: '#807c6b', fontSize: 16, lineHeight: 1.8 }}>
+                  <div key={item} style={{ textAlign: 'center', color: '#6f837a', fontSize: 16, lineHeight: 1.8 }}>
                     {item}
                   </div>
                 ))}
@@ -582,7 +375,7 @@ export default function InnerForumWorkspace() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10 }}>
                 {cells.map((day, index) => {
                   if (!day) {
-                    return <div key={`empty-${index}`} style={{ width: '100%', minWidth: 0, aspectRatio: '1 / 1', background: '#f7f1e8', borderRadius: 10 }} />;
+                    return <div key={`empty-${index}`} style={{ width: '100%', minWidth: 0, aspectRatio: '1 / 1', background: '#f6f8f7', borderRadius: 10 }} />;
                   }
 
                   const dateKey = formatDateKey(visibleYear, visibleMonth, day);
@@ -591,17 +384,17 @@ export default function InnerForumWorkspace() {
                   const canBook = isInBookingRange(dateKey);
                   const active = selectedDate === dateKey;
                   const calendarCellBackground = active
-                    ? '#2f372b'
+                    ? '#1f3f2d'
                     : canBook
                       ? '#fff'
                       : hasSchedule
-                        ? '#f8f4ec'
-                        : '#f7f1e8';
+                        ? '#f1f6f3'
+                        : '#f6f8f7';
                   const calendarCellBorder = active
-                    ? '2px solid #151b13'
+                    ? '2px solid #111f18'
                     : canBook
-                      ? '1px solid #d9e4dc'
-                      : '1px solid #ece6da';
+                      ? '1px solid #d7e6dc'
+                      : '1px solid #e7eee9';
 
                   return (
                     <button
@@ -620,7 +413,7 @@ export default function InnerForumWorkspace() {
                         borderRadius: 10,
                         border: calendarCellBorder,
                         background: calendarCellBackground,
-                        color: active ? '#fff' : canBook ? '#3c4436' : hasSchedule ? '#807c6b' : '#b3c2ba',
+                        color: active ? '#fff' : canBook ? '#2e463d' : hasSchedule ? '#6f837a' : '#b3c2ba',
                         cursor: hasSchedule ? 'pointer' : 'not-allowed',
                         fontWeight: active ? 800 : 500,
                         display: 'flex',
@@ -629,7 +422,7 @@ export default function InnerForumWorkspace() {
                         justifyContent: 'space-between',
                         gap: 6,
                         padding: '12px 8px 10px',
-                        boxShadow: active ? '0 8px 18px rgba(47, 55, 43, 0.2)' : '0 2px 8px rgba(47, 55, 43, 0.04)',
+                        boxShadow: active ? '0 8px 18px rgba(31, 63, 45, 0.2)' : '0 2px 8px rgba(31, 63, 45, 0.04)',
                       }}
                     >
                       <div
@@ -659,11 +452,11 @@ export default function InnerForumWorkspace() {
             </div>
 
             <div>
-              <div style={{ background: '#4b5342', color: '#fff', borderRadius: 8, padding: '12px 14px', fontWeight: 700, marginBottom: 10 }}>
+              <div style={{ background: '#44554f', color: '#fff', borderRadius: 8, padding: '12px 14px', fontWeight: 700, marginBottom: 10 }}>
                 {selectedDate || '未选择日期'}
               </div>
 
-              <p style={{ margin: '0 0 10px', color: '#797663', fontSize: 13 }}>当日可预约咨询师</p>
+              <p style={{ margin: '0 0 10px', color: '#6a7e75', fontSize: 13 }}>当日可预约咨询师</p>
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
                 {counselorsOnSelectedDate.length > 0 ? (
@@ -678,9 +471,9 @@ export default function InnerForumWorkspace() {
                           setSelectedSlot('');
                         }}
                         style={{
-                          border: active ? `1px solid ${counselor.color}` : '1px solid #ddd5c5',
-                          background: active ? '#ebe2d2' : '#fff',
-                          color: active ? '#4b5342' : '#666d5c',
+                          border: active ? `1px solid ${counselor.color}` : '1px solid #d9e5de',
+                          background: active ? '#eaf6ef' : '#fff',
+                          color: active ? '#1f6f3a' : '#4a5f56',
                           borderRadius: 999,
                           padding: '6px 12px',
                           fontSize: 13,
@@ -696,11 +489,11 @@ export default function InnerForumWorkspace() {
                     );
                   })
                 ) : (
-                  <p style={{ margin: 0, color: '#807c6b' }}>该日期暂无可预约咨询师。</p>
+                  <p style={{ margin: 0, color: '#6f837a' }}>该日期暂无可预约咨询师。</p>
                 )}
               </div>
 
-              <p style={{ margin: '0 0 10px', color: '#797663', fontSize: 13 }}>可预约时间段</p>
+              <p style={{ margin: '0 0 10px', color: '#6a7e75', fontSize: 13 }}>可预约时间段</p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
                 {daySlots.length > 0 ? (
@@ -721,12 +514,12 @@ export default function InnerForumWorkspace() {
                         }}
                         style={{
                           height: 44,
-                          border: active ? '1px solid #4b5342' : '1px solid #8fd0a6',
+                          border: active ? '1px solid #2f7a4a' : '1px solid #8fd0a6',
                           background: canBookSelectedDate
                             ? active
-                              ? '#4b5342'
-                              : '#8a957f'
-                            : '#ddd5c5',
+                              ? '#2f7a4a'
+                              : '#58b778'
+                            : '#d9e5de',
                           color: '#fff',
                           borderRadius: 8,
                           fontSize: 18,
@@ -740,7 +533,7 @@ export default function InnerForumWorkspace() {
                     );
                   })
                 ) : (
-                  <p style={{ margin: 0, color: '#807c6b', gridColumn: '1 / -1' }}>该日期暂无可预约时段。</p>
+                  <p style={{ margin: 0, color: '#6f837a', gridColumn: '1 / -1' }}>该日期暂无可预约时段。</p>
                 )}
               </div>
             </div>
@@ -752,8 +545,8 @@ export default function InnerForumWorkspace() {
     if (activeKey === 'records') {
       return (
         <div style={CARD_STYLE}>
-          <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#2f372b' }}>咨询记录</h2>
-          <p style={{ margin: '0 0 12px', color: '#6b705e', lineHeight: 1.8 }}>
+          <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#1f3f2d' }}>咨询记录</h2>
+          <p style={{ margin: '0 0 12px', color: '#5e756d', lineHeight: 1.8 }}>
             该账户已被管理员封存。请使用预约编号查询咨询记录
           </p>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
@@ -770,12 +563,12 @@ export default function InnerForumWorkspace() {
               style={{
                 width: 280,
                 height: 36,
-                border: '1px solid #ddd5c5',
+                border: '1px solid #d9e5de',
                 borderRadius: 8,
                 padding: '0 10px',
                 fontSize: 14,
-                color: '#3e4637',
-                background: '#fffdf8',
+                color: '#2d4740',
+                background: '#ffffff',
               }}
             />
             <button
@@ -785,10 +578,10 @@ export default function InnerForumWorkspace() {
               }}
               style={{
                 height: 36,
-                border: '1px solid #4b5342',
+                border: '1px solid #2f7a4a',
                 borderRadius: 8,
-                background: '#fffdf8',
-                color: '#4b5342',
+                background: '#ffffff',
+                color: '#1f6f3a',
                 padding: '0 12px',
                 cursor: 'pointer',
                 fontWeight: 700,
@@ -805,10 +598,11 @@ export default function InnerForumWorkspace() {
       return (
         <div style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', height: 690 }}>
-            <aside style={{ borderRight: '1px solid #ddd5c5', background: '#fffdf8' }}>
-              <h2 style={{ margin: 0, padding: '14px 14px 10px', fontSize: 20, color: '#2f372b' }}>站内私信</h2>
+            <aside style={{ borderRight: '1px solid #d9e5de', background: '#f9fcfa' }}>
+              <h2 style={{ margin: 0, padding: '14px 14px 10px', fontSize: 20, color: '#1f3f2d' }}>站内私信</h2>
               <div style={{ display: 'grid' }}>
                 {MESSAGE_THREADS.map((thread) => {
+                  const active = thread.id === activeThread.id;
                   return (
                     <button
                       key={thread.id}
@@ -819,21 +613,21 @@ export default function InnerForumWorkspace() {
                         minWidth: 0,
                         textAlign: 'left',
                         border: 0,
-                        borderTop: '1px solid #e8e0d1',
+                        borderTop: '1px solid #e6efea',
                         padding: '12px 14px',
-                        background: '#fffdf8',
+                        background: active ? '#eaf6ef' : '#f9fcfa',
                         cursor: 'pointer',
                         overflow: 'hidden',
                       }}
                     >
-                      <p style={{ margin: '0 0 4px', color: '#3d4536', fontWeight: 700, fontSize: 15 }}>{thread.name}</p>
+                      <p style={{ margin: '0 0 4px', color: '#234337', fontWeight: 700, fontSize: 15 }}>{thread.name}</p>
                       <p
                         style={{
                           display: 'block',
                           width: '100%',
                           minWidth: 0,
                           margin: 0,
-                          color: '#797564',
+                          color: '#678078',
                           fontSize: 13,
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
@@ -848,8 +642,8 @@ export default function InnerForumWorkspace() {
               </div>
             </aside>
 
-            <section style={{ background: '#fffdf8', display: 'grid', gridTemplateRows: '56px minmax(0,1fr) 56px', height: 690, overflow: 'hidden' }}>
-              <header style={{ borderBottom: '1px solid #e8e0d1', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#3d4536', fontWeight: 700 }}>
+            <section style={{ background: '#ffffff', display: 'grid', gridTemplateRows: '56px minmax(0,1fr) 56px', height: 690, overflow: 'hidden' }}>
+              <header style={{ borderBottom: '1px solid #e6efea', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#234337', fontWeight: 700 }}>
                 与 {activeThread.name} 的对话
               </header>
 
@@ -885,9 +679,9 @@ export default function InnerForumWorkspace() {
                           margin: '6px 0 2px',
                         }}
                       >
-                        <div style={{ height: 1, background: '#ddd8cb', flex: 1 }} />
-                        <span style={{ color: '#8a8575', fontSize: 12 }}>{message.text}</span>
-                        <div style={{ height: 1, background: '#ddd8cb', flex: 1 }} />
+                        <div style={{ height: 1, background: '#dbe6e0', flex: 1 }} />
+                        <span style={{ color: '#7a8f86', fontSize: 12 }}>{message.text}</span>
+                        <div style={{ height: 1, background: '#dbe6e0', flex: 1 }} />
                       </div>
                     );
                   }
@@ -908,7 +702,7 @@ export default function InnerForumWorkspace() {
                           border: '1px solid #d3e4db',
                           borderRadius: 10,
                           padding: '8px 10px',
-                          color: '#3a4335',
+                          color: '#2e4a40',
                           fontSize: 14,
                           lineHeight: 1.7,
                         }}
@@ -940,14 +734,31 @@ export default function InnerForumWorkspace() {
                         ) : (
                           <p style={{ margin: 0, whiteSpace: 'pre-line' }}>{message.text}</p>
                         )}
-                        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#807c6b', textAlign: isSelf ? 'right' : 'left' }}>{message.time}</p>
+                        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6f857c', textAlign: isSelf ? 'right' : 'left' }}>{message.time}</p>
                       </div>
                     </div>
                   );
                 })}
+                {activeThread.id === 'argue' ? (
+                  <div
+                    style={{
+                      justifySelf: 'center',
+                      marginTop: 8,
+                      padding: '6px 12px',
+                      borderRadius: 999,
+                      background: '#f6f8f7',
+                      border: '1px solid #d8e3dd',
+                      color: '#70837a',
+                      fontSize: 12,
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    你已被对方拉黑
+                  </div>
+                ) : null}
               </div>
 
-              <footer style={{ borderTop: '1px solid #e8e0d1', display: 'flex', alignItems: 'center', padding: '0 12px', color: '#8a8575', fontSize: 13 }}>
+              <footer style={{ borderTop: '1px solid #e6efea', display: 'flex', alignItems: 'center', padding: '0 12px', color: '#7a8f86', fontSize: 13 }}>
                 账户功能异常：当前仅支持查看历史私信，不支持发送新消息。
               </footer>
             </section>
@@ -960,28 +771,30 @@ export default function InnerForumWorkspace() {
       return (
         <div style={{ display: 'grid', gap: 12 }}>
           <div style={CARD_STYLE}>
-            <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#2f372b' }}>发帖记录</h2>
-            <div style={{ display: 'grid', gap: 12 }}>
-              {INNER_POSTS.map((post) => (
-                <a
-                  key={post.id}
-                  href={publicPath(post.to)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    border: '1px solid #ddd5c5',
-                    borderRadius: 8,
-                    padding: '12px 14px',
-                    textDecoration: 'none',
-                    color: '#394133',
-                    fontSize: 16,
-                    fontWeight: 700,
-                  }}
-                >
-                  {post.title}
-                </a>
-              ))}
-            </div>
+            <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#1f3f2d' }}>发帖记录</h2>
+            {myPosts.length === 0 ? (
+              <p style={{ margin: 0, color: '#5e756d', lineHeight: 1.8 }}>因疑似违禁发言，账号锁定中，暂时无法查看发帖记录。</p>
+            ) : (
+              <div style={{ display: 'grid', gap: 12 }}>
+                {myPosts.map((post) => (
+                  <div key={post.id} style={{ border: '1px solid #d9e5de', borderRadius: 8, padding: '12px 14px' }}>
+                    <a
+                      href="http://localhost:5173/p/8a04e6d3f2"
+                      style={{
+                        display: 'inline-block',
+                        margin: 0,
+                        color: '#224534',
+                        fontSize: 16,
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                      }}
+                    >
+                      {post.title}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -990,9 +803,163 @@ export default function InnerForumWorkspace() {
     return (
       <div style={{ display: 'grid', gap: 12 }}>
         <div style={CARD_STYLE}>
-          <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#2f372b' }}>账户安全</h2>
-          <div style={{ display: 'grid', gap: 8, color: '#6b705e', lineHeight: 1.8 }}>
-            <p style={{ margin: 0 }}>当前登陆身份：{currentIdentity}</p>
+          <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#1f3f2d' }}>账户安全</h2>
+          <div style={{ display: 'grid', gap: 8, color: '#5e756d', lineHeight: 1.8 }}>
+            <p style={{ margin: 0 }}>账户ID：不想再背锅</p>
+            <p style={{ margin: 0 }}>绑定邮箱：未验证</p>
+            <p style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              密码：{showPassword ? 'Courage0426' : '••••••••'}
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                aria-label={showPassword ? '隐藏密码' : '显示密码'}
+                style={{
+                  border: '1px solid #d9e5de',
+                  background: '#ffffff',
+                  borderRadius: 6,
+                  width: 24,
+                  height: 24,
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  color: '#3b4f46',
+                }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  {showPassword ? (
+                    <>
+                      <path
+                        d="M3 3L21 21"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M9.9 5.2C10.6 5.07 11.29 5 12 5C17.2 5 21 9 22 12C21.63 13.1 21.02 14.28 20.15 15.35M14.1 14.1C13.56 14.65 12.81 15 12 15C10.34 15 9 13.66 9 12C9 11.19 9.35 10.44 9.9 9.9M6.27 6.26C4.2 7.68 2.76 9.86 2 12C3 15 6.8 19 12 19C13.95 19 15.67 18.44 17.14 17.56"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <path
+                        d="M2 12C3 9 6.8 5 12 5C17.2 5 21 9 22 12C21 15 17.2 19 12 19C6.8 19 3 15 2 12Z"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinejoin="round"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="3"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
+                    </>
+                  )}
+                </svg>
+              </button>
+            </p>
+            <p style={{ margin: 0 }}>注册时间：2026-04-26</p>
+            <p style={{ margin: 0 }}>上次登录：2026-04-26</p>
+            <p style={{ margin: 0 }}>安全提示问题1：我最喜欢的书是什么？</p>
+            <label style={{ margin: 0, display: 'grid', gap: 4 }}>
+              <span>安全提示答案：</span>
+              <input
+                type="text"
+                value="被讨厌的勇气"
+                readOnly
+                disabled
+                style={{
+                  width: 220,
+                  height: 30,
+                  border: '1px solid #d9e5de',
+                  borderRadius: 6,
+                  padding: '0 10px',
+                  background: '#f5f7f6',
+                  color: '#6a7c74',
+                  fontSize: 14,
+                }}
+              />
+            </label>
+            <p style={{ margin: 0 }}>安全提示问题2：你第一次独自旅行的城市是哪里？</p>
+            <label style={{ margin: 0, display: 'grid', gap: 4 }}>
+              <span>安全提示答案：</span>
+              <input
+                type="text"
+                value="攀枝花"
+                readOnly
+                disabled
+                style={{
+                  width: 220,
+                  height: 30,
+                  border: '1px solid #d9e5de',
+                  borderRadius: 6,
+                  padding: '0 10px',
+                  background: '#f5f7f6',
+                  color: '#6a7c74',
+                  fontSize: 14,
+                }}
+              />
+            </label>
+            <p style={{ margin: 0 }}>安全提示问题3：你最喜欢的电影角色是谁？</p>
+            <label style={{ margin: 0, display: 'grid', gap: 4 }}>
+              <span>安全提示答案：</span>
+              <input
+                type="text"
+                value="小猪佩奇"
+                readOnly
+                disabled
+                style={{
+                  width: 220,
+                  height: 30,
+                  border: '1px solid #d9e5de',
+                  borderRadius: 6,
+                  padding: '0 10px',
+                  background: '#f5f7f6',
+                  color: '#6a7c74',
+                  fontSize: 14,
+                }}
+              />
+            </label>
+            <p
+              style={{
+                marginTop: 8,
+                marginBottom: 0,
+                fontSize: 12,
+                textDecoration: 'underline',
+                color: '#6f827a',
+              }}
+            >
+              账号锁定中，暂时不支持修改ID、密码和密保问题。
+            </p>
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                justifySelf: 'flex-start',
+                margin: '2px 0 0',
+                border: '1px solid #cfded6',
+                background: '#ffffff',
+                color: '#385246',
+                borderRadius: 8,
+                padding: '8px 14px',
+                cursor: 'pointer',
+                fontSize: 14,
+                fontWeight: 700,
+                fontFamily: 'inherit',
+              }}
+            >
+              退出登录
+            </button>
           </div>
         </div>
       </div>
@@ -1001,26 +968,25 @@ export default function InnerForumWorkspace() {
 
   return (
     <div
-      ref={workspaceRootRef}
       style={{
         minHeight: '100vh',
-        background: '#f4efe2',
-        color: '#2f3629',
+        background: '#f5f7f6',
+        color: '#25383a',
         display: 'flex',
         flexDirection: 'column',
         fontFamily:
           'Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif',
       }}
     >
-      <HeartHomeHeader variant="innerWorkspace" />
+      <HeartHomeHeader />
 
       <main style={{ flex: 1, padding: '48px 20px 64px' }}>
         <section
           style={{
             maxWidth: 1100,
             margin: '0 auto',
-            background: '#fffdf8',
-            border: '1px solid #ddd5c5',
+            background: '#ffffff',
+            border: '1px solid #d9e5de',
             borderRadius: 14,
             overflow: 'hidden',
             minHeight: 'calc(100vh - 80px - 112px - 64px)',
@@ -1029,8 +995,8 @@ export default function InnerForumWorkspace() {
           <div style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)' }}>
             <aside
               style={{
-                background: '#fffdf8',
-                borderRight: '1px solid #e8e0d1',
+                background: '#f8fbf9',
+                borderRight: '1px solid #e3ece7',
                 padding: 16,
                 minHeight: '100%',
               }}
@@ -1039,7 +1005,7 @@ export default function InnerForumWorkspace() {
                 style={{
                   margin: '6px 8px 14px',
                   fontSize: 22,
-                  color: '#2f372b',
+                  color: '#1f3f2d',
                   fontWeight: 800,
                 }}
               >
@@ -1055,11 +1021,11 @@ export default function InnerForumWorkspace() {
                       onClick={() => setActiveKey(item.key)}
                       style={{
                         textAlign: 'left',
-                        border: active ? '1px solid #4b5342' : '1px solid #ddd5c5',
+                        border: active ? '1px solid #2f7a4a' : '1px solid #d9e5de',
                         borderRadius: 8,
                         padding: '10px 12px',
-                        background: '#fffdf8',
-                        color: active ? '#4b5342' : '#4d5446',
+                        background: active ? '#eaf6ef' : '#ffffff',
+                        color: active ? '#1f6f3a' : '#3b4f46',
                         fontWeight: active ? 700 : 500,
                         cursor: 'pointer',
                       }}
@@ -1078,9 +1044,8 @@ export default function InnerForumWorkspace() {
 
       <HeartHomeFooter
         onOpenForum={() => {
-          navigate('/p/3e7b10a9c4');
+          navigate('/p/b12e8f40a6');
         }}
-        variant="innerWorkspace"
       />
 
       {showAppointmentBlockedModal && (
@@ -1088,7 +1053,7 @@ export default function InnerForumWorkspace() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(34, 37, 28, 0.34)',
+            background: 'rgba(20, 40, 32, 0.38)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1099,23 +1064,23 @@ export default function InnerForumWorkspace() {
           <div
             style={{
               width: 'min(460px, 100%)',
-              background: '#fffdf8',
+              background: '#ffffff',
               border: '1px solid #d7e4dd',
               borderRadius: 12,
-              boxShadow: '0 18px 48px rgba(52, 48, 34, 0.18)',
+              boxShadow: '0 18px 48px rgba(15, 44, 31, 0.22)',
               padding: '24px 22px 18px',
             }}
           >
             <p
               style={{
                 margin: 0,
-                color: '#3e4637',
+                color: '#2d4740',
                 fontSize: 16,
                 lineHeight: 1.8,
                 fontWeight: 600,
               }}
             >
-              上一次临时咨询未由YD001确认完成，当前无法预约。
+              当前账户仍在审核中，暂时无法预约。
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
               <button
@@ -1124,10 +1089,10 @@ export default function InnerForumWorkspace() {
                 style={{
                   height: 34,
                   minWidth: 84,
-                  border: '1px solid #4b5342',
+                  border: '1px solid #2f7a4a',
                   borderRadius: 8,
-                  background: '#fffdf8',
-                  color: '#4b5342',
+                  background: '#ffffff',
+                  color: '#1f6f3a',
                   cursor: 'pointer',
                   fontWeight: 700,
                 }}
@@ -1144,7 +1109,7 @@ export default function InnerForumWorkspace() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(34, 37, 28, 0.34)',
+            background: 'rgba(20, 40, 32, 0.38)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1155,17 +1120,17 @@ export default function InnerForumWorkspace() {
           <div
             style={{
               width: 'min(460px, 100%)',
-              background: '#fffdf8',
+              background: '#ffffff',
               border: '1px solid #d7e4dd',
               borderRadius: 12,
-              boxShadow: '0 18px 48px rgba(52, 48, 34, 0.18)',
+              boxShadow: '0 18px 48px rgba(15, 44, 31, 0.22)',
               padding: '24px 22px 18px',
             }}
           >
             <p
               style={{
                 margin: 0,
-                color: '#3e4637',
+                color: '#2d4740',
                 fontSize: 16,
                 lineHeight: 1.8,
                 fontWeight: 600,
@@ -1180,10 +1145,10 @@ export default function InnerForumWorkspace() {
                 style={{
                   height: 34,
                   minWidth: 84,
-                  border: '1px solid #4b5342',
+                  border: '1px solid #2f7a4a',
                   borderRadius: 8,
-                  background: '#fffdf8',
-                  color: '#4b5342',
+                  background: '#ffffff',
+                  color: '#1f6f3a',
                   cursor: 'pointer',
                   fontWeight: 700,
                 }}
@@ -1201,7 +1166,7 @@ export default function InnerForumWorkspace() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(18, 20, 14, 0.82)',
+            background: 'rgba(8, 20, 17, 0.82)',
             zIndex: 1300,
             display: 'flex',
             alignItems: 'center',
@@ -1226,6 +1191,3 @@ export default function InnerForumWorkspace() {
     </div>
   );
 }
-
-
-

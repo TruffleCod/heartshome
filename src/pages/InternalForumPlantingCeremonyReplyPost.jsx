@@ -50,7 +50,7 @@ const comments = [
       {
         type: 'link',
         href: '/p/44d2ae09f6',
-        label: 'https://trufflecod.github.io/heartshome/p/44d2ae09f6',
+        label: 'https://www.xinzhijia.cc/p/44d2ae09f6',
       },
     ],
   },

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import PageProgressBanner from '../components/PageProgressBanner';
 import { isInnerForumLightToggleRoute, updateSiteChrome } from './routeChrome';
 
-const TOTAL_PAGES = 46;
+const TOTAL_PAGES = 50;
 
 function getPageNumber(route, fallbackPageNumber) {
   if (route.path === '/p/ad5f0c8b62') {
@@ -10,7 +10,7 @@ function getPageNumber(route, fallbackPageNumber) {
   }
 
   if (route.path === '/p/09a7dc3e51') {
-    return '17';
+    return '16';
   }
 
   return route.pageNumber || fallbackPageNumber;

@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import posts from '../data/posts.json';
+import { LOGIN_PATH, clearHeartHomeLogin } from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
 import { publicPath } from '../utils/publicPath';
 
@@ -84,7 +85,7 @@ const MESSAGE_THREADS = [
       { from: 'other', image: '/bully-photo.jpg', time: '2026/05/14 00:03' },
       {
         from: 'other',
-        text: '照片里你好看吗？真后悔没把你的头发剪的更短一点啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈',
+        text: '昨天照片里你好看吗？真后悔没把你的头发剪的更短一点啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈',
         time: '2026/05/14 00:03',
       },
       {
@@ -147,7 +148,7 @@ const MESSAGE_THREADS = [
       },
       {
         from: 'other',
-        text: '亲爱的孤独四叶草，你好。你已成功预约线上文字咨询（临时）。\n咨询师：陆心音\n预约时间：2026/05/14 21:00\n预约编号：GDSYC-0514-LXY\n\n本站线上咨询内容严格保密，结束后仅本人和咨询师可在工作台中查阅。\n注：本次临时咨询室由管理员手动确认。',
+        text: '亲爱的孤独四叶草，你好。你已成功预约线上文字咨询（临时）。\n咨询师：陆心音\n预约时间：2026/05/14 01:00\n预约编号：GDSYC-0514-LXY\n\n本站线上咨询内容严格保密，结束后仅本人和咨询师可在工作台中查阅。\n注：本次临时咨询室由管理员手动确认。',
         time: '2026/05/14 20:34',
       },
     ],
@@ -346,6 +347,10 @@ export default function Workspace() {
       return;
     }
     handleOpenRecord(matchedPath);
+  };
+  const handleLogout = () => {
+    clearHeartHomeLogin();
+    navigate(LOGIN_PATH, { replace: true });
   };
 
   const monthLabel = `${visibleYear}年${visibleMonth + 1}月`;
@@ -958,6 +963,25 @@ export default function Workspace() {
             >
               账号锁定中，暂时不支持修改ID、密码和密保问题。
             </p>
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                justifySelf: 'flex-start',
+                margin: '2px 0 0',
+                border: '1px solid #cfded6',
+                background: '#ffffff',
+                color: '#385246',
+                borderRadius: 8,
+                padding: '8px 14px',
+                cursor: 'pointer',
+                fontSize: 14,
+                fontWeight: 700,
+                fontFamily: 'inherit',
+              }}
+            >
+              退出登录
+            </button>
           </div>
         </div>
       </div>

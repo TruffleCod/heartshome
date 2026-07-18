@@ -28,7 +28,7 @@ export default function NewsHeartHomeFiveYears() {
         alt: '顾正清接受明川新闻网采访',
         caption: '顾正清在工作室接受明川新闻网记者采访。图源：明川新闻网',
       }}
-      relatedLinks={[{ href: '/', label: '心之家心理服务平台' }]}
+      relatedLinks={[{ href: '/home', label: '心之家心理服务平台' }]}
     />
   );
 }

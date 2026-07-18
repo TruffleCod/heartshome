@@ -46,6 +46,7 @@ export default function MingchuanThirdMiddleCaseThree() {
             {caseImages.map((image, index) => (
               <figure className="dy-investigation-photo" key={image}>
                 <img src={publicPath(image)} alt={`明川三中少女失踪案调查照片 ${index + 1}`} />
+                <figcaption>{`1/${index + 1}`}</figcaption>
               </figure>
             ))}
           </div>

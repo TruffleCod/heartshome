@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DongyangOldStoriesLayout } from '../DongyangOldStoriesBlog';
+import { readPlayerGuestbookMessages } from '../../utils/dongyangGuestbookStorage';
 
 const archivedMessages = [
   {
@@ -54,6 +55,20 @@ const archivedMessages = [
 
 export default function DongyangGuestbookArchive() {
   const [activeMessageId, setActiveMessageId] = useState(null);
+  const [playerMessages, setPlayerMessages] = useState(() =>
+    readPlayerGuestbookMessages()
+  );
+  const allMessages = [...archivedMessages, ...playerMessages];
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setPlayerMessages(readPlayerGuestbookMessages());
+    };
+
+    window.addEventListener('storage', handleStorage);
+
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   return (
     <DongyangOldStoriesLayout>
@@ -130,7 +145,7 @@ export default function DongyangGuestbookArchive() {
         </div>
 
         <div className="dy-archive-list">
-          {archivedMessages.map((message) => (
+          {allMessages.map((message, index) => (
             <div className="dy-archive-item" key={message.id}>
               <button
                 className="dy-archive-trigger"
@@ -142,7 +157,11 @@ export default function DongyangGuestbookArchive() {
                 }
               >
                 <p className="dy-result-type">隐藏留言 | {message.author}</p>
-                <h2>{message.label}</h2>
+                <h2>
+                  {message.isPlayerMessage
+                    ? `留言 ${index + 1}`
+                    : message.label}
+                </h2>
                 <p className="dy-archive-time">暂存于 {message.archivedAt}</p>
               </button>
               <div

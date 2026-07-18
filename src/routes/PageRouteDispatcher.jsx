@@ -23,6 +23,7 @@ const routeGroups = [
       '166ajty', 'kz4l3w', '3m3kbr', 'ocny9l', '1a6ka1r', '1ihvpba', 'zk9zc8',
       'inv0o1', '4c53kr', '1v0mmxw', '10x3e5g', '1j4pfrj', '332le4',
       '14uw8lb', 'k2yuvc', '1v7ng81', '1exjq39', 'alwepc', 'jo4740',
+      'syvncj',
     ]),
     Component: HeartRoutes,
   },
@@ -45,6 +46,7 @@ const routeGroups = [
     routeHashes: new Set([
       '1b8k6s1', 'ttdyt3', 'anyd0n', '1cctlx', 'suamyf', '1haxh7p',
       'moqtpx', '17t815q', 'um37tw', '8fo5mr', '1t3qeql', '16q4uaq',
+      'otlb73', 'pv87ks', '1388eqx', 'n7by3x',
     ]),
     Component: DongyangRoutes,
   },

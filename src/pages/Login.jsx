@@ -2,14 +2,33 @@
 import { Link, useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
+import {
+  BU_XIANG_WORKSPACE_PATH,
+  WORKSPACE_PATH,
+  getHeartHomeWorkspacePath,
+  markHeartHomeLoggedIn,
+} from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
 
 const CORRECT_USERNAME = '孤独四叶草';
+const BU_XIANG_USERNAME = '不想再背锅';
 const LOGIN_PASSWORD_PEPPER = 'heart_home_login_v1::';
-const WORKSPACE_PATH = '/p/1b9c60e4fa';
 
 const CORRECT_PASSWORD_HASH =
   'e90c93253c64f9855ea6449f9ef18d6d32ecb60cc33d7e2fc10ace6eb684b5c9';
+const BU_XIANG_PASSWORD_HASH =
+  '3a98cfbe8d88094eadcc7aefc5751de1853e4ea23bd01153ae79b8c6ee41af84';
+
+const LOGIN_ACCOUNTS = {
+  [CORRECT_USERNAME]: {
+    passwordHash: CORRECT_PASSWORD_HASH,
+    workspacePath: WORKSPACE_PATH,
+  },
+  [BU_XIANG_USERNAME]: {
+    passwordHash: BU_XIANG_PASSWORD_HASH,
+    workspacePath: BU_XIANG_WORKSPACE_PATH,
+  },
+};
 
 function isLoggedIn() {
   return (
@@ -32,7 +51,7 @@ export default function Login() {
   useEffect(() => {
     const redirectIfAlreadyLoggedIn = () => {
       if (isLoggedIn()) {
-        navigate(WORKSPACE_PATH, { replace: true });
+        navigate(getHeartHomeWorkspacePath(), { replace: true });
       }
     };
 
@@ -56,7 +75,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (isLoggedIn()) {
-      navigate(WORKSPACE_PATH, { replace: true });
+      navigate(getHeartHomeWorkspacePath(), { replace: true });
       return;
     }
 
@@ -72,17 +91,17 @@ export default function Login() {
 
     try {
       const passwordHash = await hashWithPepper(normalizedPassword, LOGIN_PASSWORD_PEPPER);
+      const account = LOGIN_ACCOUNTS[normalizedUsername];
 
       if (
-        normalizedUsername === CORRECT_USERNAME &&
-        passwordHash === CORRECT_PASSWORD_HASH
+        account &&
+        passwordHash === account.passwordHash
       ) {
         setLoginMessage('');
-        localStorage.setItem('heartHomeLoggedIn', 'true');
-        localStorage.setItem('heartHomeCurrentUser', CORRECT_USERNAME);
+        markHeartHomeLoggedIn(normalizedUsername);
         setShowSuccessModal(true);
         successTimerRef.current = window.setTimeout(() => {
-          navigate(WORKSPACE_PATH);
+          navigate(account.workspacePath);
         }, 2000);
         return;
       }

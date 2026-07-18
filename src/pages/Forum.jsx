@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import VerificationModal from '../components/VerificationModal';
-import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
+import {
+  getHeartHomeWorkspacePath,
+  openVisitorForumOrVerify,
+  openVisitorForumWindow,
+} from '../utils/forumAccess';
 import { publicPath } from '../utils/publicPath';
 
 const forumPosts = [
@@ -40,11 +44,13 @@ function isForumLoggedIn() {
 
 export default function Forum() {
   const [showVerification, setShowVerification] = useState(false);
-  const loginTargetPath = isForumLoggedIn() ? '/p/1b9c60e4fa' : '/p/6e58c2b9a1';
+  const loginTargetPath = isForumLoggedIn()
+    ? getHeartHomeWorkspacePath()
+    : '/p/6e58c2b9a1';
 
   const handleLoginLinkClick = (event) => {
     const currentTargetPath = isForumLoggedIn()
-      ? '/p/1b9c60e4fa'
+      ? getHeartHomeWorkspacePath()
       : '/p/6e58c2b9a1';
 
     if (currentTargetPath !== loginTargetPath) {

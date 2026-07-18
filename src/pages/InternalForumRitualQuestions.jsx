@@ -933,7 +933,7 @@ export default function InternalForumRitualQuestions() {
           </Link>
         ) : (
           <>
-            <Link to="/" style={endingReturnButtonStyle}>
+            <Link to="/home" style={endingReturnButtonStyle}>
               返回心之家
             </Link>
             <button type="button" onClick={handleRestartAssessment} style={endingReturnButtonStyle}>

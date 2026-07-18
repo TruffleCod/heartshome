@@ -141,23 +141,25 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               <p className="hh-dialogue-line"><strong>孤独四叶草：</strong>嗯。最近总是半夜突然醒，醒了以后会一直想事情。</p>
               <p className="hh-dialogue-line"><strong>咨询师-陈霁：</strong>还是学校里的事吗？</p>
               <p className="hh-dialogue-line">
-                <strong>孤独四叶草：</strong>有一点，但有时候我其实不知道自己在害怕什么，就是会突然很紧张。
+                <strong>孤独四叶草：</strong>有一点……其实有时候我也不知道自己在害怕什么，就是会突然很紧张。
+              </p>
+               <p className="hh-dialogue-line">
+                <strong></strong>有的时候我会跑到姐姐的床上，抱着姐姐的枕头睡觉，这样会感觉安全一点。
               </p>
               <p className="hh-dialogue-line">
+                <strong>咨询师-陈霁：</strong>你和姐姐的关系很好。
+              </p>
+              <p className="hh-dialogue-line">
+                <strong>孤独四叶草：</strong>嗯。小时候爸爸妈妈忙，很多事情都是姐姐在照顾我。接我放学，陪我写作业，我不开心的时候她也会安慰我。现在姐姐在大学里也很忙，我不想让她太担心。我也想自己变得勇敢一点。
+              </p>
+               <p className="hh-dialogue-line">
                 <strong>咨询师-陈霁：</strong>你之前长期紧绷的状态，可能会让大脑一直停留在“警觉”里。即使已经入睡了，身体还是会觉得自己没有真正安全下来。最近有没有继续做之前说的呼吸练习？
               </p>
               <p className="hh-dialogue-line">
-                <strong>孤独四叶草：</strong>有。但有时候闭上眼睛以后，会更容易想到那些不开心的事。
+                <strong>孤独四叶草：</strong>有。但有时候闭上眼睛以后，会更容易想到那些不开心的事。有时候我会觉得，如果我不是这么脆弱，这么容易内耗，爸爸妈妈和姐姐会不会过得更开心。
               </p>
               <p className="hh-dialogue-line">
-                <strong>咨询师-陈霁：</strong>那就先不要强迫自己“什么都不想”。很多时候，越想控制念头，反而越会反复反复往意它。如果脑子里一直出现某一句话、某一个画面，也不用立刻赶走它，只是注意到：“我现在又想这件事了。”
-              </p>
-              <p className="hh-dialogue-line">
-                <strong>孤独四叶草：</strong>可是我会觉得很难受。有时候已经过去一整天了，我会突然想到别人说的话。
-              </p>
-
-              <p className="hh-dialogue-line">
-                <strong>咨询师-陈霁：</strong>会反复想起让自己受伤的经历，并不说明你脆弱。人的情绪不会因为“应该过去了”就自动结束。比起急着否定自己，现在更重要的是先让身体慢慢从长期紧张里停下来。
+                <strong>咨询师-陈霁：</strong>会反复想起让自己受伤的经历，并不说明你脆弱。人的情绪不会因为“应该过去了”就自动结束。比起急着否定自己，现在更重要的是先让身体慢慢从长期紧张里停下来。很多时候，越想控制念头，反而越会反复注意它，先不要强迫自己“什么都不想”，然后尝试慢慢把注意力带回来。
               </p>
               <p className="hh-dialogue-line"><strong>孤独四叶草：</strong>嗯……</p>
               <p className="hh-dialogue-line">

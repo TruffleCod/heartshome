@@ -3,19 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import posts from '../data/posts.json';
-import { WORKSPACE_PATH, markHeartHomeLoggedIn } from '../utils/forumAccess';
+import {
+  BU_XIANG_WORKSPACE_PATH,
+  WORKSPACE_PATH,
+  markHeartHomeLoggedIn,
+} from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
+
+const UNSUPPORTED_RECOVER_ACCOUNT_IDS = ['陈霁', '袁知夏'];
 
 const FORUM_ACCOUNT_IDS = Array.from(
   new Set(
-    posts.flatMap((post) => [
-      post.author,
-      ...(post.comments || []).map((comment) => comment.author),
-    ]),
+    posts
+      .flatMap((post) => [
+        post.author,
+        ...(post.comments || []).map((comment) => comment.author),
+      ])
+      .map((id) => normalizeInput(id))
+      .filter(
+        (id) =>
+          id && !UNSUPPORTED_RECOVER_ACCOUNT_IDS.includes(id),
+      ),
   ),
-).filter(Boolean);
+);
 
 const SPECIAL_ACCOUNT_ID = '孤独四叶草';
+const BU_XIANG_ACCOUNT_ID = '不想再背锅';
 const RECOVER_SECURITY_PEPPER = 'heart_home_recover_v1::';
 
 const SPECIAL_SECURITY_QUESTIONS = [
@@ -35,6 +48,27 @@ const SPECIAL_SECURITY_QUESTIONS = [
     answerHash: 'a0d9e1e4e2d886a3a9448ed1f8c50922f24288e5162ee4b3529b45bf5ee5c3ff',
   },
 ];
+
+const BU_XIANG_SECURITY_QUESTIONS = [
+  {
+    key: 'book',
+    label: '安全提示问题1：我最喜欢的书是什么？',
+  },
+  {
+    key: 'common-2',
+    label: '安全提示问题2：你第一次独自旅行的城市是哪里？',
+  },
+  {
+    key: 'common-3',
+    label: '安全提示问题3：你最喜欢的电影角色是谁？',
+  },
+];
+
+const BU_XIANG_SECURITY_ANSWERS = {
+  book: '被讨厌的勇气',
+  'common-2': '攀枝花',
+  'common-3': '小猪佩奇',
+};
 
 const COMMON_SECURITY_QUESTION_POOL = [
   '你第一次独自旅行的城市是哪里？',
@@ -64,6 +98,13 @@ function buildCommonQuestionsForAccount(account) {
   });
 }
 
+function normalizeBuXiangAnswer(value) {
+  return normalizeInput(value)
+    .normalize('NFKC')
+    .replace(/\s+/g, '')
+    .replace(/[《》<>「」『』“”"']/g, '');
+}
+
 export default function RecoverPassword() {
   const navigate = useNavigate();
 
@@ -86,10 +127,17 @@ export default function RecoverPassword() {
 
   const normalizedAccountId = normalizeInput(accountId);
   const activeQuestions = useMemo(
-    () =>
-      normalizedAccountId === SPECIAL_ACCOUNT_ID
-        ? SPECIAL_SECURITY_QUESTIONS
-        : buildCommonQuestionsForAccount(normalizedAccountId),
+    () => {
+      if (normalizedAccountId === SPECIAL_ACCOUNT_ID) {
+        return SPECIAL_SECURITY_QUESTIONS;
+      }
+
+      if (normalizedAccountId === BU_XIANG_ACCOUNT_ID) {
+        return BU_XIANG_SECURITY_QUESTIONS;
+      }
+
+      return buildCommonQuestionsForAccount(normalizedAccountId);
+    },
     [normalizedAccountId],
   );
   const selectedQuestion = useMemo(
@@ -144,6 +192,25 @@ export default function RecoverPassword() {
         }, 2000);
         return;
       }
+      setMessage('安全提示答案不正确。');
+      return;
+    }
+
+    if (normalizedAccountId === BU_XIANG_ACCOUNT_ID) {
+      const expectedAnswer = BU_XIANG_SECURITY_ANSWERS[selectedQuestion.key];
+      if (
+        expectedAnswer &&
+        normalizeBuXiangAnswer(normalizedAnswer) ===
+          normalizeBuXiangAnswer(expectedAnswer)
+      ) {
+        markHeartHomeLoggedIn(BU_XIANG_ACCOUNT_ID);
+        setShowSuccessModal(true);
+        successTimerRef.current = window.setTimeout(() => {
+          navigate(BU_XIANG_WORKSPACE_PATH);
+        }, 2000);
+        return;
+      }
+
       setMessage('安全提示答案不正确。');
       return;
     }

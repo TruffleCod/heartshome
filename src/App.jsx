@@ -83,16 +83,16 @@ function AppRoutes() {
     <>
       <ScrollToTop />
       <Routes>
+        <Route path="/" element={<StartGame />} />
         <Route
-          path="/"
+          path="/home"
           element={
             <>
               <HomeNew />
-              <PageProgressBanner current="01" total={46} projectName="心之家 Project" />
+              <PageProgressBanner current="01" total={50} projectName="心之家 Project" />
             </>
           }
         />
-        <Route path="/start-game" element={<StartGame />} />
         <Route
           path="/404-page-not-found"
           element={<InternalForumGhostCache showGame={false} copy={ordinaryNotFoundCopy} />}

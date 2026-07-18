@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
+import { savePlayerGuestbookMessage } from '../utils/dongyangGuestbookStorage';
 import {
   readSearchHistory,
   recordSearchHistory,
@@ -112,41 +113,39 @@ const searchItems = [
   },
   {
     id: 'mingchuan-county-gazetteer',
-    type: 'image',
-    title: '（图片）',
-    paths: ['/images/明川县志1.jpg', '/images/明川县志2.jpg'],
+    type: 'post',
+    title: '明川县志',
+    path: '/p/56b2d8a4c1',
     date: '明川县志',
-    summary: '',
+    summary: '旧县志扫描件与文字整理。',
     keywords: ['明川县志'],
   },
   {
     id: 'mingchuan-waterways-addendum',
-    type: 'image',
-    title: '（图片）',
-    paths: ['/images/明川水经补遗1.jpg', '/images/明川水经补遗2.jpg'],
+    type: 'post',
+    title: '明川水经补遗',
+    path: '/p/8a4f03c7de',
     date: '明川水经补遗',
-    summary: '',
+    summary: '残页、旧地图与文字整理。',
     keywords: ['明川水经补遗'],
   },
   {
     id: 'dongyang-strange-cults-study',
-    type: 'image',
-    title: '（图片）',
-    paths: ['/images/东阳异崇考1.jpg', '/images/东阳异崇考2.jpg'],
-    downloadPath: '/images/复原译文.txt',
-    downloadName: '复原译文.txt',
+    type: 'post',
+    title: '东阳异崇考',
+    path: '/p/2c91b7e6a4',
     date: '东阳异崇考',
-    summary: '',
-    keywords: ['两仪祠'],
+    summary: '扫描页、原文整理与复原译文。',
+    keywords: ['东阳异崇考', '两仪祠'],
   },
   {
     id: 'hidden-name-record',
-    type: 'image',
-    title: '（图片）',
-    path: '/images/幽名别录.jpg',
+    type: 'post',
+    title: '幽名别录',
+    path: '/p/f0d6a19c82',
     date: '幽名别录',
-    summary: '',
-    keywords: ['刘义庆'],
+    summary: '残卷扫描件与可辨文字整理。',
+    keywords: ['幽名别录', '刘义庆'],
   },
   {
     id: 'mingchuan-third-middle-case-one',
@@ -987,6 +986,24 @@ export function DongyangOldStoriesLayout({ children }) {
           filter: sepia(.2) saturate(.82) contrast(.96);
         }
 
+        .dy-investigation-photo figcaption {
+          margin-top: 6px;
+          color: rgba(74, 36, 29, 0.58);
+          font-size: 12px;
+          line-height: 1.6;
+          text-align: center;
+        }
+
+        .dy-archive-section {
+          margin-top: 26px;
+          padding-top: 18px;
+          border-top: 1px dashed rgba(106, 22, 19, 0.22);
+        }
+
+        .dy-archive-section h2 {
+          font-size: 18px;
+        }
+
         .dy-read-more {
           display: inline-flex;
           align-items: center;
@@ -1587,6 +1604,8 @@ export function DongyangOldStoriesMessages() {
       });
       return;
     }
+
+    savePlayerGuestbookMessage(visitorName, messageText);
 
     setMessageModal({
       title: '留言已暂存！',
