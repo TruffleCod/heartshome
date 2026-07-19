@@ -44,6 +44,7 @@ const routes = [
   },
   { path: '/p/09a7dc3e51', component: AssessmentFollowUp, pageNumber: '16', progressTheme: 'charcoal' },
   { path: '/p/3e7b10a9c4', component: InternalForum, pageNumber: '17', progressTheme: 'innerLight' },
+  { path: '/p/b80a4e6c1f', component: InternalForumBulliedHelpPost, pageNumber: '21' },
   { path: '/p/ad5f0c8b62', component: EmergencyHelp },
 ];
 
