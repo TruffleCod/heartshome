@@ -344,7 +344,7 @@ function QuizAd({ close, onComplete, placement }) {
 }
 
 function FortuneAd({ close, placement }) {
-  const hiddenNames = ['李宏宇', '叶诗遥', '王静', '刘欣怡', '张婷', '赵兰婷'];
+  const hiddenNames = ['李宏宇', '叶诗遥', '王静', '刘欣怡', '张婷', '赵兰子'];
   const fortuneResults = [
     {
       key: 'lucky',

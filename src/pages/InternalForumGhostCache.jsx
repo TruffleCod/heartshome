@@ -793,7 +793,7 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
           opacity: 0.96,
         }}
       >
-        © 心之家 Project 当前页面收集进度 43/46
+        © 心之家 Project 当前页面收集进度 {showGame ? '47/50' : 'N/A'}
       </div>
     </div>
   );
