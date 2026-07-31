@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
 import { preloadImages } from '../utils/preloadAssets';
+import { INPUT_MODES, readInputMode } from '../utils/inputMode';
 
 const CHOICE_QUESTIONS = [
   {
@@ -599,6 +600,10 @@ export default function AssessmentFollowUp() {
     const search = typeof window !== 'undefined' ? window.location.search : '';
     return new URLSearchParams(search).get('debugScribble') === '1';
   }, []);
+  const [inputMode, setInputMode] = useState(readInputMode);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window === 'undefined' ? 1024 : window.innerWidth,
+  );
   const [birthdayDigits, setBirthdayDigits] = useState('');
   const [nameInput, setNameInput] = useState('');
   const [dateConfirmed, setDateConfirmed] = useState(false);
@@ -630,9 +635,29 @@ export default function AssessmentFollowUp() {
   const optionAdvanceTimerRef = useRef(null);
   const nameStrikeTimerRef = useRef(null);
 
+  useEffect(() => {
+    const updateInputContext = (event) => {
+      setInputMode(event?.detail?.mode || readInputMode());
+      setViewportWidth(window.innerWidth);
+    };
+
+    updateInputContext();
+    window.addEventListener('heart-home:input-mode-change', updateInputContext);
+    window.addEventListener('resize', updateInputContext);
+    window.addEventListener('orientationchange', updateInputContext);
+
+    return () => {
+      window.removeEventListener('heart-home:input-mode-change', updateInputContext);
+      window.removeEventListener('resize', updateInputContext);
+      window.removeEventListener('orientationchange', updateInputContext);
+    };
+  }, []);
+
   const answeredCount = Object.keys(answers).length;
   const currentQuestion = CHOICE_QUESTIONS[answeredCount];
   const showFinalNameInput = dateConfirmed && answeredCount === CHOICE_QUESTIONS.length;
+  const isTouchMode = inputMode === INPUT_MODES.TOUCH;
+  const isTouchNarrow = isTouchMode && viewportWidth <= 768;
   const shouldShowNoise =
     !isBooting || showBlueScreen || currentFlashImageIndex >= 0;
   const questionTitleStyle = {
@@ -693,18 +718,24 @@ export default function AssessmentFollowUp() {
       return;
     }
 
-    const makeWindow = (index) => ({
-      id: `${Date.now()}-${index}`,
-      top: Math.floor(Math.random() * 84),
-      left: Math.floor(Math.random() * 84),
-      width: 220 + Math.floor(Math.random() * 190),
-      message:
-        index % 3 === 0
-          ? 'System memory access failed.'
-          : index % 3 === 1
-            ? 'Unexpected null pointer.'
-            : 'Archive index corrupted.',
-    });
+    const makeWindow = (index) => {
+      const isCompactTouch =
+        window.innerWidth <= 768 &&
+        document.documentElement.classList.contains('hh-input-mode-touch');
+
+      return {
+        id: `${Date.now()}-${index}`,
+        top: isCompactTouch ? 12 + Math.floor(Math.random() * 76) : Math.floor(Math.random() * 84),
+        left: isCompactTouch ? 28 + Math.floor(Math.random() * 44) : Math.floor(Math.random() * 84),
+        width: isCompactTouch ? 168 + Math.floor(Math.random() * 86) : 220 + Math.floor(Math.random() * 190),
+        message:
+          index % 3 === 0
+            ? 'System memory access failed.'
+            : index % 3 === 1
+              ? 'Unexpected null pointer.'
+              : 'Archive index corrupted.',
+      };
+    };
 
     const intervalId = window.setInterval(() => {
       const next = Array.from({ length: 36 }, (_, index) => makeWindow(index));
@@ -990,10 +1021,14 @@ export default function AssessmentFollowUp() {
 
       const cfg = FINAL_NAME_SCRIBBLE_CONFIG;
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
+      const visualViewport = window.visualViewport;
+      const pageEl = canvas.closest('.assessment-follow-page');
+      const pageWidth = Math.max(window.innerWidth, pageEl?.scrollWidth || 0);
+      const pageHeight = Math.max(window.innerHeight, pageEl?.scrollHeight || 0);
+      canvas.width = Math.floor(pageWidth * dpr);
+      canvas.height = Math.floor(pageHeight * dpr);
+      canvas.style.width = `${pageWidth}px`;
+      canvas.style.height = `${pageHeight}px`;
 
       const ctx = canvas.getContext('2d');
       if (!ctx) {
@@ -1007,18 +1042,36 @@ export default function AssessmentFollowUp() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      const canvasRect = canvas.getBoundingClientRect();
+      const canvasWidth = pageWidth;
+      const canvasHeight = pageHeight;
+      const toCanvasRect = (rect) => ({
+        x: rect.left - canvasRect.left,
+        y: rect.top - canvasRect.top,
+        width: rect.width,
+        height: rect.height,
+      });
+      const viewportBounds = {
+        x: (visualViewport?.offsetLeft || 0) - canvasRect.left,
+        y: (visualViewport?.offsetTop || 0) - canvasRect.top,
+        width: visualViewport?.width || canvasWidth,
+        height: visualViewport?.height || canvasHeight,
+      };
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
       ctx.font = '800 28px "KaiTi", "STKaiti", "Kaiti SC", serif';
 
       const inputRect = inputEl.getBoundingClientRect();
+      const pageRect = pageEl?.getBoundingClientRect();
+      const inputCanvasRect = toCanvasRect(inputRect);
+      const pageCanvasRect = pageRect ? toCanvasRect(pageRect) : null;
       const measured = ctx.measureText(nameInput);
       const textWidth = Math.max(1, Math.ceil(measured.width));
       const textHeight = Math.max(
         1,
         Math.ceil((measured.actualBoundingBoxAscent || 20) + (measured.actualBoundingBoxDescent || 8)),
       );
-      const textX = inputRect.left + 14;
-      const textY = inputRect.top + (inputRect.height - textHeight) / 2;
+      const textX = inputCanvasRect.x + 14;
+      const textY = inputCanvasRect.y + (inputCanvasRect.height - textHeight) / 2;
       const padX = textWidth * 0.34;
       const padY = textHeight * 0.48;
       const rawTextClip = {
@@ -1028,10 +1081,10 @@ export default function AssessmentFollowUp() {
         height: textHeight + padY * 2,
       };
       const inputBounds = {
-        x: inputRect.left,
-        y: inputRect.top,
-        width: inputRect.width,
-        height: inputRect.height,
+        x: inputCanvasRect.x,
+        y: inputCanvasRect.y,
+        width: inputCanvasRect.width,
+        height: inputCanvasRect.height,
       };
       const intersectRect = (a, b) => {
         const x = Math.max(a.x, b.x);
@@ -1054,12 +1107,27 @@ export default function AssessmentFollowUp() {
         height: Math.max(0, textClipRaw.height - clipInset * 2),
       };
       const inputClip = {
-        x: inputRect.left + clipInset,
-        y: inputRect.top + clipInset,
-        width: Math.max(0, inputRect.width - clipInset * 2),
-        height: Math.max(0, inputRect.height - clipInset * 2),
+        x: inputCanvasRect.x + clipInset,
+        y: inputCanvasRect.y + clipInset,
+        width: Math.max(0, inputCanvasRect.width - clipInset * 2),
+        height: Math.max(0, inputCanvasRect.height - clipInset * 2),
       };
-      const fullClip = { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight };
+      const fullCanvasClip = { x: 0, y: 0, width: canvasWidth, height: canvasHeight };
+      const pageClip = pageCanvasRect
+        ? intersectRect(
+            {
+              x: pageCanvasRect.x,
+              y: pageCanvasRect.y,
+              width: pageCanvasRect.width,
+              height: pageCanvasRect.height,
+            },
+            viewportBounds,
+          )
+        : viewportBounds;
+      const isCompactTouch =
+        window.innerWidth <= 768 &&
+        document.documentElement.classList.contains('hh-input-mode-touch');
+      const fullClip = isCompactTouch && pageClip.width > 0 && pageClip.height > 0 ? pageClip : fullCanvasClip;
 
       const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
       const lerp = (a, b, t) => a + (b - a) * t;
@@ -1147,22 +1215,30 @@ export default function AssessmentFollowUp() {
 
         for (let i = 0; i < totalCount; i += 1) {
           const phrase = phrases[Math.floor(Math.random() * phrases.length)];
-          const x = left + Math.random() * width;
-          const y = top + Math.random() * height;
           const fontSize = Math.round(
-            (height > 180 ? 18 : 14) + Math.random() * (height > 180 ? 62 : 32),
+            (height > 180 ? 16 : 13) + Math.random() * (height > 180 ? 46 : 26),
           );
           const rotation = (Math.random() - 0.5) * 0.8;
           const scaleX = 0.82 + Math.random() * 0.42;
           const scaleY = 0.84 + Math.random() * 0.38;
           const skewX = (Math.random() - 0.5) * 0.42;
           const skewY = (Math.random() - 0.5) * 0.18;
+          const font = `700 ${fontSize}px "HanziPen SC", "FZShuTi", "STXinwei", "STXingkai", "Xingkai SC", cursive`;
+          ctx.font = font;
+          const measuredWidth = Math.min(width * 0.9, Math.max(fontSize * 1.8, ctx.measureText(phrase).width * scaleX));
+          const xInset = Math.min(width * 0.28, measuredWidth * 0.52 + fontSize * 0.4);
+          const yInset = Math.min(height * 0.18, fontSize * 0.9);
+          const xRange = Math.max(1, width - xInset * 2);
+          const yRange = Math.max(1, height - yInset * 2);
+          const x = left + xInset + Math.random() * xRange;
+          const y = top + yInset + Math.random() * yRange;
 
           ctx.save();
           ctx.translate(x, y);
           ctx.rotate(rotation);
           ctx.transform(scaleX, skewY, skewX, scaleY, 0, 0);
-          ctx.font = `700 ${fontSize}px "HanziPen SC", "FZShuTi", "STXinwei", "STXingkai", "Xingkai SC", cursive`;
+          ctx.font = font;
+          ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = cfg.inkColor;
           ctx.globalAlpha = 0.18 + Math.random() * 0.22;
@@ -1253,7 +1329,7 @@ export default function AssessmentFollowUp() {
         let budget = cfg.strokesPerFrame;
 
         if (lineProgress < 1) {
-          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          ctx.clearRect(0, 0, canvasWidth, canvasHeight);
           ctx.save();
           ctx.beginPath();
           ctx.rect(textClip.x, textClip.y, textClip.width, textClip.height);
@@ -1331,8 +1407,10 @@ export default function AssessmentFollowUp() {
 
   return (
     <div
+      className="assessment-follow-page"
       style={{
         minHeight: '100vh',
+        position: 'relative',
         background: isBooting
           ? 'linear-gradient(140deg, #f5f8f6 0%, #eef4f0 56%, #f6faf7 100%)'
           : 'radial-gradient(circle at 16% 12%, rgba(108, 130, 119, 0.14), transparent 42%), radial-gradient(circle at 88% 78%, rgba(82, 97, 89, 0.12), transparent 40%), linear-gradient(140deg, #141816 0%, #1a201d 55%, #171c1a 100%)',
@@ -1362,8 +1440,9 @@ export default function AssessmentFollowUp() {
           ref={finalScribbleCanvasRef}
           aria-hidden="true"
           style={{
-            position: 'fixed',
-            inset: 0,
+            position: 'absolute',
+            left: 0,
+            top: 0,
             zIndex: 2800,
             pointerEvents: 'none',
           }}
@@ -1371,6 +1450,7 @@ export default function AssessmentFollowUp() {
       )}
       {isBooting && showBlueScreen && (
         <div
+          className="assessment-follow-blue-screen"
           style={{
             position: 'fixed',
             inset: 0,
@@ -1393,6 +1473,7 @@ export default function AssessmentFollowUp() {
 
       {isBooting && currentFlashImageIndex >= 0 && !showBlueScreen && (
         <div
+          className="assessment-follow-flash-overlay"
           style={{
             position: 'fixed',
             inset: 0,
@@ -1406,6 +1487,7 @@ export default function AssessmentFollowUp() {
           }}
         >
           <img
+            className={`assessment-follow-flash-image ${currentFlashImageIndex === 3 ? 'assessment-follow-flash-image-last' : ''}`}
             src={publicPath(FLASH_IMAGES[currentFlashImageIndex])}
             alt={`闪回画面${currentFlashImageIndex + 1}`}
             style={{
@@ -1421,6 +1503,7 @@ export default function AssessmentFollowUp() {
 
       {isBooting && showErrorStorm && !showBlueScreen && (
         <div
+          className="assessment-follow-error-storm"
           style={{
             position: 'fixed',
             inset: 0,
@@ -1431,6 +1514,7 @@ export default function AssessmentFollowUp() {
           {errorWindows.map((item) => (
             <div
               key={item.id}
+              className="assessment-follow-error-window"
               style={{
                 position: 'absolute',
                 top: `${item.top}%`,
@@ -1455,6 +1539,7 @@ export default function AssessmentFollowUp() {
       )}
 
       <main
+        className="assessment-follow-main"
         style={{
           width: 'min(1360px, 96vw)',
           margin: '0 auto',
@@ -1468,6 +1553,7 @@ export default function AssessmentFollowUp() {
       >
         {isBooting && (
           <section
+            className="assessment-follow-boot-card"
             style={{
               maxWidth: 1280,
               border: '1px solid #cfe1d5',
@@ -1518,6 +1604,7 @@ export default function AssessmentFollowUp() {
               {typedLines.map((line, idx) => (
                 <p
                   key={`typed-line-${idx}`}
+                  className="assessment-follow-boot-line"
                   style={{
                     margin: 0,
                     color: idx % 2 === 0 ? '#3f5f4f' : '#5a7568',
@@ -1540,6 +1627,7 @@ export default function AssessmentFollowUp() {
 
         {!isBooting && !dateConfirmed && (
           <form
+            className="assessment-follow-date-form"
             onSubmit={handleDateSubmit}
             style={{
               display: 'grid',
@@ -1555,10 +1643,11 @@ export default function AssessmentFollowUp() {
               fontFamily: '"KaiTi", "STKaiti", "Kaiti SC", serif',
             }}
           >
-            <h1 style={questionTitleStyle}>
+            <h1 className="assessment-follow-question-title" style={questionTitleStyle}>
               请输入你记忆中最痛苦的那一天：
             </h1>
             <input
+              className="assessment-follow-date-input"
               type="text"
               placeholder="YYYY/MM/DD"
               value={formatBirthdayInput(birthdayDigits)}
@@ -1584,6 +1673,7 @@ export default function AssessmentFollowUp() {
             />
             <div>
               <button
+                className="assessment-follow-submit-button"
                 type="submit"
                 style={{
                   height: 44,
@@ -1605,6 +1695,7 @@ export default function AssessmentFollowUp() {
 
         {!isBooting && dateConfirmed && currentQuestion && (
           <section
+            className="assessment-follow-question-card"
             style={{
               maxWidth: 960,
               width: '100%',
@@ -1617,10 +1708,10 @@ export default function AssessmentFollowUp() {
               fontFamily: '"KaiTi", "STKaiti", "Kaiti SC", serif',
             }}
           >
-            <h2 style={{ ...questionTitleStyle, margin: '0 0 20px' }}>
+            <h2 className="assessment-follow-question-title" style={{ ...questionTitleStyle, margin: '0 0 20px' }}>
               {currentQuestion.title}
             </h2>
-            <div style={{ display: 'grid', gap: 12 }}>
+            <div className="assessment-follow-option-list" style={{ display: 'grid', gap: 12 }}>
               {currentQuestion.options.map((option, index) => {
                 const isStriking =
                   strikethroughTarget?.questionId === currentQuestion.id &&
@@ -1629,6 +1720,7 @@ export default function AssessmentFollowUp() {
                 return (
                 <button
                   key={option}
+                  className="assessment-follow-option"
                   type="button"
                   onClick={() => handleOptionSelect(currentQuestion.id, index)}
                   onMouseEnter={() => setHoveredOptionIndex(index)}
@@ -1696,6 +1788,7 @@ export default function AssessmentFollowUp() {
 
         {!isBooting && showFinalNameInput && !isComplete && (
           <form
+            className="assessment-follow-name-form"
             onSubmit={handleNameSubmit}
             style={{
               display: 'grid',
@@ -1711,11 +1804,12 @@ export default function AssessmentFollowUp() {
               fontFamily: '"KaiTi", "STKaiti", "Kaiti SC", serif',
             }}
           >
-            <h2 style={questionTitleStyle}>
+            <h2 className="assessment-follow-question-title" style={questionTitleStyle}>
               现在，请输入你最讨厌的那个人的名字：
             </h2>
             <div style={{ position: 'relative' }}>
               <input
+                className="assessment-follow-name-input"
                 ref={finalNameInputRef}
                 type="text"
                 value={nameInput}
@@ -1759,8 +1853,8 @@ export default function AssessmentFollowUp() {
         )}
 
         {!isBooting && isComplete && (
-          <section style={{ maxWidth: 900, width: '100%', justifySelf: 'center', border: '1px solid #3e4c45', borderRadius: 14, padding: '34px 30px', background: 'rgba(197, 205, 198, 0.07)', fontFamily: '"KaiTi", "STKaiti", "Kaiti SC", serif' }}>
-            <p style={{ margin: 0, color: '#cad5cf', fontSize: 'clamp(26px,2.1vw,34px)', lineHeight: 1.6 }}>
+          <section className="assessment-follow-complete-card" style={{ maxWidth: 900, width: '100%', justifySelf: 'center', border: '1px solid #3e4c45', borderRadius: 14, padding: '34px 30px', background: 'rgba(197, 205, 198, 0.07)', fontFamily: '"KaiTi", "STKaiti", "Kaiti SC", serif' }}>
+            <p className="assessment-follow-complete-text" style={{ margin: 0, color: '#cad5cf', fontSize: 'clamp(26px,2.1vw,34px)', lineHeight: 1.6 }}>
               {Array.from(COMPLETE_TEXT.slice(0, typedCompleteLength)).map((char, index) => {
                 if (char === '\n') return <br key={`complete-break-${index}`} />;
                 const highlightStart = COMPLETE_TEXT.indexOf(COMPLETE_HIGHLIGHT);
@@ -1776,7 +1870,7 @@ export default function AssessmentFollowUp() {
                 );
               })}
             </p>
-            <div style={{ display: 'flex', gap: 14, marginTop: 26, opacity: typedCompleteLength >= COMPLETE_TEXT.length ? 1 : 0, transition: 'opacity 220ms ease' }}>
+            <div className="assessment-follow-complete-actions" style={{ display: 'flex', gap: 14, marginTop: 26, opacity: typedCompleteLength >= COMPLETE_TEXT.length ? 1 : 0, transition: 'opacity 220ms ease' }}>
               <button
                 type="button"
                 onClick={handleContinue}
@@ -1816,19 +1910,34 @@ export default function AssessmentFollowUp() {
         )}
 
         {!isBooting && noticeText && (
-          <p
+          <div
+            className="assessment-follow-notice-row"
             style={{
+              width: '100%',
+              maxWidth: showFinalNameInput ? 1120 : dateConfirmed ? 960 : 1280,
+              justifySelf: 'center',
               margin: '40px 0 0',
+              boxSizing: 'border-box',
+            }}
+          >
+            <p
+              className="assessment-follow-notice"
+              style={{
+              margin: 0,
               color: '#e4ece7',
               background: 'rgba(78, 88, 82, 0.92)',
               borderRadius: 6,
-              padding: '14px 18px',
-              width: 'fit-content',
-              fontSize: 28,
+              padding: isTouchMode ? (isTouchNarrow ? '11px 14px' : '12px 16px') : '14px 18px',
+              width: isTouchMode ? 'min(760px, 100%)' : 'fit-content',
+              maxWidth: isTouchMode ? '100%' : undefined,
+              boxSizing: isTouchMode ? 'border-box' : undefined,
+              fontSize: isTouchMode ? (isTouchNarrow ? 15 : 20) : 28,
+              lineHeight: isTouchMode ? 1.45 : undefined,
             }}
-          >
-            {noticeText}
-          </p>
+            >
+              {noticeText}
+            </p>
+          </div>
         )}
       </main>
     </div>

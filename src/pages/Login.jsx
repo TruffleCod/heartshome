@@ -126,6 +126,7 @@ export default function Login() {
 
   return (
     <div
+      className="login-page"
       style={{
         minHeight: '100vh',
         background: '#f5f7f6',
@@ -139,12 +140,14 @@ export default function Login() {
       <HeartHomeHeader />
 
       <main
+        className="login-main"
         style={{
           flex: 1,
           padding: '68px 20px 76px',
         }}
       >
         <section
+          className="login-card"
           style={{
             maxWidth: 860,
             margin: '0 auto',
@@ -157,18 +160,21 @@ export default function Login() {
         >
 
           <div
+            className="login-layout"
             style={{
               display: 'grid',
               gridTemplateColumns: 'minmax(0, 1fr) 300px',
             }}
           >
             <div
+              className="login-form-panel"
               style={{
                 padding: '38px 38px 42px',
                 borderRight: '1px solid #e3ece7',
               }}
             >
               <h1
+                className="login-title"
                 style={{
                   margin: '0 0 28px',
                   fontSize: 26,
@@ -180,8 +186,9 @@ export default function Login() {
                 用户登录
               </h1>
 
-              <div style={{ display: 'grid', gap: 18 }}>
+              <div className="login-form" style={{ display: 'grid', gap: 18 }}>
                 <label
+                  className="login-field"
                   style={{
                     display: 'grid',
                     gap: 8,
@@ -192,6 +199,7 @@ export default function Login() {
                 >
                   账户ID
                   <input
+                    className="login-input"
                     type="text"
                     value={username}
                     onChange={(event) => {
@@ -218,6 +226,7 @@ export default function Login() {
                 </label>
 
                 <label
+                  className="login-field"
                   style={{
                     display: 'grid',
                     gap: 8,
@@ -228,6 +237,7 @@ export default function Login() {
                 >
                   密码
                   <input
+                    className="login-input"
                     type="password"
                     value={password}
                     onChange={(event) => {
@@ -270,6 +280,7 @@ export default function Login() {
                 )}
 
                 <div
+                  className="login-actions"
                   style={{
                     display: 'flex',
                     gap: 14,
@@ -279,6 +290,7 @@ export default function Login() {
                   }}
                 >
                   <button
+                    className="login-submit-button"
                     type="button"
                     onClick={handleLogin}
                     disabled={isChecking}
@@ -315,12 +327,14 @@ export default function Login() {
             </div>
 
             <aside
+              className="login-register-panel"
               style={{
                 padding: '38px 30px 42px',
                 background: '#f9fcfa',
               }}
             >
               <h2
+                className="login-register-title"
                 style={{
                   margin: '0 0 12px',
                   fontSize: 21,
@@ -344,6 +358,7 @@ export default function Login() {
               </p>
 
               <button
+                className="login-register-button"
                 type="button"
                 onClick={handleRegisterClick}
                 style={{

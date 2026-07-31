@@ -85,6 +85,7 @@ export default function ForumRulesPost() {
       <HeartHomeHeader />
 
       <main
+        className="post-detail-main"
         style={{
           flex: 1,
           width: '100%',
@@ -94,7 +95,7 @@ export default function ForumRulesPost() {
           boxSizing: 'border-box',
         }}
       >
-        <article>
+        <article className="post-detail-article">
           <h1
             style={{
               margin: '0 0 46px',
@@ -191,8 +192,9 @@ export default function ForumRulesPost() {
             </section>
           ))}
 
-          <div style={{ marginTop: 70 }}>
+          <div className="forum-rules-signoff" style={{ marginTop: 70 }}>
             <p
+              className="forum-rules-signoff-title"
               style={{
                 margin: '0 0 18px',
                 color: '#26313d',
@@ -201,9 +203,12 @@ export default function ForumRulesPost() {
                 fontWeight: 800,
               }}
             >
-              请记得，这里每一句对话，都值得被温暖照亮。
+              <span>请记得，这里每一句对话</span>
+              <br />
+              <span className="forum-rules-warmth-line">都值得被温暖照亮。</span>
             </p>
             <p
+              className="forum-rules-signoff-copy"
               style={{
                 margin: 0,
                 color: '#26313d',

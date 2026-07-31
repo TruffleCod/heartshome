@@ -3,12 +3,14 @@
 import { publicPath } from '../utils/publicPath';
 import { useNavigate } from 'react-router-dom';
 import { preloadImages } from '../utils/preloadAssets';
+import { INPUT_MODES, readInputMode } from '../utils/inputMode';
 
 const RUNNER_WIDTH = 126;
 const RUNNER_HEIGHT = 126;
 const RUNNER_X = 72;
 const GROUND_HEIGHT = 50;
 const GAME_HEIGHT = 220;
+const TOUCH_COMPACT_GAME_WIDTH = 860;
 const JUMP_VELOCITY = 770;
 const GRAVITY = 2150;
 const GAME_SPEED = 335;
@@ -43,6 +45,10 @@ const GAME_IMAGE_SOURCES = [
   '/images/followup/heart.png',
   ...FLOWER_SOURCES,
 ];
+function isInteractiveTarget(target) {
+  return Boolean(target?.closest?.('button, a, input, textarea, select, [role="button"]'));
+}
+
 const DEFAULT_PAGE_COPY = {
   title: '抱歉，页面无法访问…',
   description: '网址已失效：可能页面已删除，地址变更等',
@@ -225,7 +231,17 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
   const gameStateRef = useRef({ ...INITIAL_GAME_STATE });
 
   const [gameState, setGameState] = useState(() => ({ ...INITIAL_GAME_STATE }));
+  const [isTouchMode, setIsTouchMode] = useState(() => readInputMode() === INPUT_MODES.TOUCH);
+  const [viewportWidth, setViewportWidth] = useState(() => (typeof window === 'undefined' ? 980 : window.innerWidth));
   const pageCopy = { ...DEFAULT_PAGE_COPY, ...copy };
+  const isCompactTouch = isTouchMode && viewportWidth <= 768;
+  const gameVisualScale = isCompactTouch
+    ? Math.min(0.5, Math.max(0.34, Math.max(viewportWidth - 48, 280) / TOUCH_COMPACT_GAME_WIDTH))
+    : 1;
+  const displayInstruction = isTouchMode && showGame
+    ? 'Oops, this page does not exist. Tap anywhere to start over.'
+    : pageCopy.instruction;
+  const displayRestartPrompt = isTouchMode && showGame ? 'Tap to restart' : pageCopy.restartPrompt;
 
   useEffect(() => {
     if (!showGame) {
@@ -234,6 +250,24 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
 
     preloadImages(GAME_IMAGE_SOURCES);
   }, [showGame]);
+
+  useEffect(() => {
+    const updateTouchContext = () => {
+      setIsTouchMode(readInputMode() === INPUT_MODES.TOUCH);
+      setViewportWidth(window.innerWidth);
+    };
+
+    updateTouchContext();
+    window.addEventListener('resize', updateTouchContext);
+    window.addEventListener('orientationchange', updateTouchContext);
+    window.addEventListener('heart-home:input-mode-change', updateTouchContext);
+
+    return () => {
+      window.removeEventListener('resize', updateTouchContext);
+      window.removeEventListener('orientationchange', updateTouchContext);
+      window.removeEventListener('heart-home:input-mode-change', updateTouchContext);
+    };
+  }, []);
 
   const handleContinueToRitual = () => {
     navigate('/p/6c9f02a7bd');
@@ -264,7 +298,9 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
       if (!gameShellRef.current) {
         return;
       }
-      const nextWidth = Math.max(540, Math.min(980, Math.floor(gameShellRef.current.clientWidth)));
+      const nextWidth = isCompactTouch
+        ? TOUCH_COMPACT_GAME_WIDTH
+        : Math.max(540, Math.min(980, Math.floor(gameShellRef.current.clientWidth)));
       gameStateRef.current = {
         ...gameStateRef.current,
         width: nextWidth,
@@ -275,7 +311,7 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
     syncWidth();
     window.addEventListener('resize', syncWidth);
     return () => window.removeEventListener('resize', syncWidth);
-  }, []);
+  }, [isCompactTouch]);
 
   useEffect(() => {
     if (!showGame) {
@@ -330,11 +366,21 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
       triggerJump();
     };
 
+    const handleTouchEnd = (event) => {
+      if (!isTouchMode || isInteractiveTarget(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      triggerJump();
+    };
+
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('touchend', handleTouchEnd, { passive: false });
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [scheduleSpawn, showGame]);
+  }, [isTouchMode, scheduleSpawn, showGame]);
 
   useEffect(() => {
     if (!showGame) {
@@ -500,6 +546,36 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
   const showLetter = clampedLetterIndex < LETTER_SEQUENCE.length;
   const letterX = gameState.width - letterProgress + 96;
   const currentLetter = showLetter ? LETTER_SEQUENCE[clampedLetterIndex] : '';
+  const gameViewportStyle = isCompactTouch
+    ? {
+        width: '100%',
+        height: GAME_HEIGHT * gameVisualScale + 10,
+        margin: '0 auto 14px',
+        display: 'flex',
+        justifyContent: 'center',
+        overflow: 'visible',
+      }
+    : {
+        width: 'min(860px, 100%)',
+        margin: '0 auto 18px',
+        height: GAME_HEIGHT,
+        position: 'relative',
+        overflow: 'hidden',
+      };
+  const gameStageStyle = isCompactTouch
+    ? {
+        width: TOUCH_COMPACT_GAME_WIDTH,
+        height: GAME_HEIGHT,
+        position: 'relative',
+        overflow: 'hidden',
+        transform: `scale(${gameVisualScale})`,
+        transformOrigin: 'top center',
+        flex: '0 0 auto',
+      }
+    : null;
+  const titleFontSize = isTouchMode ? 'clamp(27px, 8.2vw, 40px)' : 'clamp(46px, 7vw, 62px)';
+  const descriptionFontSize = isTouchMode ? 'clamp(16px, 4.9vw, 21px)' : 'clamp(22px, 3.6vw, 32px)';
+  const instructionFontSize = isTouchMode ? 'clamp(14px, 4.45vw, 20px)' : 'clamp(18px, 3vw, 22px)';
 
   return (
     <div
@@ -537,15 +613,8 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
                 transition: 'opacity 180ms ease',
               }}
             >
-              <div
-                style={{
-                  width: 'min(860px, 100%)',
-                  margin: '0 auto 18px',
-                  height: GAME_HEIGHT,
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
+              <div style={gameViewportStyle}>
+                <div style={gameStageStyle || gameViewportStyle}>
                 <div
                   style={{
                     position: 'absolute',
@@ -645,14 +714,15 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
                     {String(gameState.score).padStart(2, '0')}
                   </div>
                 )}
+                </div>
               </div>
 
-          <div style={{ marginTop: 20 }}>
+          <div style={{ marginTop: isTouchMode ? 14 : 20 }}>
             <h1
               style={{
                 margin: 0,
                 color: '#585d67',
-                fontSize: 'clamp(46px, 7vw, 62px)',
+                fontSize: titleFontSize,
                 fontWeight: 700,
                 lineHeight: 1.12,
                 letterSpacing: 0,
@@ -664,7 +734,7 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
               style={{
                 margin: '18px 0 0',
                 color: '#757b84',
-                fontSize: 'clamp(22px, 3.6vw, 32px)',
+                fontSize: descriptionFontSize,
                 lineHeight: 1.5,
               }}
             >
@@ -672,13 +742,13 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
             </p>
             <p
               style={{
-                margin: '56px 0 0',
+                margin: isTouchMode ? '32px 0 0' : '56px 0 0',
                 color: '#666b74',
-                fontSize: 'clamp(22px, 3vw, 18px)',
+                fontSize: instructionFontSize,
                 lineHeight: 1.6,
               }}
             >
-              {pageCopy.instruction}
+              {displayInstruction}
             </p>
           </div>
 
@@ -705,7 +775,7 @@ export default function InternalForumGhostCache({ showGame = true, copy = {} }) 
                   textTransform: 'uppercase',
                 }}
               >
-                {pageCopy.restartPrompt}
+                {displayRestartPrompt}
               </div>
             </div>
           )}

@@ -1,6 +1,8 @@
-﻿import { useNavigate, useParams } from 'react-router-dom';
+﻿import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
+import { INPUT_MODES, readInputMode } from '../utils/inputMode';
 
 const RECORDS = {
   'GDSYC-0428-CJ': {
@@ -35,6 +37,25 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
   const is0428 = normalizedCode === 'GDSYC-0428-CJ';
   const is0514 = normalizedCode === 'GDSYC-0514-LXY';
   const isHJ338 = normalizedCode === 'HJ338-0528-YD001';
+  const [inputMode, setInputMode] = useState(readInputMode);
+  const isTouchMode = inputMode === INPUT_MODES.TOUCH;
+
+  useEffect(() => {
+    const handleInputModeChange = (event) => {
+      setInputMode(event.detail?.mode || readInputMode());
+    };
+
+    setInputMode(readInputMode());
+    window.addEventListener('heart-home:input-mode-change', handleInputModeChange);
+
+    return () => {
+      window.removeEventListener('heart-home:input-mode-change', handleInputModeChange);
+    };
+  }, []);
+
+  const hj338SearchHint = isTouchMode
+    ? '解锁的方法就是在新闻网的任意空白处连续点按三下。'
+    : '解锁的方法就是常见电脑游戏调出控制台的按键，随便搜一下就能知道。';
 
   return (
     <div
@@ -99,7 +120,7 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
       `}</style>
       <HeartHomeHeader />
 
-      <main style={{ flex: 1, padding: '48px 20px 64px' }}>
+      <main className="counseling-record-main" style={{ flex: 1, padding: '48px 20px 64px' }}>
         {is0428 ? (
           <section
             style={{
@@ -112,11 +133,11 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               color: '#2d4740',
             }}
           >
-            <h1 style={{ margin: '0 0 18px', fontSize: 30, fontWeight: 800, color: '#1f3f2d' }}>
+            <h1 className="counseling-record-title" style={{ margin: '0 0 18px', fontSize: 30, fontWeight: 800, color: '#1f3f2d' }}>
               咨询记录-GDSYC-0428-CJ
             </h1>
 
-            <div style={{ fontSize: 16, lineHeight: 1.65, textAlign: 'left' }}>
+            <div className="counseling-record-body" style={{ fontSize: 16, lineHeight: 1.65, textAlign: 'left' }}>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>咨询方式：正念练习（回访）</p>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>咨询师：陈霁</p>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>来访者：孤独四叶草</p>
@@ -197,11 +218,11 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               color: '#2d4740',
             }}
           >
-            <h1 style={{ margin: '0 0 18px', fontSize: 30, fontWeight: 800, color: '#1f3f2d' }}>
+            <h1 className="counseling-record-title" style={{ margin: '0 0 18px', fontSize: 30, fontWeight: 800, color: '#1f3f2d' }}>
               咨询记录-GDSYC-0514-LXY
             </h1>
 
-            <div style={{ fontSize: 16, lineHeight: 1.65 }}>
+            <div className="counseling-record-body" style={{ fontSize: 16, lineHeight: 1.65 }}>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>咨询方式：线上文字咨询（临时）</p>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>咨询师：陆心音</p>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>来访者：孤独四叶草</p>
@@ -304,7 +325,7 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               <p className="hh-dialogue-line">
                 <strong>孤独四叶草：</strong>我现在脑子很乱，状态很差。会不会不通过评估？
               </p>
-              <div className="hh-dialogue-row">
+              <div className="hh-dialogue-row hh-emphasis-dialogue-row">
                 <div className="hh-dialogue-speaker">咨询师-陆心音：</div>
                 <div className="hh-dialogue-content hh-emphasis-block">
                   <span className="hh-emphasis-title">那就记住你今晚说得最清楚的几件事：</span>
@@ -353,11 +374,11 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               color: '#2d4740',
             }}
           >
-            <h1 style={{ margin: '0 0 18px', fontSize: 30, fontWeight: 800, color: '#1f3f2d' }}>
+            <h1 className="counseling-record-title" style={{ margin: '0 0 18px', fontSize: 30, fontWeight: 800, color: '#1f3f2d' }}>
               咨询记录-HJ338-0528-YD001
             </h1>
 
-            <div style={{ fontSize: 16, lineHeight: 1.65, textAlign: 'left' }}>
+            <div className="counseling-record-body" style={{ fontSize: 16, lineHeight: 1.65, textAlign: 'left' }}>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>咨询方式：线上文字咨询（临时）</p>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>咨询师：YD001</p>
               <p style={{ margin: '0 0 2px', fontWeight: 700 }}>来访者：HJ338</p>
@@ -370,7 +391,7 @@ export default function CounselingRecords({ recordCode: routedRecordCode }) {
               <p className="hh-dialogue-line"><strong>花匠338：</strong>我写下她的名字以后没多久，人就不见了。而且，不只是她……这不是你第一次这么干了吧。</p>
               <p className="hh-dialogue-line"><strong>园丁001：</strong>……你查到了什么？</p>
               <p className="hh-dialogue-line"><strong>花匠338：</strong>
-                  我姐姐以前跟我说过，明川新闻网有一个隐藏的搜索功能，像是有人故意留在系统里的后门。解锁的方法就是常见电脑游戏调出控制台的按键，随便搜一下就能知道。赵兰子失踪后，我用这个办法在明川新闻网上追查了你们所有人。结果我发现，二十多年前，明川也发生过类似的失踪案件。
+                  我姐姐以前跟我说过，明川新闻网有一个隐藏的搜索功能，像是有人故意留在系统里的后门。{hj338SearchHint}赵兰子失踪后，我用这个办法在明川新闻网上追查了你们所有人。结果我发现，二十多年前，明川也发生过类似的失踪案件。
               </p>
               <p className="hh-dialogue-line"><strong>园丁001：</strong>那又怎么样？是那个记者写得太夸张了。而且他已经死了。</p>
               <p className="hh-dialogue-line"><strong>花匠338：</strong>你对那些女孩做了什么？栽种仪式是什么意思？你到底是谁？</p>

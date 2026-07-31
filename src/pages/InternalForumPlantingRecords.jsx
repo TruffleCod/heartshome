@@ -27,6 +27,7 @@ const latestRecordIndex = 0;
 export default function InternalForumPlantingRecords() {
   return (
     <div
+      className="planting-records-page"
       style={{
         minHeight: '100vh',
         color: '#e4ebe6',
@@ -38,6 +39,154 @@ export default function InternalForumPlantingRecords() {
         background: '#030606',
       }}
     >
+      <style>{`
+        .hh-input-mode-touch .planting-records-page {
+          overflow-x: hidden !important;
+        }
+
+        .hh-input-mode-touch .planting-records-main {
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+        }
+
+        .hh-input-mode-touch .planting-records-list {
+          overflow-x: visible !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+        }
+
+        .hh-input-mode-touch .planting-records-row {
+          min-width: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        }
+
+        .hh-input-mode-touch .planting-records-item {
+          min-width: 0 !important;
+          grid-template-columns: auto auto !important;
+          justify-content: start !important;
+          align-content: center !important;
+          gap: 6px 12px !important;
+          padding: 16px 12px !important;
+          font-size: clamp(12px, 1.2vw, 15px) !important;
+        }
+
+        .hh-input-mode-touch .planting-records-item span {
+          min-width: 0 !important;
+          white-space: nowrap !important;
+          overflow-wrap: normal !important;
+          word-break: keep-all !important;
+        }
+
+        .hh-input-mode-touch .planting-records-time {
+          grid-column: 1 / 2 !important;
+        }
+
+        .hh-input-mode-touch .planting-records-name {
+          grid-column: 1 / 2 !important;
+          opacity: 0.94 !important;
+        }
+
+        .hh-input-mode-touch .planting-records-status {
+          grid-column: 2 / 3 !important;
+          grid-row: 1 / 3 !important;
+          align-self: center !important;
+          white-space: nowrap !important;
+        }
+
+        .hh-input-mode-touch .planting-records-arrow {
+          display: none !important;
+        }
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .planting-records-shell,
+          .planting-records-page .planting-records-shell { padding: 26px 16px 42px !important; }
+          .hh-input-mode-touch .planting-records-main,
+          .planting-records-page .planting-records-main { width: 100% !important; }
+          .planting-records-heading { gap: 10px !important; margin-bottom: 16px !important; }
+          .planting-records-alert {
+            width: clamp(28px, 8vw, 38px) !important;
+            height: clamp(28px, 8vw, 38px) !important;
+            border-radius: 9px !important;
+            font-size: clamp(20px, 5.8vw, 28px) !important;
+            padding-top: 6px !important;
+          }
+          .planting-records-title {
+            font-size: clamp(21px, 6vw, 28px) !important;
+            line-height: 1.16 !important;
+            letter-spacing: 0.03em !important;
+            white-space: nowrap !important;
+          }
+          .planting-records-label {
+            margin-bottom: 10px !important;
+            font-size: clamp(15px, 4.4vw, 20px) !important;
+            line-height: 1.25 !important;
+            letter-spacing: 0.04em !important;
+          }
+          .planting-records-total {
+            margin-bottom: 16px !important;
+            font-size: clamp(48px, 17vw, 78px) !important;
+            line-height: 0.95 !important;
+            letter-spacing: 0.02em !important;
+          }
+          .planting-records-slogan {
+            width: 100% !important;
+            margin-bottom: 24px !important;
+            padding: 14px 16px !important;
+            font-size: clamp(17px, 5vw, 22px) !important;
+            line-height: 1.35 !important;
+            letter-spacing: 0.06em !important;
+          }
+          .hh-input-mode-touch .planting-records-list,
+          .planting-records-page .planting-records-list {
+            overflow-x: visible !important;
+            font-size: clamp(12px, 3.45vw, 14px) !important;
+          }
+          .hh-input-mode-touch .planting-records-row,
+          .planting-records-page .planting-records-row {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+            border-bottom: 0 !important;
+          }
+          .hh-input-mode-touch .planting-records-item,
+          .planting-records-page .planting-records-item {
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            justify-content: stretch !important;
+            gap: 8px 10px !important;
+            min-width: 0 !important;
+            padding: 12px 0 !important;
+            border-bottom: 1px solid rgba(35, 185, 145, 0.22) !important;
+          }
+          .hh-input-mode-touch .planting-records-item span,
+          .planting-records-page .planting-records-item span {
+            min-width: 0 !important;
+            overflow-wrap: anywhere !important;
+            white-space: normal !important;
+          }
+          .hh-input-mode-touch .planting-records-time,
+          .planting-records-page .planting-records-time { grid-column: 1 / 2 !important; }
+          .hh-input-mode-touch .planting-records-status,
+          .planting-records-page .planting-records-status {
+            grid-column: 2 / 3 !important;
+            grid-row: 1 / 3 !important;
+            align-self: center !important;
+            white-space: nowrap !important;
+          }
+          .hh-input-mode-touch .planting-records-name,
+          .planting-records-page .planting-records-name {
+            grid-column: 1 / 2 !important;
+            font-size: 0.95em !important;
+            opacity: 0.92 !important;
+          }
+          .hh-input-mode-touch .planting-records-arrow,
+          .planting-records-page .planting-records-arrow { display: none !important; }
+        }
+      `}</style>
+
       <Balatro
         color1="#8b0502"
         color2="#21f2a4"
@@ -55,6 +204,7 @@ export default function InternalForumPlantingRecords() {
       />
 
       <div
+        className="planting-records-shell"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -66,6 +216,7 @@ export default function InternalForumPlantingRecords() {
         }}
       >
         <main
+          className="planting-records-main"
           style={{
             width: 'min(1480px, 100%)',
             margin: '0 auto',
@@ -75,6 +226,7 @@ export default function InternalForumPlantingRecords() {
           }}
         >
           <div
+            className="planting-records-heading"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -85,6 +237,7 @@ export default function InternalForumPlantingRecords() {
             }}
           >
             <span
+              className="planting-records-alert"
               aria-hidden="true"
               style={{
                 display: 'inline-flex',
@@ -108,6 +261,7 @@ export default function InternalForumPlantingRecords() {
             </span>
 
             <h1
+              className="planting-records-title"
               style={{
                 margin: 0,
                 color: '#ff333f',
@@ -122,6 +276,7 @@ export default function InternalForumPlantingRecords() {
           </div>
 
           <p
+            className="planting-records-label"
             style={{
               margin: '0 0 20px',
               color: 'rgba(156, 197, 182, 0.72)',
@@ -135,6 +290,7 @@ export default function InternalForumPlantingRecords() {
           </p>
 
           <div
+            className="planting-records-total"
             style={{
               margin: '0 0 24px',
               color: '#e7222c',
@@ -151,6 +307,7 @@ export default function InternalForumPlantingRecords() {
           </div>
 
           <div
+            className="planting-records-slogan"
             style={{
               width: 'min(700px, 100%)',
               margin: '0 auto 34px',
@@ -171,6 +328,7 @@ export default function InternalForumPlantingRecords() {
           </div>
 
           <section
+            className="planting-records-list"
             style={{
               borderTop: '1px solid rgba(35, 185, 145, 0.26)',
               color: '#19c996',
@@ -183,6 +341,7 @@ export default function InternalForumPlantingRecords() {
           >
             {recordRows.map((row, rowIndex) => (
               <div
+                className="planting-records-row"
                 key={row.map(([time]) => time).join('-')}
                 style={{
                   display: 'grid',
@@ -197,6 +356,7 @@ export default function InternalForumPlantingRecords() {
 
                   return (
                     <div
+                      className="planting-records-item"
                       key={`${time}-${name}`}
                       style={{
                         display: 'grid',
@@ -212,8 +372,9 @@ export default function InternalForumPlantingRecords() {
                         boxSizing: 'border-box',
                       }}
                     >
-                      <span>[{time}]</span>
+                      <span className="planting-records-time">[{time}]</span>
                       <span
+                        className="planting-records-name"
                         style={{
                           minWidth: 0,
                           whiteSpace: 'nowrap',
@@ -221,9 +382,10 @@ export default function InternalForumPlantingRecords() {
                       >
                         {name}
                       </span>
-                      <span>已栽种</span>
+                      <span className="planting-records-status">已栽种</span>
                       {!isLatestRecord && (
                         <span
+                          className="planting-records-arrow"
                           aria-hidden="true"
                           style={{
                             color: 'rgba(44, 218, 171, 0.72)',

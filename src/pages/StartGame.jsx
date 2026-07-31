@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
+import { INPUT_MODES, saveInputMode } from '../utils/inputMode';
 
 const storyPoints = [
   <>
@@ -58,6 +59,10 @@ export default function StartGame() {
   const [isNoteOpen, setIsNoteOpen] = useState(false);
   const noteSrc = publicPath('note.jpg');
 
+  const handleStartMode = (mode) => {
+    saveInputMode(mode);
+  };
+
   return (
     <div className="start-game-page">
       <main className="start-game-shell">
@@ -91,8 +96,24 @@ export default function StartGame() {
               </div>
             </section>
 
-            <div className="start-game-action">
-              <Link to="/home">开始游戏</Link>
+            <div className="start-game-action" aria-label="选择开始游戏的操作模式">
+              <p>推荐电脑端用户使用键鼠，手机和 iPad用户使用触控模式。</p>
+              <div className="start-game-start-options">
+                <Link
+                  className="start-game-link pointer"
+                  to="/home"
+                  onClick={() => handleStartMode(INPUT_MODES.POINTER)}
+                >
+                  【键鼠模式】开始游戏
+                </Link>
+                <Link
+                  className="start-game-link touch"
+                  to="/home"
+                  onClick={() => handleStartMode(INPUT_MODES.TOUCH)}
+                >
+                  【触控模式】开始游戏
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -300,27 +321,45 @@ const styles = `
   }
 
   .start-game-action {
-    display: flex;
-    justify-content: flex-start;
+    display: grid;
+    gap: 14px;
+    justify-items: start;
     padding-top: 12px;
   }
 
-  .start-game-action a {
+  .start-game-action p {
+    margin: 0;
+    color: #647b70;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .start-game-start-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .start-game-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 172px;
+    min-width: 218px;
     min-height: 50px;
     border-radius: 6px;
-    background: #1f6f3a;
-    color: #fff;
     text-decoration: none;
     font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
-    box-shadow: 0 10px 20px rgba(31, 111, 58, 0.2);
   }
 
+  .start-game-link.pointer,
+  .start-game-link.touch {
+    border: 1px solid #1f6f3a;
+    background: #1f6f3a;
+    color: #ffffff;
+    box-shadow: 0 10px 20px rgba(31, 111, 58, 0.2);
+  }
   .note-lightbox {
     position: fixed;
     inset: 0;
@@ -354,9 +393,9 @@ const styles = `
     cursor: default;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     .start-game-shell {
-      width: min(100% - 28px, 720px);
+      width: min(100% - 28px, 768px);
       padding-top: 24px;
     }
 
@@ -376,9 +415,75 @@ const styles = `
     }
   }
 
-  @media (max-width: 560px) {
+  @media (max-width: 768px) {
+    .start-game-shell {
+      width: min(100% - 20px, 768px);
+      padding-bottom: 42px;
+    }
+
+    .start-game-hero {
+      gap: 16px;
+      padding: 22px 0 20px;
+    }
+
+    .start-game-hero h1 {
+      font-size: 30px;
+    }
+
+    .start-game-copy p,
+    .start-game-copy.compact p {
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
     .start-game-panel {
       padding: 22px 18px;
+    }
+
+    .section-heading h2 {
+      font-size: 25px;
+    }
+
+    .start-game-action p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .start-game-link {
+      font-size: 15px;
+      min-height: 48px;
+    }
+
+    .note-panel {
+      max-width: none;
+    }
+
+    .start-game-start-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
+
+    .start-game-link {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .note-lightbox {
+      align-items: start;
+      padding: max(56px, env(safe-area-inset-top)) 10px max(14px, env(safe-area-inset-bottom));
+      overflow-y: auto;
+    }
+
+    .note-lightbox button {
+      top: max(10px, env(safe-area-inset-top));
+      right: 10px;
+    }
+
+    .note-lightbox img {
+      max-width: 100%;
+      max-height: none;
+      width: 100%;
     }
   }
 `;

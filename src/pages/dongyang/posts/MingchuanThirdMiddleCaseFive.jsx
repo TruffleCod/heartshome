@@ -185,7 +185,7 @@ export default function MingchuanThirdMiddleCaseFive() {
                 100%
               );
               max-width: 100%;
-              margin-inline: 0;
+              margin-inline: auto;
             }
 
             .dy-case-five-card .dy-card-body {
@@ -237,15 +237,153 @@ export default function MingchuanThirdMiddleCaseFive() {
               font-family: inherit;
             }
 
+
+
             @media (max-width: 820px) {
               .dy-case-five-card {
-                --dy-note-font-size: clamp(8px, 1.9vw, 12px);
                 --dy-note-side-padding: 18px;
               }
 
               .dy-case-five-card .dy-card-body {
                 padding-top: 22px;
                 padding-bottom: 24px;
+              }
+            }
+
+            .hh-input-mode-touch .dy-case-five-card {
+              --dy-note-side-padding: clamp(10px, 3vw, 18px);
+              --dy-note-font-size: clamp(
+                8px,
+                calc((100dvw - 72px - (var(--dy-note-side-padding) * 2)) / var(--dy-note-columns)),
+                19px
+              );
+              width: 100%;
+              max-width: none;
+              margin-inline: auto;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-card-body {
+              padding: 18px var(--dy-note-side-padding) 22px;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-case-five-content,
+            .hh-input-mode-touch .dy-case-five-card .dy-hidden-note-canvas {
+              width: calc(var(--dy-note-cell) * var(--dy-note-columns));
+              max-width: 100%;
+              margin-inline: 0;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card h1 {
+              font-size: clamp(20px, 6.8dvw, 30px);
+              line-height: 1.34;
+            }
+
+            @media (min-width: 821px) {
+              .hh-input-mode-touch .dy-case-five-card {
+                --dy-note-side-padding: clamp(28px, 3vw, 42px);
+                --dy-note-font-size: clamp(
+                  15px,
+                  calc((min(820px, calc(67dvw - 112px)) - (var(--dy-note-side-padding) * 2)) / var(--dy-note-columns)),
+                  20px
+                );
+                width: min(
+                  820px,
+                  calc(67dvw - 112px),
+                  calc((var(--dy-note-cell) * var(--dy-note-columns)) + (var(--dy-note-side-padding) * 2) + 8px)
+                );
+                max-width: 100%;
+                margin-inline: 0 auto;
+              }
+
+              .hh-input-mode-touch .dy-case-five-card .dy-card-body {
+                padding: 30px var(--dy-note-side-padding) 34px;
+              }
+
+              .hh-input-mode-touch .dy-case-five-card .dy-case-five-content,
+              .hh-input-mode-touch .dy-case-five-card .dy-hidden-note-canvas {
+                width: calc(var(--dy-note-cell) * var(--dy-note-columns));
+                max-width: 100%;
+                margin-inline: 0;
+              }
+
+              .hh-input-mode-touch .dy-case-five-card h1 {
+                font-size: clamp(29px, 2.65vw, 36px);
+                line-height: 1.22;
+                white-space: nowrap;
+              }
+            }
+
+            /* touch-fixed-grid-case-five-final */
+            .hh-input-mode-touch .dy-case-five-card {
+              container-type: inline-size;
+              --dy-note-side-padding: clamp(10px, 3vw, 18px) !important;
+              --dy-note-safety: clamp(18px, 4cqw, 30px);
+              --dy-note-font-size: clamp(8px, calc((100cqw - (var(--dy-note-side-padding) * 2) - var(--dy-note-safety)) / var(--dy-note-columns)), 18px) !important;
+              width: 100% !important;
+              max-width: none !important;
+              margin-inline: 0 !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-card-body {
+              padding: 18px var(--dy-note-side-padding) 24px !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-case-five-content,
+            .hh-input-mode-touch .dy-case-five-card .dy-hidden-note {
+              width: calc((var(--dy-note-font-size) * var(--dy-note-columns)) + var(--dy-note-safety)) !important;
+              max-width: 100% !important;
+              overflow: hidden !important;
+              margin-inline: auto !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-hidden-note-canvas {
+              width: 100% !important;
+              max-width: 100% !important;
+              margin-inline: 0 !important;
+              overflow: hidden !important;
+              font-size: var(--dy-note-font-size) !important;
+              line-height: 1.18 !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-note-line {
+              position: relative !important;
+              height: calc(var(--dy-note-font-size) * 1.18) !important;
+              margin-bottom: 0 !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-note-line.blank {
+              height: calc(var(--dy-note-font-size) * 1.75) !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card .dy-note-fragment {
+              position: absolute !important;
+              top: 0 !important;
+              left: calc(var(--dy-note-font-size) * var(--dy-note-x)) !important;
+              white-space: pre !important;
+            }
+
+            .hh-input-mode-touch .dy-case-five-card h1 {
+              font-size: clamp(24px, calc((100cqw - 40px) / 18), 34px) !important;
+              line-height: 1.22 !important;
+              white-space: nowrap !important;
+            }
+
+            @media (min-width: 821px) {
+              .hh-input-mode-touch .dy-case-five-card {
+                --dy-note-side-padding: clamp(28px, 3vw, 42px) !important;
+                --dy-note-safety: clamp(28px, 4cqw, 46px);
+                --dy-note-font-size: clamp(14px, calc((100cqw - (var(--dy-note-side-padding) * 2) - var(--dy-note-safety)) / var(--dy-note-columns)), 17px) !important;
+                width: min(920px, calc(67dvw - 112px)) !important;
+                max-width: 100% !important;
+                margin-inline: 0 auto !important;
+              }
+
+              .hh-input-mode-touch .dy-case-five-card .dy-card-body {
+                padding: 30px var(--dy-note-side-padding) 36px !important;
+              }
+
+              .hh-input-mode-touch .dy-case-five-card h1 {
+                font-size: clamp(28px, calc((100cqw - 96px) / 18), 34px) !important;
               }
             }
           `}</style>

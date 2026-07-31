@@ -172,10 +172,15 @@ export default function PostDetail({ postId: routedPostId }) {
     return (
       <div style={{ minHeight: '100vh', background: '#ffffff' }}>
         <HeartHomeHeader />
-        <main style={{ maxWidth: 980, margin: '0 auto', padding: '64px 42px 92px' }}>
+        <main
+          className="post-detail-main"
+          style={{ maxWidth: 980, margin: '0 auto', padding: '64px 42px 92px' }}
+        >
           <h1>帖子不存在或被隐藏</h1>
           <p>没有找到对应的帖子，请返回论坛重新选择。</p>
-          <Link to="/p/b12e8f40a6">返回论坛</Link>
+          <Link
+          className="post-return-link"
+          to="/p/b12e8f40a6">返回论坛</Link>
         </main>
       </div>
     );
@@ -230,6 +235,7 @@ export default function PostDetail({ postId: routedPostId }) {
       <HeartHomeHeader />
 
       <main
+        className="post-detail-main"
         style={{
           flex: 1,
           width: '100%',
@@ -241,6 +247,7 @@ export default function PostDetail({ postId: routedPostId }) {
         }}
       >
         <Link
+          className="post-return-link"
           to="/p/b12e8f40a6"
           style={{
             position: 'sticky',
@@ -276,7 +283,7 @@ export default function PostDetail({ postId: routedPostId }) {
           {'返\n回\n论\n坛'}
         </Link>
 
-        <article>
+        <article className="post-detail-article">
           <h1
             style={{
               margin: '0 0 46px',

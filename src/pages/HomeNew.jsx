@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import VerificationModal from '../components/VerificationModal';
 import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
@@ -21,6 +21,7 @@ export default function HomeNew() {
 
   return (
     <div
+      className="home-new-page"
       style={{
         minHeight: '100vh',
         background: '#ffffff',
@@ -33,8 +34,9 @@ export default function HomeNew() {
     >
       <HeartHomeHeader />
 
-      <main style={{ flex: 1 }}>
+      <main className="home-main" style={{ flex: 1 }}>
         <section
+          className="home-hero-section"
           style={{
             textAlign: 'center',
             maxWidth: 1120,
@@ -48,6 +50,7 @@ export default function HomeNew() {
           }}
         >
           <div
+            className="home-hero-title-wrap"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -57,6 +60,7 @@ export default function HomeNew() {
             }}
           >
             <img
+              className="home-hero-logo"
               src={LogoPng}
               alt="心之家"
               style={{
@@ -67,6 +71,7 @@ export default function HomeNew() {
             />
 
             <h1
+              className="home-hero-title"
               style={{
                 fontSize: 60,
                 margin: 0,
@@ -76,11 +81,13 @@ export default function HomeNew() {
                 letterSpacing: '0.02em',
               }}
             >
-              欢迎来到 <span style={{ color: '#2d8f4b' }}>心之家</span>
+              <span>欢迎来到</span>{' '}
+              <span style={{ color: '#2d8f4b' }}>心之家</span>
             </h1>
           </div>
 
           <p
+            className="home-hero-subtitle"
             style={{
               marginTop: 22,
               fontSize: 18,
@@ -88,7 +95,7 @@ export default function HomeNew() {
               letterSpacing: '0.02em',
             }}
           >
-            在忙碌与喧嚣的日常中，我们都需要一个安心停泊的港湾。
+            在忙碌与喧嚣的日常中，<span>我们都需要一个安心停泊的港湾。</span>
           </p>
 
           <p
@@ -107,6 +114,7 @@ export default function HomeNew() {
           </p>
 
           <div
+            className="home-hero-actions"
             style={{
               marginTop: 42,
               display: 'flex',
@@ -153,6 +161,7 @@ export default function HomeNew() {
         </section>
 
         <section
+          className="home-about-section"
           id="about-heart-home"
           style={{
             background: '#f4f7f5',
@@ -169,6 +178,7 @@ export default function HomeNew() {
          
 
           <div
+            className="home-about-inner"
             style={{
               maxWidth: 1180,
               width: '100%',
@@ -184,6 +194,7 @@ export default function HomeNew() {
             }}
           >
             <div
+              className="home-about-heading-block"
               style={{
                 position: 'relative',
                 minHeight: 150,
@@ -192,6 +203,7 @@ export default function HomeNew() {
               }}
             >
               <div
+                className="home-about-bg-title"
                 style={{
                   position: 'absolute',
                   left: -8,
@@ -214,6 +226,7 @@ export default function HomeNew() {
               </div>
 
               <h2
+                className="home-about-title"
                 style={{
                   position: 'relative',
                   zIndex: 1,
@@ -247,8 +260,10 @@ export default function HomeNew() {
 
         <ConsultantCarousel />
 
-        <section
-          id="recent-news"
+        <div className="home-news-footer-screen">
+          <section
+            id="recent-news"
+          className="home-news-section"
           style={{
             background: '#f7fbf7',
             borderTop: '1px solid #e6f1e8',
@@ -256,12 +271,14 @@ export default function HomeNew() {
           }}
         >
           <div
+            className="home-news-inner"
             style={{
               maxWidth: 980,
               margin: '0 auto',
             }}
           >
             <div
+              className="home-news-heading"
               style={{
                 display: 'flex',
                 alignItems: 'baseline',
@@ -270,6 +287,7 @@ export default function HomeNew() {
               }}
             >
               <h2
+                className="home-news-title"
                 style={{
                   margin: 0,
                   color: '#214932',
@@ -282,6 +300,7 @@ export default function HomeNew() {
               </h2>
 
               <p
+                className="home-news-subtitle"
                 style={{
                   margin: 0,
                   fontSize: 18,
@@ -294,6 +313,7 @@ export default function HomeNew() {
             </div>
 
             <Link
+              className="home-news-card"
               to="/p/86f1c4b0ed"
               target="_blank"
               rel="noopener noreferrer"
@@ -308,6 +328,7 @@ export default function HomeNew() {
               }}
             >
               <p
+                className="home-news-kicker"
                 style={{
                   margin: '0 0 12px',
                   color: '#6b7b71',
@@ -320,6 +341,7 @@ export default function HomeNew() {
               </p>
 
               <h3
+                className="home-news-card-title"
                 style={{
                   margin: 0,
                   color: '#1f3f2d',
@@ -332,6 +354,7 @@ export default function HomeNew() {
               </h3>
 
               <p
+                className="home-news-card-copy"
                 style={{
                   margin: '16px 0 0',
                   color: '#6b7b71',
@@ -355,10 +378,11 @@ export default function HomeNew() {
               </p>
             </Link>
           </div>
-        </section>
-      </main>
+          </section>
 
-      <HeartHomeFooter onOpenForum={openForum} />
+          <HeartHomeFooter onOpenForum={openForum} />
+        </div>
+      </main>
 
       {showVerification && (
         <VerificationModal

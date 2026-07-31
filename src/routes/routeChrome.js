@@ -57,6 +57,10 @@ const blackFlowerSlugs = new Set([
 ]);
 
 export function getSiteKeyForPathname(pathname) {
+  if (pathname.endsWith('/404-page-not-found')) {
+    return 'blackFlower';
+  }
+
   if (pathname.endsWith('/news/search')) {
     return 'mingchuanNews';
   }

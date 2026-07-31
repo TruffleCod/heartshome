@@ -66,6 +66,7 @@ export default function PageProgressBanner({
 
   return (
     <div
+      className="page-progress-banner"
       style={{
         borderTop: palette.borderTop,
         background: palette.background,
@@ -79,8 +80,9 @@ export default function PageProgressBanner({
         letterSpacing: '0.01em',
       }}
     >
-      <div>{disclaimerText}</div>
+      <div className="page-progress-disclaimer">{disclaimerText}</div>
       <div
+        className="page-progress-status"
         style={{
           marginTop: 4,
           fontSize: 15,

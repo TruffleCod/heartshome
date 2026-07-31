@@ -77,6 +77,7 @@ export default function InternalForumRitualEntry() {
 
   return (
     <div
+      className="ritual-entry-page"
       style={{
         minHeight: '100vh',
         color: '#eef2ef',
@@ -89,6 +90,113 @@ export default function InternalForumRitualEntry() {
         background: '#050707',
       }}
     >
+      <style>{`
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .ritual-entry-main,
+          .ritual-entry-page .ritual-entry-main {
+            width: 100% !important;
+            padding: 28px 18px 48px !important;
+          }
+          .hh-input-mode-touch .ritual-entry-section,
+          .ritual-entry-page .ritual-entry-section { gap: 14px !important; }
+          .hh-input-mode-touch .ritual-entry-title,
+          .ritual-entry-page .ritual-entry-title {
+            width: 100% !important;
+            max-width: 100% !important;
+            font-size: clamp(15px, 5.05vw, 24px) !important;
+            line-height: 1.18 !important;
+            letter-spacing: 0.01em !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+            text-align: center !important;
+          }
+          .hh-input-mode-touch .ritual-entry-divider,
+          .ritual-entry-page .ritual-entry-divider { width: min(280px, 72vw) !important; gap: 8px !important; }
+          .hh-input-mode-touch .ritual-entry-date,
+          .ritual-entry-page .ritual-entry-date {
+            font-size: clamp(12px, 3.5vw, 15px) !important;
+            letter-spacing: 0.06em !important;
+            margin-top: 0 !important;
+          }
+          .hh-input-mode-touch .ritual-entry-countdown,
+          .ritual-entry-page .ritual-entry-countdown {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) !important;
+            align-items: center !important;
+            gap: clamp(2px, 1vw, 5px) !important;
+            margin-top: 2px !important;
+            width: min(420px, 100%) !important;
+            justify-content: center !important;
+          }
+          .hh-input-mode-touch .ritual-entry-count-cell,
+          .ritual-entry-page .ritual-entry-count-cell {
+            min-width: 0 !important;
+            min-height: clamp(62px, 20vw, 88px) !important;
+            border-radius: 6px !important;
+            padding: 4px 2px !important;
+          }
+          .hh-input-mode-touch .ritual-entry-count-cell.is-separator,
+          .ritual-entry-page .ritual-entry-count-cell.is-separator {
+            min-height: clamp(62px, 20vw, 88px) !important;
+            padding: 0 !important;
+          }
+          .hh-input-mode-touch .ritual-entry-digit,
+          .ritual-entry-page .ritual-entry-digit {
+            font-size: clamp(42px, 15.5vw, 66px) !important;
+            line-height: 0.96 !important;
+            white-space: nowrap !important;
+          }
+          .hh-input-mode-touch .ritual-entry-digit.is-separator,
+          .ritual-entry-page .ritual-entry-digit.is-separator {
+            font-size: clamp(28px, 8vw, 40px) !important;
+            line-height: 1 !important;
+          }
+          .hh-input-mode-touch .ritual-entry-form,
+          .ritual-entry-page .ritual-entry-form {
+            width: min(360px, 100%) !important;
+            gap: 10px !important;
+            margin-top: 4px !important;
+          }
+          .hh-input-mode-touch .ritual-entry-note-wrap,
+          .ritual-entry-page .ritual-entry-note-wrap { height: auto !important; }
+          .hh-input-mode-touch .ritual-entry-note,
+          .ritual-entry-page .ritual-entry-note {
+            position: static !important;
+            left: auto !important;
+            transform: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            white-space: normal !important;
+            font-size: clamp(13px, 3.7vw, 16px) !important;
+            line-height: 1.55 !important;
+            letter-spacing: 0 !important;
+          }
+          .hh-input-mode-touch .ritual-entry-input,
+          .ritual-entry-page .ritual-entry-input {
+            height: 46px !important;
+            padding: 0 13px !important;
+            border-width: 1.5px !important;
+            font-size: clamp(14px, 4vw, 17px) !important;
+            font-weight: 600 !important;
+          }
+          .hh-input-mode-touch .ritual-entry-submit,
+          .ritual-entry-page .ritual-entry-submit {
+            width: min(120px, 58vw) !important;
+            height: 46px !important;
+            border-width: 1.5px !important;
+            font-size: clamp(15px, 4.2vw, 18px) !important;
+            letter-spacing: 0.03em !important;
+          }
+          .hh-input-mode-touch .ritual-entry-nav,
+          .ritual-entry-page .ritual-entry-nav {
+            gap: 12px !important;
+            font-size: clamp(13px, 3.7vw, 16px) !important;
+            letter-spacing: 0 !important;
+            flex-wrap: wrap !important;
+          }
+        }
+      `}</style>
+
       <Balatro
         color1="#8b0502"
         color2="#21f2a4"
@@ -119,6 +227,7 @@ export default function InternalForumRitualEntry() {
       />
 
       <main
+        className="ritual-entry-main"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -132,6 +241,7 @@ export default function InternalForumRitualEntry() {
         }}
       >
         <section
+          className="ritual-entry-section"
           style={{
             width: '100%',
             display: 'grid',
@@ -140,6 +250,7 @@ export default function InternalForumRitualEntry() {
           }}
         >
           <h1
+            className="ritual-entry-title"
             style={{
               margin: 0,
               color: '#ff1d25',
@@ -155,6 +266,7 @@ export default function InternalForumRitualEntry() {
           </h1>
 
           <div
+            className="ritual-entry-divider"
             aria-hidden="true"
             style={{
               width: 'min(520px, 62vw)',
@@ -184,6 +296,7 @@ export default function InternalForumRitualEntry() {
           </div>
 
           <div
+            className="ritual-entry-date"
             style={{
               color: 'rgba(238, 244, 240, 0.78)',
               fontSize: 'clamp(14px, 1.2vw, 18px)',
@@ -197,6 +310,7 @@ export default function InternalForumRitualEntry() {
           </div>
 
           <div
+            className="ritual-entry-countdown"
             style={{
               display: 'flex',
               alignItems: 'flex-end',
@@ -209,6 +323,7 @@ export default function InternalForumRitualEntry() {
             {[timeParts.hour, ':', timeParts.minute, ':', timeParts.second].map((item, index) => (
               <div
                 key={`${item}-${index}`}
+                className={item === ':' ? 'ritual-entry-count-cell is-separator' : 'ritual-entry-count-cell'}
                 style={{
                   flex: item === ':' ? '0 0 auto' : '1 1 0',
                   display: 'grid',
@@ -222,6 +337,7 @@ export default function InternalForumRitualEntry() {
                 }}
               >
                 <div
+                  className={item === ':' ? 'ritual-entry-digit is-separator' : 'ritual-entry-digit'}
                   style={{
                     fontSize:
                       item === ':'
@@ -244,6 +360,7 @@ export default function InternalForumRitualEntry() {
           </div>
 
           <form
+            className="ritual-entry-form"
             onSubmit={handleVerify}
             style={{
               width: 'min(920px, calc(100vw - 48px))',
@@ -256,6 +373,7 @@ export default function InternalForumRitualEntry() {
             }}
           >
             <div
+              className="ritual-entry-note-wrap"
               style={{
                 width: '100%',
                 height: 38,
@@ -263,6 +381,7 @@ export default function InternalForumRitualEntry() {
               }}
             >
                 <label
+                  className="ritual-entry-note"
                   htmlFor="gardener-name"
                   style={{
                     position: 'absolute',
@@ -283,6 +402,7 @@ export default function InternalForumRitualEntry() {
                 </label>
             </div>
                 <input
+                  className="ritual-entry-input"
                   id="gardener-name"
                   type="text"
                   placeholder="请输入真实姓名"
@@ -307,6 +427,7 @@ export default function InternalForumRitualEntry() {
                   }}
                 />
                 <input
+                  className="ritual-entry-input"
                   id="ritual-password"
                   type="password"
                   placeholder="请输入密码"
@@ -331,6 +452,7 @@ export default function InternalForumRitualEntry() {
                   }}
                 />
                 <button
+                  className="ritual-entry-submit"
                   type="submit"
                   style={{
                     width: 'min(500px, 82%)',
@@ -356,6 +478,7 @@ export default function InternalForumRitualEntry() {
           </form>
 
           <nav
+            className="ritual-entry-nav"
             aria-label="仪式入口导航"
             style={{
               display: 'flex',

@@ -102,6 +102,7 @@ export default function InternalForumRulesPost() {
 
   return (
     <div
+      className={`inner-forum-post-page ${lightsOn ? 'is-light' : 'is-dark'}`}
       style={{
         minHeight: '100vh',
         backgroundColor: lightsOn ? INNER_FORUM_LIGHT_BG : INTERNAL_FORUM_BLACK,
@@ -120,6 +121,7 @@ export default function InternalForumRulesPost() {
       <HeartHomeHeader dark={!lightsOn} variant={lightsOn ? 'innerLight' : 'innerDark'} />
 
       <main
+        className="inner-forum-post-main post-detail-main"
         style={{
           flex: 1,
           width: '100%',
@@ -132,6 +134,7 @@ export default function InternalForumRulesPost() {
         }}
       >
         <Link
+          className="inner-forum-return-link post-return-link"
           to="/p/3e7b10a9c4"
           style={{
             position: 'sticky',
@@ -167,8 +170,9 @@ export default function InternalForumRulesPost() {
           {'返\n回\n论\n坛'}
         </Link>
 
-        <article>
+        <article className="inner-forum-post-article post-detail-article">
           <div
+            className="inner-forum-post-heading"
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -303,13 +307,15 @@ export default function InternalForumRulesPost() {
             </p>
           </section>
 
-          <div style={{ marginTop: 70 }}>
+          <div className="forum-rules-signoff" style={{ marginTop: 70 }}>
             {lightsOn ? (
               <>
-                <p style={{ margin: '0 0 18px', color: theme.text, fontSize: 28, lineHeight: 1.7, fontWeight: 800 }}>
-                  {renderMaskedText('请记得，这里每一句对话，都值得被温暖照亮。')}
+                <p className="forum-rules-signoff-title" style={{ margin: '0 0 18px', color: theme.text, fontSize: 28, lineHeight: 1.7, fontWeight: 800 }}>
+                  <span>{renderMaskedText('请记得，这里每一句对话')}</span>
+                  <br />
+                  <span className="forum-rules-warmth-line">{renderMaskedText('都值得被温暖照亮。')}</span>
                 </p>
-                <p style={{ margin: 0, color: theme.text, fontSize: 21, lineHeight: 1.9 }}>
+                <p className="forum-rules-signoff-copy" style={{ margin: 0, color: theme.text, fontSize: 21, lineHeight: 1.9 }}>
                   {renderMaskedText('让我们共同维护发言秩序，共建安全、温暖、专业的互助社区')}
                   <br />
                   {renderMaskedText('心之家管理团队 敬上')}
@@ -317,10 +323,10 @@ export default function InternalForumRulesPost() {
               </>
             ) : (
               <>
-                <p style={{ margin: '0 0 18px', color: INTERNAL_FORUM_RED, fontSize: 28, lineHeight: 1.7, fontWeight: 800 }}>
+                <p className="forum-rules-signoff-title" style={{ margin: '0 0 18px', color: INTERNAL_FORUM_RED, fontSize: 28, lineHeight: 1.7, fontWeight: 800 }}>
                   请记得，这里每一种伤痛，都值得被公正审判。
                 </p>
-                <p style={{ margin: 0, color: INTERNAL_FORUM_RED, fontSize: 21, lineHeight: 1.9 }}>
+                <p className="forum-rules-signoff-copy" style={{ margin: 0, color: INTERNAL_FORUM_RED, fontSize: 21, lineHeight: 1.9 }}>
                   让我们共同维护发言秩序，共建公平、正义、和谐的互助社区
                   <br />
                   心之家管理团队 敬上

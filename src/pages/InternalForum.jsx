@@ -6,6 +6,7 @@ import VerificationModal from '../components/VerificationModal';
 import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
 import { hashWithPepper, normalizeInput } from '../utils/hash';
 import { preloadImage } from '../utils/preloadAssets';
+import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
 import {
   INNER_FORUM_LIGHT_ACCENT,
   INNER_FORUM_LIGHT_BG,
@@ -235,6 +236,7 @@ export default function InternalForum() {
 
   return (
     <div
+      className="inner-forum-page forum-page"
       style={{
         minHeight: '100vh',
         background: INNER_FORUM_LIGHT_BG,
@@ -248,6 +250,7 @@ export default function InternalForum() {
       <HeartHomeHeader variant="innerLight" />
 
       <main
+        className="inner-forum-main forum-main"
         style={{
           flex: 1,
           width: '100%',
@@ -258,6 +261,7 @@ export default function InternalForum() {
         }}
       >
         <section
+          className="inner-forum-hero forum-hero"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -268,6 +272,7 @@ export default function InternalForum() {
         >
           <div>
             <p
+              className="inner-forum-kicker forum-kicker"
               style={{
                 margin: '0 0 10px',
                 color: INNER_FORUM_LIGHT_HEADER_TEXT,
@@ -279,6 +284,7 @@ export default function InternalForum() {
               心之家社区
             </p>
             <h1
+              className="inner-forum-title forum-title"
               style={{
                 margin: '0 0 16px',
                 color: INNER_FORUM_LIGHT_ACCENT,
@@ -289,6 +295,7 @@ export default function InternalForum() {
               静室花园
             </h1>
             <p
+              className="inner-forum-subtitle forum-subtitle"
               style={{
                 margin: 0,
                 color: INNER_FORUM_LIGHT_MUTED,
@@ -302,7 +309,8 @@ export default function InternalForum() {
         </section>
 
         <nav
-          aria-label="论坛帖子"
+          className="inner-forum-post-list forum-post-list"
+          aria-label="????"
           style={{
             display: 'grid',
             gap: 14,
@@ -311,6 +319,7 @@ export default function InternalForum() {
           {forumPosts.map((post) => (
             <Link
               key={post.title}
+              className="inner-forum-post-card forum-post-card"
               to={post.to}
               target="_blank"
               rel="noopener noreferrer"
@@ -334,6 +343,7 @@ export default function InternalForum() {
         </nav>
 
         <section
+          className="inner-forum-note"
           style={{
             marginTop: 20,
             color: INNER_FORUM_LIGHT_MUTED,
@@ -378,6 +388,7 @@ export default function InternalForum() {
 
       {showInnerLoginModal ? (
         <div
+          className="inner-forum-login-backdrop"
           style={{
             position: 'fixed',
             inset: 0,
@@ -391,6 +402,7 @@ export default function InternalForum() {
           }}
         >
           <div
+            className="inner-forum-login-panel"
             onClick={(event) => event.stopPropagation()}
             style={{
               width: 'min(720px, 92vw)',
@@ -411,7 +423,7 @@ export default function InternalForum() {
               }}
             />
 
-            <div style={{ padding: '34px 40px 36px' }}>
+            <div className="inner-forum-login-body" style={{ padding: '34px 40px 36px' }}>
               <div
                 style={{
                   display: 'flex',
@@ -422,6 +434,7 @@ export default function InternalForum() {
                 }}
               >
                 <p
+                  className="inner-forum-login-title"
                   style={{
                     margin: 0,
                     color: INNER_FORUM_LIGHT_ACCENT,
@@ -436,6 +449,7 @@ export default function InternalForum() {
               </div>
 
               <div
+                className="inner-forum-login-field"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -444,6 +458,7 @@ export default function InternalForum() {
                 }}
               >
                 <label
+                  className="inner-forum-login-label"
                   htmlFor="inner-forum-name"
                   style={{
                     color: INNER_FORUM_LIGHT_ACCENT,
@@ -455,6 +470,7 @@ export default function InternalForum() {
                   真实姓名：
                 </label>
                 <input
+                  className="inner-forum-login-input"
                   id="inner-forum-name"
                   type="text"
                   value={innerForumName}
@@ -482,6 +498,7 @@ export default function InternalForum() {
               </div>
 
               <div
+                className="inner-forum-login-field"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -490,6 +507,7 @@ export default function InternalForum() {
                 }}
               >
                 <label
+                  className="inner-forum-login-label"
                   htmlFor="inner-forum-password"
                   style={{
                     color: INNER_FORUM_LIGHT_ACCENT,
@@ -501,6 +519,7 @@ export default function InternalForum() {
                   密码：
                 </label>
                 <input
+                  className="inner-forum-login-input"
                   id="inner-forum-password"
                   type="password"
                   value={innerForumPassword}
@@ -528,6 +547,7 @@ export default function InternalForum() {
               </div>
 
               <p
+                className="inner-forum-login-note"
                 style={{
                   margin: 0,
                   color: INNER_FORUM_LIGHT_MUTED,
@@ -541,6 +561,7 @@ export default function InternalForum() {
 
               {innerForumMessage && (
                 <div
+                  className="inner-forum-login-message"
                   style={{
                     marginTop: 16,
                     padding: '12px 14px',
@@ -557,6 +578,7 @@ export default function InternalForum() {
               )}
 
               <div
+                className="inner-forum-login-actions"
                 style={{
                   marginTop: 24,
                   display: 'flex',

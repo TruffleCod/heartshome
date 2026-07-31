@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
@@ -225,6 +225,7 @@ export default function RecoverPassword() {
 
   return (
     <div
+      className="recover-page"
       style={{
         minHeight: '100vh',
         background: '#f5f7f6',
@@ -238,12 +239,14 @@ export default function RecoverPassword() {
       <HeartHomeHeader />
 
       <main
+        className="recover-main"
         style={{
           flex: 1,
           padding: '68px 20px 76px',
         }}
       >
         <section
+          className="recover-card"
           style={{
             maxWidth: 720,
             margin: '0 auto',
@@ -260,11 +263,13 @@ export default function RecoverPassword() {
             }}
           >
             <div
+              className="recover-panel"
               style={{
                 padding: '38px 38px 42px',
               }}
             >
               <h1
+                className="recover-title"
                 style={{
                   margin: '0 0 10px',
                   fontSize: 26,
@@ -287,8 +292,9 @@ export default function RecoverPassword() {
                 请输入账户ID。找到对应账户后，系统会要求你回答一条安全提示问题。
               </p>
 
-              <div style={{ display: 'grid', gap: 16 }}>
+              <div className="recover-form" style={{ display: 'grid', gap: 16 }}>
                 <label
+                  className="recover-field"
                   style={{
                     display: 'grid',
                     gap: 8,
@@ -299,6 +305,7 @@ export default function RecoverPassword() {
                 >
                   账户ID
                   <input
+                    className="recover-input"
                     type="text"
                     value={accountId}
                     onChange={(event) => {
@@ -349,7 +356,8 @@ export default function RecoverPassword() {
 
                 {accountChecked && accountFound && (
                   <div style={{ display: 'grid', gap: 12, marginTop: 4 }}>
-                    <label
+                                        <label
+                      className="recover-field"
                       style={{
                         display: 'grid',
                         gap: 8,
@@ -360,12 +368,14 @@ export default function RecoverPassword() {
                     >
                       选择安全提示问题（三选一）
                       <select
+                        className="recover-select"
                         value={selectedQuestionKey}
                         onChange={(event) => {
                           setSelectedQuestionKey(event.target.value);
                           setMessage('');
                         }}
                         style={{
+                          width: '100%',
                           height: 42,
                           border: '1px solid #c6d6ce',
                           borderRadius: 8,
@@ -374,6 +384,7 @@ export default function RecoverPassword() {
                           fontSize: 14,
                           outline: 'none',
                           color: '#1f2f28',
+                          boxSizing: 'border-box',
                         }}
                       >
                         <option value="">请选择问题</option>
@@ -386,6 +397,7 @@ export default function RecoverPassword() {
                     </label>
 
                     <label
+                      className="recover-field"
                       style={{
                         display: 'grid',
                         gap: 8,
@@ -396,6 +408,7 @@ export default function RecoverPassword() {
                     >
                       安全提示答案
                       <input
+                        className="recover-input"
                         type="text"
                         value={securityAnswer}
                         onChange={(event) => {

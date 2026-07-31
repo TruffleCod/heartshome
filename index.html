@@ -26,7 +26,9 @@
         const pageSlug = pathname.match(/\/p\/([^/]+)/)?.[1];
         let siteKey = 'heartHome';
 
-        if (pathname.endsWith('/news/search') || mingchuanNewsSlugs.has(pageSlug)) {
+        if (pathname.endsWith('/404-page-not-found')) {
+          siteKey = 'blackFlower';
+        } else if (pathname.endsWith('/news/search') || mingchuanNewsSlugs.has(pageSlug)) {
           siteKey = 'mingchuanNews';
         } else if (pathname.endsWith('/p/71a6d0e2bf/search') || dongyangBlogSlugs.has(pageSlug)) {
           siteKey = 'dongyangBlog';

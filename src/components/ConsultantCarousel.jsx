@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { INPUT_MODES, readInputMode } from '../utils/inputMode';
 
 import guZhengqing from '../assets/consultants/gu-zhengqing.jpg';
 import yuanZhixia from '../assets/consultants/yuan-zhixia.jpg';
@@ -49,6 +50,16 @@ export default function ConsultantCarousel() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
+  const [isNarrowViewport, setIsNarrowViewport] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 768px)').matches;
+  });
+  const [isTouchMode, setIsTouchMode] = useState(() => readInputMode() === INPUT_MODES.TOUCH);
+  const touchStartRef = useRef(null);
+
+  const isMobileLayout = isTouchMode && isNarrowViewport;
+  const itemsPerView = isMobileLayout ? 1 : 2;
+  const slideWidthPercent = 100 / itemsPerView;
 
   const trackSlides = useMemo(() => {
     const firstSlide = slides[0];
@@ -74,7 +85,40 @@ export default function ConsultantCarousel() {
     setTrackIndex((value) => value - 1);
     setCurrentIndex((value) => (value - 1 + slides.length) % slides.length);
   };
+  const handleTouchStart = (event) => {
+    if (!isMobileLayout) return;
 
+    const touch = event.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+    setIsPaused(true);
+  };
+
+  const handleTouchEnd = (event) => {
+    if (!isMobileLayout || !touchStartRef.current) return;
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+    setIsPaused(false);
+
+    if (Math.abs(deltaX) < 44 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+
+    if (deltaX < 0) {
+      next();
+      return;
+    }
+
+    prev();
+  };
+
+  const handleTouchCancel = () => {
+    touchStartRef.current = null;
+    setIsPaused(false);
+  };
   const handleTransitionEnd = () => {
     setIsTransitioning(false);
 
@@ -113,6 +157,30 @@ export default function ConsultantCarousel() {
   }, [isPaused, isTransitioning]);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const handleChange = () => setIsNarrowViewport(mediaQuery.matches);
+
+    handleChange();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, []);
+
+  useEffect(() => {
+    const handleModeChange = (event) => {
+      setIsTouchMode(event.detail?.mode === INPUT_MODES.TOUCH);
+    };
+
+    window.addEventListener('heart-home:input-mode-change', handleModeChange);
+    return () => window.removeEventListener('heart-home:input-mode-change', handleModeChange);
+  }, []);
+
+  useEffect(() => {
     if (!selectedConsultant) return undefined;
 
     const previousOverflow = document.body.style.overflow;
@@ -134,6 +202,7 @@ export default function ConsultantCarousel() {
 
   return (
     <section
+      className="consultant-carousel-section"
       id="consultants"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -144,6 +213,7 @@ export default function ConsultantCarousel() {
       }}
     >
       <div
+        className="consultant-carousel-shell"
         style={{
           maxWidth: 1180,
           margin: '0 auto',
@@ -151,6 +221,7 @@ export default function ConsultantCarousel() {
         }}
       >
         <div
+          className="consultant-carousel-heading"
           style={{
             marginBottom: 42,
             display: 'flex',
@@ -183,6 +254,7 @@ export default function ConsultantCarousel() {
         </div>
 
         <div
+          className="consultant-carousel-frame"
           style={{
             position: 'relative',
             padding: '0 50px',
@@ -217,12 +289,12 @@ export default function ConsultantCarousel() {
             />
           </button>
 
-          <div style={{ overflow: 'hidden' }}>
+          <div className="consultant-carousel-viewport" style={{ overflow: 'hidden', touchAction: 'pan-y' }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel}>
             <div
               onTransitionEnd={handleTransitionEnd}
               style={{
                 display: 'flex',
-                width: `${trackSlides.length * 50}%`,
+                width: `${trackSlides.length * slideWidthPercent}%`,
                 transform: `translateX(-${trackIndex * (100 / trackSlides.length)}%)`,
                 transition: transitionEnabled
                   ? `transform ${animationDuration}ms ease`
@@ -232,19 +304,21 @@ export default function ConsultantCarousel() {
               {trackSlides.map((consultant, index) => (
                 <article
                   key={`${consultant.title}-${index}`}
+                  className="consultant-carousel-card"
                   style={{
                     flex: `0 0 ${100 / trackSlides.length}%`,
                     boxSizing: 'border-box',
-                    padding: '0 38px',
+                    padding: isMobileLayout ? '0 12px' : '0 38px',
                   }}
                 >
                   <button
                     type="button"
                     onClick={() => setSelectedConsultant(consultant)}
+                    className="consultant-carousel-avatar-button"
                     aria-label={`${consultant.title}头像大图预览`}
                     style={{
-                      width: 168,
-                      height: 168,
+                      width: isMobileLayout ? 136 : 168,
+                      height: isMobileLayout ? 136 : 168,
                       margin: '0 auto 28px',
                       borderRadius: '50%',
                       overflow: 'hidden',
@@ -269,6 +343,7 @@ export default function ConsultantCarousel() {
                   </button>
 
                   <h3
+                    className="consultant-carousel-card-title"
                     style={{
                       margin: 0,
                       textAlign: 'center',
@@ -283,6 +358,7 @@ export default function ConsultantCarousel() {
                   </h3>
 
                   <div
+                    className="consultant-carousel-card-copy"
                     style={{
                       marginTop: 24,
                       color: '#1f2a24',
@@ -293,6 +369,7 @@ export default function ConsultantCarousel() {
                     }}
                   >
                     <p
+                      className="consultant-carousel-card-subtitle"
                       style={{
                         margin: 0,
                         fontWeight: 600,
@@ -303,6 +380,7 @@ export default function ConsultantCarousel() {
                     </p>
 
                     <p
+                      className="consultant-carousel-card-body"
                       style={{
                         margin: '22px 0 0',
                         whiteSpace: 'pre-line',
@@ -380,6 +458,7 @@ export default function ConsultantCarousel() {
 
       {selectedConsultant && (
         <div
+          className="hh-modal-backdrop consultant-preview-backdrop"
           role="dialog"
           aria-modal="true"
           aria-label={`${selectedConsultant.title}头像大图`}
@@ -397,6 +476,7 @@ export default function ConsultantCarousel() {
           }}
         >
           <div
+            className="hh-modal-panel consultant-preview-panel"
             onClick={(event) => event.stopPropagation()}
             style={{
               position: 'relative',

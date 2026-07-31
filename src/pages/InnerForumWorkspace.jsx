@@ -1,8 +1,11 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
-import { hashWithPepper, normalizeInput } from '../utils/hash';
+import {
+  getCounselingRecordPathForAccount,
+  normalizeRecordCodeInput,
+} from '../utils/counselingRecordAccess';
 import { publicPath } from '../utils/publicPath';
 
 const CORRUPTION_START_MS = 30000;
@@ -10,11 +13,11 @@ const CORRUPTION_STEP_MS = 5000;
 const MOJIBAKE_FRAGMENTS = ['锟ソ', '鈻�', '銆å', '闂ѧ', '鍚�', '娑Ҫ', '鏂鐢', '妗悜', '锛½', '锝�','ç','æ','花','『鍒╁惎鍔�','眾鏍界浠'];
 
 const MENU_ITEMS = [
-  { key: 'appointment', label: '预约咨询' },
-  { key: 'records', label: '咨询记录' },
-  { key: 'messages', label: '站内私信' },
-  { key: 'posts', label: '发帖记录' },
-  { key: 'security', label: '账户安全' },
+  { key: 'appointment', label: '预约咨询', shortLabel: '预约' },
+  { key: 'records', label: '咨询记录', shortLabel: '记录' },
+  { key: 'messages', label: '站内私信', shortLabel: '私信' },
+  { key: 'posts', label: '发帖记录', shortLabel: '论坛' },
+  { key: 'security', label: '账户安全', shortLabel: '账户' },
 ];
 
 const CARD_STYLE = {
@@ -62,16 +65,6 @@ const COUNSELORS = [
 const WEEK_HEADERS = ['日', '一', '二', '三', '四', '五', '六'];
 const BOOKING_START = '2026-06-15';
 const BOOKING_END = '2026-06-30';
-const RECORD_CODE_PEPPER = 'heart_home_record_key_v1::';
-const RECORD_HASH_TO_PATH = {
-  '5bbec09980046b1ebd6c3d7c69967350b0ef0de396a45b666b8b676d0a70aca8':
-    '/p/e47a92c0d1',
-  '80b9462d494619151bdb37e034c3438642309ccee32ee3ac48a069dc40e91e29':
-    '/p/0f6b83d2a7',
-  '0d6ba888e22ac8a6ad02b8c71a6e1b1e3f7b528ff355b0e0dcbaa239880e9e3d':
-    '/p/c5a18f0e9d',
-};
-
 const MESSAGE_THREADS = [
   {
     id: 'unknown-mail',
@@ -388,6 +381,7 @@ export default function InnerForumWorkspace() {
   const [selectedCounselorId, setSelectedCounselorId] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedThreadId, setSelectedThreadId] = useState(MESSAGE_THREADS[0].id);
+  const [messageDetailOpen, setMessageDetailOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState('');
   const [showAppointmentBlockedModal, setShowAppointmentBlockedModal] = useState(false);
   const [noticeModalText, setNoticeModalText] = useState('');
@@ -497,14 +491,13 @@ export default function InnerForumWorkspace() {
   };
 
   const handleQueryRecordByInput = async () => {
-    const normalized = normalizeInput(recordCodeInput).toUpperCase();
+    const normalized = normalizeRecordCodeInput(recordCodeInput);
     if (!normalized) {
       setNoticeModalText('请输入预约编号。');
       return;
     }
 
-    const hash = await hashWithPepper(normalized, RECORD_CODE_PEPPER);
-    const matchedPath = RECORD_HASH_TO_PATH[hash];
+    const matchedPath = await getCounselingRecordPathForAccount('gardener338', normalized);
     if (!matchedPath) {
       setNoticeModalText('未找到对应咨询记录编号。');
       return;
@@ -526,9 +519,10 @@ export default function InnerForumWorkspace() {
         <div style={{ ...CARD_STYLE, padding: 18 }}>
           <h2 style={{ margin: '0 0 14px', fontSize: 22, color: '#2f372b' }}>预约咨询</h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
+          <div className="workspace-appointment-layout" style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
             <div>
               <div
+                className="workspace-calendar-nav"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '44px 1fr 44px',
@@ -571,7 +565,7 @@ export default function InnerForumWorkspace() {
                 </button>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
+              <div className="workspace-calendar-weekdays" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
                 {WEEK_HEADERS.map((item) => (
                   <div key={item} style={{ textAlign: 'center', color: '#807c6b', fontSize: 16, lineHeight: 1.8 }}>
                     {item}
@@ -579,7 +573,7 @@ export default function InnerForumWorkspace() {
                 ))}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10 }}>
+              <div className="workspace-calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10 }}>
                 {cells.map((day, index) => {
                   if (!day) {
                     return <div key={`empty-${index}`} style={{ width: '100%', minWidth: 0, aspectRatio: '1 / 1', background: '#f7f1e8', borderRadius: 10 }} />;
@@ -803,9 +797,9 @@ export default function InnerForumWorkspace() {
 
     if (activeKey === 'messages') {
       return (
-        <div style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', height: 690 }}>
-            <aside style={{ borderRight: '1px solid #ddd5c5', background: '#fffdf8' }}>
+        <div className={messageDetailOpen ? 'workspace-messages-card is-detail-open' : 'workspace-messages-card'} style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
+          <div className="workspace-messages-layout" style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', height: 690 }}>
+            <aside className="workspace-message-list" style={{ borderRight: '1px solid #ddd5c5', background: '#fffdf8' }}>
               <h2 style={{ margin: 0, padding: '14px 14px 10px', fontSize: 20, color: '#2f372b' }}>站内私信</h2>
               <div style={{ display: 'grid' }}>
                 {MESSAGE_THREADS.map((thread) => {
@@ -813,7 +807,10 @@ export default function InnerForumWorkspace() {
                     <button
                       key={thread.id}
                       type="button"
-                      onClick={() => setSelectedThreadId(thread.id)}
+                      onClick={() => {
+                        setSelectedThreadId(thread.id);
+                        setMessageDetailOpen(true);
+                      }}
                       style={{
                         width: '100%',
                         minWidth: 0,
@@ -848,12 +845,21 @@ export default function InnerForumWorkspace() {
               </div>
             </aside>
 
-            <section style={{ background: '#fffdf8', display: 'grid', gridTemplateRows: '56px minmax(0,1fr) 56px', height: 690, overflow: 'hidden' }}>
-              <header style={{ borderBottom: '1px solid #e8e0d1', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#3d4536', fontWeight: 700 }}>
-                与 {activeThread.name} 的对话
+            <section className="workspace-message-detail" style={{ background: '#fffdf8', display: 'grid', gridTemplateRows: '56px minmax(0,1fr) 56px', height: 690, overflow: 'hidden' }}>
+              <header className="workspace-message-detail-header" style={{ borderBottom: '1px solid #e8e0d1', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#3d4536', fontWeight: 700 }}>
+                <button
+                  type="button"
+                  className="workspace-message-back"
+                  onClick={() => setMessageDetailOpen(false)}
+                >
+                  返回
+                </button>
+                <span>与 {activeThread.name} 的对话
+</span>
               </header>
 
               <div
+                className="workspace-chat-body"
                 ref={chatBodyRef}
                 onMouseDown={handleChatDragStart}
                 onMouseMove={handleChatDragMove}
@@ -947,7 +953,7 @@ export default function InnerForumWorkspace() {
                 })}
               </div>
 
-              <footer style={{ borderTop: '1px solid #e8e0d1', display: 'flex', alignItems: 'center', padding: '0 12px', color: '#8a8575', fontSize: 13 }}>
+              <footer className="workspace-message-footer" style={{ borderTop: '1px solid #e8e0d1', display: 'flex', alignItems: 'center', padding: '0 12px', color: '#8a8575', fontSize: 13 }}>
                 账户功能异常：当前仅支持查看历史私信，不支持发送新消息。
               </footer>
             </section>
@@ -958,12 +964,13 @@ export default function InnerForumWorkspace() {
 
     if (activeKey === 'posts') {
       return (
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div style={CARD_STYLE}>
-            <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#2f372b' }}>发帖记录</h2>
-            <div style={{ display: 'grid', gap: 12 }}>
+        <div className="workspace-posts-panel inner-workspace-posts-panel" style={{ display: 'grid', gap: 12 }}>
+          <div className="workspace-posts-card inner-workspace-posts-card" style={CARD_STYLE}>
+            <h2 className="workspace-posts-title inner-workspace-posts-title" style={{ margin: '0 0 10px', fontSize: 20, color: '#2f372b' }}>发帖记录</h2>
+            <div className="workspace-posts-list inner-workspace-posts-list" style={{ display: 'grid', gap: 12 }}>
               {INNER_POSTS.map((post) => (
                 <a
+                  className="workspace-posts-item-link inner-workspace-posts-item-link"
                   key={post.id}
                   href={publicPath(post.to)}
                   target="_blank"
@@ -1002,6 +1009,7 @@ export default function InnerForumWorkspace() {
   return (
     <div
       ref={workspaceRootRef}
+      className="workspace-page"
       style={{
         minHeight: '100vh',
         background: '#f4efe2',
@@ -1014,8 +1022,9 @@ export default function InnerForumWorkspace() {
     >
       <HeartHomeHeader variant="innerWorkspace" />
 
-      <main style={{ flex: 1, padding: '48px 20px 64px' }}>
+      <main className="workspace-main" style={{ flex: 1, padding: '48px 20px 64px' }}>
         <section
+          className="workspace-shell"
           style={{
             maxWidth: 1100,
             margin: '0 auto',
@@ -1026,8 +1035,9 @@ export default function InnerForumWorkspace() {
             minHeight: 'calc(100vh - 80px - 112px - 64px)',
           }}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)' }}>
+          <div className="workspace-layout" style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)' }}>
             <aside
+              className="workspace-sidebar"
               style={{
                 background: '#fffdf8',
                 borderRight: '1px solid #e8e0d1',
@@ -1036,6 +1046,7 @@ export default function InnerForumWorkspace() {
               }}
             >
               <h1
+                className="workspace-title"
                 style={{
                   margin: '6px 8px 14px',
                   fontSize: 22,
@@ -1045,14 +1056,18 @@ export default function InnerForumWorkspace() {
               >
                 工作台
               </h1>
-              <div style={{ display: 'grid', gap: 6 }}>
+              <div className="workspace-tabs" style={{ display: 'grid', gap: 6 }}>
                 {MENU_ITEMS.map((item) => {
                   const active = activeKey === item.key;
                   return (
                     <button
                       key={item.key}
                       type="button"
-                      onClick={() => setActiveKey(item.key)}
+                      className="workspace-tab"
+                      onClick={() => {
+                        setActiveKey(item.key);
+                        setMessageDetailOpen(false);
+                      }}
                       style={{
                         textAlign: 'left',
                         border: active ? '1px solid #4b5342' : '1px solid #ddd5c5',
@@ -1064,14 +1079,15 @@ export default function InnerForumWorkspace() {
                         cursor: 'pointer',
                       }}
                     >
-                      {item.label}
+                      <span className="workspace-tab-full">{item.label}</span>
+                      <span className="workspace-tab-short">{item.shortLabel || item.label}</span>
                     </button>
                   );
                 })}
               </div>
             </aside>
 
-            <div style={{ padding: 24, minHeight: '100%' }}>{renderContent()}</div>
+            <div className="workspace-content" style={{ padding: 24, minHeight: '100%' }}>{renderContent()}</div>
           </div>
         </section>
       </main>
@@ -1226,6 +1242,5 @@ export default function InnerForumWorkspace() {
     </div>
   );
 }
-
 
 

@@ -135,6 +135,7 @@ export default function InternalForumThanksSleepPost() {
 
   return (
     <div
+      className={`inner-forum-post-page ${lightsOn ? 'is-light' : 'is-dark'}`}
       style={{
         minHeight: '100vh',
         backgroundColor: lightsOn ? INNER_FORUM_LIGHT_BG : INTERNAL_FORUM_BLACK,
@@ -153,6 +154,7 @@ export default function InternalForumThanksSleepPost() {
       <HeartHomeHeader dark={!lightsOn} variant={lightsOn ? 'innerLight' : 'innerDark'} />
 
       <main
+        className="inner-forum-post-main post-detail-main"
         style={{
           flex: 1,
           width: '100%',
@@ -165,6 +167,7 @@ export default function InternalForumThanksSleepPost() {
         }}
       >
         <Link
+          className="inner-forum-return-link post-return-link"
           to="/p/3e7b10a9c4"
           style={{
             position: 'sticky',
@@ -200,8 +203,9 @@ export default function InternalForumThanksSleepPost() {
           {'返\n回\n论\n坛'}
         </Link>
 
-        <article>
+        <article className="inner-forum-post-article post-detail-article">
           <div
+            className="inner-forum-post-heading"
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -310,6 +314,7 @@ export default function InternalForumThanksSleepPost() {
 
           {!lightsOn ? (
             <section
+              className="post-comments-box inner-forum-comments-box"
               style={{
                 border: `1px solid ${INTERNAL_FORUM_RED}`,
                 background: INTERNAL_FORUM_BLACK,
@@ -319,8 +324,10 @@ export default function InternalForumThanksSleepPost() {
                 gap: 14,
               }}
             >
+              <div className="post-comments-list inner-forum-comments-list" style={{ display: 'grid', gap: 18 }}>
               {comments.map((comment, index) => (
                 <article
+                  className="post-comment-card inner-forum-comment-card"
                   key={`${comment.author}-${comment.date}`}
                   style={{
                     border: `1px solid ${INTERNAL_FORUM_RED}`,
@@ -330,6 +337,7 @@ export default function InternalForumThanksSleepPost() {
                   }}
                 >
                   <div
+                    className="post-comment-meta inner-forum-comment-meta"
                     style={{
                       display: 'flex',
                       gap: 10,
@@ -356,6 +364,7 @@ export default function InternalForumThanksSleepPost() {
                     </span>
                     <span style={{ color: INTERNAL_FORUM_RED, fontWeight: 600 }}>{comment.date}</span>
                     <span
+                      className="post-comment-floor inner-forum-comment-floor"
                       style={{
                         marginLeft: 'auto',
                         width: 40,
@@ -374,6 +383,7 @@ export default function InternalForumThanksSleepPost() {
                   </div>
                   {comment.paragraphs.map((paragraph) => (
                     <p
+                      className="post-comment-text inner-forum-comment-text"
                       key={paragraph}
                       style={{
                         margin: '0 0 10px',
@@ -387,6 +397,7 @@ export default function InternalForumThanksSleepPost() {
                   ))}
                 </article>
               ))}
+              </div>
             </section>
           ) : null}
         </article>

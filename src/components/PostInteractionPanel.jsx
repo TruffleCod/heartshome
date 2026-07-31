@@ -76,6 +76,7 @@ export default function PostInteractionPanel({
 
   return (
     <section
+      className="post-interaction-panel"
       style={{
         marginTop: 56,
         paddingTop: 26,
@@ -83,6 +84,7 @@ export default function PostInteractionPanel({
       }}
     >
       <div
+        className="post-interaction-actions"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -144,6 +146,7 @@ export default function PostInteractionPanel({
 
       {showFakeEditor ? (
         <div
+          className="post-comment-editor-note"
           style={{
             marginTop: 14,
             border: '1px solid #dfe7e2',
@@ -160,6 +163,7 @@ export default function PostInteractionPanel({
       ) : null}
 
       <div
+        className="post-comments-box"
         style={{
           marginTop: 22,
           border: '1px solid #dfe7e2',
@@ -172,9 +176,10 @@ export default function PostInteractionPanel({
         }}
       >
         {hasComments ? (
-          <div style={{ display: 'grid', gap: 18 }}>
+          <div className="post-comments-list" style={{ display: 'grid', gap: 18 }}>
             {normalizedComments.map((comment, index) => (
               <article
+                className="post-comment-card"
                 key={`${comment.author}-${comment.date}-${index}`}
                 style={{
                   position: 'relative',
@@ -185,6 +190,7 @@ export default function PostInteractionPanel({
                 }}
               >
                 <div
+                  className="post-comment-floor"
                   style={{
                     position: 'absolute',
                     right: 16,
@@ -207,6 +213,7 @@ export default function PostInteractionPanel({
                 </div>
 
                 <div
+                  className="post-comment-meta"
                   style={{
                     display: 'flex',
                     flexWrap: 'wrap',
@@ -289,6 +296,7 @@ export default function PostInteractionPanel({
 
                 {comment.paragraphs?.map((paragraph, paragraphIndex) => (
                   <p
+                    className="post-comment-text"
                     key={`${index}-p-${paragraphIndex}`}
                     style={{
                       margin: paragraphIndex === comment.paragraphs.length - 1 ? '0' : '0 0 10px',
@@ -304,6 +312,7 @@ export default function PostInteractionPanel({
 
                 {comment.bullets?.length ? (
                   <ul
+                    className="post-comment-bullets"
                     style={{
                       margin: '10px 0 0',
                       paddingLeft: 22,
@@ -320,6 +329,7 @@ export default function PostInteractionPanel({
 
                 {comment.trailingParagraphs?.map((paragraph, paragraphIndex) => (
                   <p
+                    className="post-comment-text"
                     key={`${index}-tp-${paragraphIndex}`}
                     style={{
                       margin: '10px 0 0',

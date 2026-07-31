@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
@@ -76,8 +76,9 @@ export default function DiseaseInfo() {
     >
       <HeartHomeHeader />
 
-      <main style={{ flex: 1 }}>
+      <main className="disease-info-main" style={{ flex: 1 }}>
         <section
+          className="disease-info-shell"
           style={{
             maxWidth: 1480,
             margin: '0 auto',
@@ -124,6 +125,7 @@ export default function DiseaseInfo() {
           </p>
 
           <div
+            className="disease-info-layout"
             style={{
               display: 'grid',
               gridTemplateColumns: 'minmax(0, 1fr) 360px',
@@ -132,7 +134,7 @@ export default function DiseaseInfo() {
               marginTop: 60,
             }}
           >
-            <section>
+            <section className="disease-info-content">
               {infoSections.map((section, index) => (
                 <article
                   key={section.title}
@@ -203,6 +205,7 @@ export default function DiseaseInfo() {
             </section>
 
             <aside
+              className="disease-info-assessment-card"
               style={{
                 position: 'sticky',
                 top: 112,

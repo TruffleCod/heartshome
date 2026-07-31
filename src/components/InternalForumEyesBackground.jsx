@@ -3,12 +3,16 @@ import {
   INTERNAL_FORUM_RED,
   INTERNAL_FORUM_RED_SOFT,
 } from '../constants/internalForumTheme';
+import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
 
 const CONTENT_WIDTH = 980;
 const EYES_PER_SIDE = 234;
+const TOUCH_EYES_PER_SIDE = 405;
 const CONTENT_OVERLAP = 220;
 const MIN_EYE_SIZE = 51;
 const MAX_EYE_SIZE = MIN_EYE_SIZE * 4;
+const TOUCH_MIN_EYE_SIZE = 18;
+const TOUCH_MAX_EYE_SIZE = 48;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -64,21 +68,28 @@ function makeStrokeOffsets(seed, count, spread) {
   }));
 }
 
-function buildEyes(sideSeed, side) {
+function buildEyes(sideSeed, side, targetCount = EYES_PER_SIDE, compact = false) {
   const eyes = [];
   let attempts = 0;
 
-  while (eyes.length < EYES_PER_SIDE && attempts < 60000) {
+  while (eyes.length < targetCount && attempts < (compact ? 280000 : 60000)) {
     const seed = sideSeed + attempts * 1.73;
-    const x = 3 + seededValue(seed + 2) * 94;
+    const rawX = seededValue(seed + 2);
+    const x = compact
+      ? side === 'left'
+        ? 2 + Math.pow(rawX, 1.65) * 88
+        : 98 - Math.pow(rawX, 1.65) * 88
+      : 3 + rawX * 94;
     const edgeFactor = side === 'left' ? x / 100 : 1 - x / 100;
-    const edgeBoost = 0.86 + edgeFactor * 1.05;
-    const sizeBase = (MIN_EYE_SIZE + seededValue(seed + 3) * 44) * edgeBoost;
+    const edgeBoost = compact ? 0.84 + (1 - edgeFactor) * 0.38 : 0.86 + edgeFactor * 1.05;
+    const minSize = compact ? TOUCH_MIN_EYE_SIZE : MIN_EYE_SIZE;
+    const maxSize = compact ? TOUCH_MAX_EYE_SIZE : MAX_EYE_SIZE;
+    const sizeBase = (minSize + seededValue(seed + 3) * (compact ? 28 : 44)) * edgeBoost;
     const sizeBoost =
-      seededValue(seed + 8) > 0.68
-        ? (18 + seededValue(seed + 9) * 42) * (0.72 + edgeFactor * 0.9)
+      seededValue(seed + 8) > (compact ? 0.82 : 0.68)
+        ? ((compact ? 8 : 18) + seededValue(seed + 9) * (compact ? 18 : 42)) * (0.72 + edgeFactor * 0.9)
         : 0;
-    const size = clamp(sizeBase + sizeBoost, MIN_EYE_SIZE, MAX_EYE_SIZE);
+    const size = clamp(sizeBase + sizeBoost, minSize, maxSize);
     const strokeOffsets = makeStrokeOffsets(seed + 30, 3, 7);
     const pupilOffsets = makeStrokeOffsets(seed + 90, 2, 4);
     const candidate = {
@@ -97,15 +108,15 @@ function buildEyes(sideSeed, side) {
       const dy = candidate.top - eye.top;
       const horizontalGap = Math.abs(dx);
       const verticalGap = Math.abs(dy);
-      const minHorizontalGap = ((candidate.size + eye.size) / 2) * 0.1;
-      const minVerticalGap = ((candidate.size + eye.size) / 2) * 0.065;
+      const minHorizontalGap = ((candidate.size + eye.size) / 2) * (compact ? 0.24 : 0.1);
+      const minVerticalGap = ((candidate.size + eye.size) / 2) * (compact ? 0.2 : 0.065);
 
       if (horizontalGap < minHorizontalGap && verticalGap < minVerticalGap) {
         return false;
       }
 
       const distance = Math.sqrt(dx * dx + dy * dy);
-      const minDistance = (candidate.size + eye.size) * 0.05;
+      const minDistance = (candidate.size + eye.size) * (compact ? 0.16 : 0.05);
       return distance > minDistance;
     });
 
@@ -121,16 +132,18 @@ function buildEyes(sideSeed, side) {
 
 const LEFT_EYES = buildEyes(3.1, 'left');
 const RIGHT_EYES = buildEyes(11.4, 'right');
+const TOUCH_LEFT_EYES = buildEyes(23.6, 'left', TOUCH_EYES_PER_SIDE, true);
+const TOUCH_RIGHT_EYES = buildEyes(37.2, 'right', TOUCH_EYES_PER_SIDE, true);
 
-function SketchEye({ eye, zoneLeft, zoneWidth, viewportHeight, viewportWidth, mouse }) {
+function SketchEye({ eye, zoneLeft, zoneWidth, viewportHeight, viewportWidth, mouse, gaze }) {
   const size = eye.size;
   const height = size * 0.54;
   const centerX = zoneLeft + (zoneWidth * eye.x) / 100;
   const centerY = (viewportHeight * eye.top) / 100;
   const dx = mouse.x - centerX;
   const dy = mouse.y - centerY;
-  const normalizedX = clamp(dx / Math.max(viewportWidth * 0.18, 1), -1, 1);
-  const normalizedY = clamp(dy / Math.max(viewportHeight * 0.18, 1), -1, 1);
+  const normalizedX = gaze ? gaze.x : clamp(dx / Math.max(viewportWidth * 0.18, 1), -1, 1);
+  const normalizedY = gaze ? gaze.y : clamp(dy / Math.max(viewportHeight * 0.18, 1), -1, 1);
   const fittedOffset = fitPupilOffsetWithinEye(
     normalizedX * 24,
     normalizedY * 16
@@ -202,36 +215,104 @@ function SketchEye({ eye, zoneLeft, zoneWidth, viewportHeight, viewportWidth, mo
   );
 }
 
+function isTouchModeActive() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  return (
+    document.documentElement.classList.contains('hh-input-mode-touch') ||
+    window.localStorage.getItem(INPUT_MODE_STORAGE_KEY) === INPUT_MODES.TOUCH
+  );
+}
+
+function randomGaze() {
+  return {
+    x: -0.75 + Math.random() * 1.5,
+    y: -0.55 + Math.random() * 1.1,
+  };
+}
+
 export default function InternalForumEyesBackground({ active }) {
+  const [isTouchMode, setIsTouchMode] = useState(isTouchModeActive);
+  const [gaze, setGaze] = useState(() => randomGaze());
   const [viewport, setViewport] = useState({
     width: typeof window === 'undefined' ? 0 : window.innerWidth,
     height: typeof window === 'undefined' ? 0 : window.innerHeight,
+    documentHeight: typeof document === 'undefined' ? 0 : document.documentElement.scrollHeight,
   });
   const [mouse, setMouse] = useState({
     x: typeof window === 'undefined' ? 0 : window.innerWidth / 2,
     y: typeof window === 'undefined' ? 0 : window.innerHeight / 2,
   });
+  const [isTouchScrolling, setIsTouchScrolling] = useState(false);
 
   useEffect(() => {
     if (!active) return undefined;
 
     const updateViewport = () => {
+      const body = document.body;
+      const root = document.documentElement;
       setViewport({
         width: window.innerWidth,
         height: window.innerHeight,
+        documentHeight: Math.max(
+          window.innerHeight,
+          root.scrollHeight,
+          body ? body.scrollHeight : 0,
+          root.offsetHeight,
+          body ? body.offsetHeight : 0,
+        ),
       });
+      setIsTouchMode(isTouchModeActive());
     };
 
     const updateMouse = (event) => {
-      setMouse({ x: event.clientX, y: event.clientY });
+      if (!isTouchModeActive()) {
+        setMouse({ x: event.clientX, y: event.clientY });
+      }
+    };
+
+    let gazeTimer = 0;
+    let scrollTimer = 0;
+    const scheduleGaze = () => {
+      gazeTimer = window.setTimeout(() => {
+        if (!isTouchModeActive() || !document.documentElement.classList.contains('hh-inner-forum-touch-scrolling')) {
+          setGaze(randomGaze());
+        }
+        scheduleGaze();
+      }, 1000 + Math.random() * 1000);
+    };
+
+    const updateTouchScrollState = () => {
+      if (!isTouchModeActive()) return;
+      document.documentElement.classList.add('hh-inner-forum-touch-scrolling');
+      setIsTouchScrolling(true);
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        updateViewport();
+        document.documentElement.classList.remove('hh-inner-forum-touch-scrolling');
+        setIsTouchScrolling(false);
+      }, 220);
     };
 
     updateViewport();
+    const currentTouchMode = isTouchModeActive();
+    setIsTouchMode(currentTouchMode);
+    scheduleGaze();
     window.addEventListener('resize', updateViewport);
-    window.addEventListener('mousemove', updateMouse);
+    window.addEventListener('scroll', updateTouchScrollState, { passive: true });
+    window.addEventListener('touchmove', updateTouchScrollState, { passive: true });
+    window.addEventListener('heart-home:input-mode-change', updateViewport);
+    if (!currentTouchMode) {
+      window.addEventListener('mousemove', updateMouse);
+    }
 
     return () => {
+      window.clearTimeout(gazeTimer);
+      window.clearTimeout(scrollTimer);
+      document.documentElement.classList.remove('hh-inner-forum-touch-scrolling');
       window.removeEventListener('resize', updateViewport);
+      window.removeEventListener('scroll', updateTouchScrollState);
+      window.removeEventListener('touchmove', updateTouchScrollState);
+      window.removeEventListener('heart-home:input-mode-change', updateViewport);
       window.removeEventListener('mousemove', updateMouse);
     };
   }, [active]);
@@ -241,45 +322,62 @@ export default function InternalForumEyesBackground({ active }) {
   }
 
   const rawSideSpace = (viewport.width - CONTENT_WIDTH) / 2;
-  const sideSpace = clamp(rawSideSpace + CONTENT_OVERLAP, 320, 720);
+  const isCompactTouch = isTouchMode && viewport.width <= 768;
+  const isWideTouch = isTouchMode && viewport.width > 768;
+  const sideSpace = isCompactTouch
+    ? clamp(viewport.width * 0.46, 150, 235)
+    : clamp(rawSideSpace + CONTENT_OVERLAP, 320, 720);
+  const backgroundHeight = isWideTouch
+    ? Math.max(viewport.height, viewport.documentHeight || 0)
+    : viewport.height;
   const leftZoneLeft = 0;
   const rightZoneLeft = viewport.width - sideSpace;
-  const zoneOpacity = rawSideSpace < 88 ? 0.42 : 0.82;
+  const zoneOpacity = isCompactTouch ? 0.76 : rawSideSpace < 88 ? 0.42 : 0.82;
+  const leftEyes = isCompactTouch ? TOUCH_LEFT_EYES : LEFT_EYES;
+  const rightEyes = isCompactTouch ? TOUCH_RIGHT_EYES : RIGHT_EYES;
 
   return (
     <div
       aria-hidden="true"
       style={{
-        position: 'fixed',
-        inset: 0,
+        position: isWideTouch ? 'absolute' : 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: isWideTouch ? 'auto' : 0,
+        height: isWideTouch ? backgroundHeight : 'auto',
         pointerEvents: 'none',
         zIndex: 0,
         overflow: 'hidden',
-        opacity: zoneOpacity,
-        filter: 'saturate(1.08)',
+        opacity: isWideTouch ? 0.42 : isTouchMode && isTouchScrolling ? Math.min(zoneOpacity, 0.18) : zoneOpacity,
+        filter: isTouchMode && isTouchScrolling ? 'saturate(0.9)' : 'saturate(1.08)',
+        transition: isTouchMode ? 'opacity 160ms ease' : 'none',
+        contain: isWideTouch ? 'layout paint style' : 'none',
       }}
     >
-      {LEFT_EYES.map((eye, index) => (
+      {leftEyes.map((eye, index) => (
         <SketchEye
           key={`left-eye-${index}`}
           eye={eye}
           zoneLeft={leftZoneLeft}
           zoneWidth={sideSpace}
-          viewportHeight={viewport.height}
+          viewportHeight={backgroundHeight}
           viewportWidth={viewport.width}
           mouse={mouse}
+          gaze={isTouchMode ? gaze : null}
         />
       ))}
 
-      {RIGHT_EYES.map((eye, index) => (
+      {rightEyes.map((eye, index) => (
         <SketchEye
           key={`right-eye-${index}`}
           eye={eye}
           zoneLeft={rightZoneLeft}
           zoneWidth={sideSpace}
-          viewportHeight={viewport.height}
+          viewportHeight={backgroundHeight}
           viewportWidth={viewport.width}
           mouse={mouse}
+          gaze={isTouchMode ? gaze : null}
         />
       ))}
     </div>

@@ -138,6 +138,81 @@ export default function DongyangGuestbookArchive() {
             box-sizing: border-box;
             padding: 14px 18px 18px;
           }
+
+
+          @media (max-width: 820px) {
+            .hh-input-mode-touch .dy-message-section.archive {
+              padding: 12px 14px !important;
+            }
+
+            .hh-input-mode-touch .dy-search-heading h1 {
+              font-size: clamp(18px, 5vw, 22px) !important;
+              line-height: 1.22 !important;
+            }
+
+            .hh-input-mode-touch .dy-search-heading p {
+              font-size: clamp(11px, 3.3vw, 13px) !important;
+              line-height: 1.45 !important;
+            }
+
+            .hh-input-mode-touch .dy-archive-trigger {
+              padding: 9px 0 10px !important;
+            }
+
+            .hh-input-mode-touch .dy-archive-trigger h2 {
+              font-size: clamp(14px, 4.1vw, 17px) !important;
+              line-height: 1.28 !important;
+              text-underline-offset: 2px !important;
+            }
+
+            .hh-input-mode-touch .dy-archive-time {
+              font-size: clamp(10px, 3vw, 12px) !important;
+              line-height: 1.35 !important;
+            }
+
+            .hh-input-mode-touch .dy-archive-trigger .dy-result-type {
+              font-size: clamp(8px, 2.45vw, 10px) !important;
+              line-height: 1.15 !important;
+            }
+
+            .hh-input-mode-touch .dy-archive-panel-inner {
+              padding: 14px 18px 18px !important;
+            }
+
+            .hh-input-mode-touch .dy-archive-panel-inner p {
+              font-size: clamp(14px, 4vw, 16px) !important;
+              line-height: 1.85 !important;
+              font-weight: 400 !important;
+              margin: 0 0 14px !important;
+            }
+          }
+
+
+          @media (max-width: 820px) {
+            .dy-message-section.archive .dy-card.dy-message.dy-archive-panel-inner {
+              padding: 14px 18px 18px !important;
+            }
+
+            .dy-message-section.archive .dy-card.dy-message.dy-archive-panel-inner p,
+            .hh-input-mode-touch .dy-message-section.archive .dy-card.dy-message.dy-archive-panel-inner p {
+              color: #2a120f !important;
+              font-family: Arial, "Microsoft YaHei", sans-serif !important;
+              font-size: clamp(13px, 3.55vw, 15px) !important;
+              font-weight: 400 !important;
+              line-height: 1.9 !important;
+              margin: 0 0 14px !important;
+              letter-spacing: 0 !important;
+            }
+
+            .dy-message-section.archive .dy-card.dy-message.dy-archive-panel-inner p:last-child {
+              margin-bottom: 0 !important;
+            }
+
+            .dy-message-section.archive .dy-archive-trigger h2 {
+              font-size: clamp(13px, 3.7vw, 16px) !important;
+              line-height: 1.3 !important;
+            }
+          }
         `}</style>
         <div className="dy-search-heading">
           <h1>留言板暂存箱</h1>

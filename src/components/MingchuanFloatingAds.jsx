@@ -1,8 +1,9 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { MINGCHUAN_ADS } from '../data/mingchuanAds';
 import { publicPath } from '../utils/publicPath';
+import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
 
 const PAPER = '#ffffff';
 const ORDINARY_NOT_FOUND_PATH = '/404-page-not-found';
@@ -10,13 +11,87 @@ const GHOST_CACHE_PATH = '/p/e08c72fa9d';
 const UNIFORM_AD_WIDTH = 990;
 const UNIFORM_AD_HEIGHT = 680;
 const UNIFORM_AD_SCALE = 0.7;
+const LAST_RANDOM_AD_STORAGE_KEY = 'mingchuan:last-random-ad-id';
+
+const adCloseButtonAlignStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 0,
+  lineHeight: 1,
+  fontFamily: 'Arial, Helvetica, sans-serif',
+  textAlign: 'center',
+};
+
+function readLastRandomAdId() {
+  if (typeof window === 'undefined') return '';
+
+  try {
+    const lastSessionAdId = window.sessionStorage.getItem(LAST_RANDOM_AD_STORAGE_KEY);
+    if (lastSessionAdId) return lastSessionAdId;
+  } catch {
+    // Ignore storage failures; the fallback below may still be available.
+  }
+
+  try {
+    return window.localStorage.getItem(LAST_RANDOM_AD_STORAGE_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function writeLastRandomAdId(adId) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.sessionStorage.setItem(LAST_RANDOM_AD_STORAGE_KEY, adId);
+  } catch {
+    // Ignore storage failures; localStorage is used as a second chance below.
+  }
+
+  try {
+    window.localStorage.setItem(LAST_RANDOM_AD_STORAGE_KEY, adId);
+  } catch {
+    // Ignore storage failures; the ad can still render with plain randomness.
+  }
+}
 
 function pickRandomAd() {
-  return MINGCHUAN_ADS[Math.floor(Math.random() * MINGCHUAN_ADS.length)];
+  const lastAdId = readLastRandomAdId();
+  const candidates =
+    MINGCHUAN_ADS.length > 1
+      ? MINGCHUAN_ADS.filter((item) => item.id !== lastAdId)
+      : MINGCHUAN_ADS;
+  const pickedAd = candidates[Math.floor(Math.random() * candidates.length)] || MINGCHUAN_ADS[0];
+
+  if (pickedAd) {
+    writeLastRandomAdId(pickedAd.id);
+  }
+
+  return pickedAd;
 }
 
 function getAdById(adId) {
   return MINGCHUAN_ADS.find((item) => item.id === adId) || pickRandomAd();
+}
+
+function isTouchModeActive() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  return (
+    document.documentElement.classList.contains('hh-input-mode-touch') ||
+    window.localStorage.getItem(INPUT_MODE_STORAGE_KEY) === INPUT_MODES.TOUCH
+  );
+}
+
+function getViewportSize() {
+  if (typeof window === 'undefined') {
+    return { width: 0, height: 0 };
+  }
+
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
 }
 
 function baseCardStyle(width, height, background = PAPER) {
@@ -36,13 +111,19 @@ function baseCardStyle(width, height, background = PAPER) {
 }
 
 function uniformAdCardStyle(background = PAPER, placement = 'right') {
+  const isCentered = placement === 'center';
+
   return {
     ...baseCardStyle(UNIFORM_AD_WIDTH, UNIFORM_AD_HEIGHT, background),
-    right: placement === 'right' ? 18 : 'auto',
-    left: placement === 'left' ? 18 : 'auto',
-    bottom: 18,
-    transform: `scale(${UNIFORM_AD_SCALE})`,
-    transformOrigin: placement === 'left' ? 'left bottom' : 'right bottom',
+    top: isCentered ? '50%' : 'auto',
+    left: isCentered ? '50%' : placement === 'left' ? 18 : 'auto',
+    right: isCentered ? 'auto' : placement === 'right' ? 18 : 'auto',
+    bottom: isCentered ? 'auto' : 18,
+    width: isCentered ? UNIFORM_AD_WIDTH : `min(${UNIFORM_AD_WIDTH}px, calc(100vw - 56px))`,
+    transform: isCentered
+      ? 'translate(-50%, -50%) scale(var(--mingchuan-ad-scale, 0.7))'
+      : `scale(${UNIFORM_AD_SCALE})`,
+    transformOrigin: isCentered ? 'center center' : placement === 'left' ? 'left bottom' : 'right bottom',
   };
 }
 
@@ -124,9 +205,9 @@ function QuizAd({ close, onComplete, placement }) {
           color: '#111',
           cursor: 'pointer',
           fontSize: 24,
-          lineHeight: '22px',
           fontWeight: 900,
           zIndex: 6,
+          ...adCloseButtonAlignStyle,
         }}
       >
         ×
@@ -170,9 +251,11 @@ function QuizAd({ close, onComplete, placement }) {
             fontSize: 76,
             lineHeight: 1,
             fontWeight: 900,
-            letterSpacing: '0.08em',
-            WebkitTextStroke: '2px #9f4900',
-            textShadow: '0 4px 0 #ff9c00, 0 8px 0 #611200, 0 0 12px rgba(255,255,255,0.45)',
+            letterSpacing: 'var(--mingchuan-ad-title-letter-spacing, 0.08em)',
+            WebkitTextStroke: 'var(--mingchuan-ad-title-stroke-width, 2px) #9f4900',
+            textRendering: 'geometricPrecision',
+            textShadow:
+              'var(--mingchuan-quiz-title-shadow, 0 4px 0 #ff9c00, 0 8px 0 #611200, 0 0 12px rgba(255,255,255,0.45))',
           }}
         >
           每日答题抽奖
@@ -516,9 +599,9 @@ function FortuneAd({ close, placement }) {
           color: '#111',
           cursor: 'pointer',
           fontSize: 27,
-          lineHeight: '24px',
           fontWeight: 900,
           zIndex: 6,
+          ...adCloseButtonAlignStyle,
         }}
       >
         ×
@@ -561,9 +644,11 @@ function FortuneAd({ close, placement }) {
             fontSize: 66,
             lineHeight: 1,
             fontWeight: 900,
-            letterSpacing: '0.08em',
-            WebkitTextStroke: '2px #9b3100',
-            textShadow: '0 4px 0 #ff8a00, 0 8px 0 #5a1100, 0 0 14px rgba(255,255,255,0.65)',
+            letterSpacing: 'var(--mingchuan-ad-title-letter-spacing, 0.08em)',
+            WebkitTextStroke: 'var(--mingchuan-ad-title-stroke-width, 2px) #9b3100',
+            textRendering: 'geometricPrecision',
+            textShadow:
+              'var(--mingchuan-fortune-title-shadow, 0 4px 0 #ff8a00, 0 8px 0 #5a1100, 0 0 14px rgba(255,255,255,0.65))',
           }}
         >
           抽取今日运势
@@ -993,7 +1078,7 @@ function FortuneAd({ close, placement }) {
                 }}
               >
                 <div>今日幸运色：紫色</div>
-                <div>今日幸运数字：</div>
+                <div>今日幸运数字：16</div>
               </div>
             </section>
           </form>
@@ -1027,6 +1112,8 @@ function FortuneAd({ close, placement }) {
 }
 
 function DatingAd({ close, onComplete, placement }) {
+  const isTouchCentered = placement === 'center';
+  const datingActionFontSize = isTouchCentered ? 28 : 35;
   const [message, setMessage] = useState('');
   const profiles = [
     { name: '小雨点', age: 23, height: '162cm', job: '文员', image: '/images/news/dating-profile-1.jpg', position: 'center 26%' },
@@ -1063,9 +1150,9 @@ function DatingAd({ close, onComplete, placement }) {
           color: '#111',
           cursor: 'pointer',
           fontSize: 32,
-          lineHeight: '28px',
           fontWeight: 900,
           zIndex: 5,
+          ...adCloseButtonAlignStyle,
         }}
       >
         ×
@@ -1292,8 +1379,12 @@ function DatingAd({ close, onComplete, placement }) {
                   background: 'linear-gradient(#52d8ff, #0077e7)',
                   color: '#fff',
                   cursor: 'pointer',
-                  fontSize: 35,
+                  fontSize: datingActionFontSize,
+                  lineHeight: 1.08,
                   fontWeight: 900,
+                  letterSpacing: isTouchCentered ? 0 : undefined,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
                   textShadow: '0 3px 0 #004984',
                   boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.35), 0 5px 0 #004c91',
                 }}
@@ -1310,8 +1401,12 @@ function DatingAd({ close, onComplete, placement }) {
                   background: 'linear-gradient(#ff64ac, #e00076)',
                   color: '#fff',
                   cursor: 'pointer',
-                  fontSize: 35,
+                  fontSize: datingActionFontSize,
+                  lineHeight: 1.08,
                   fontWeight: 900,
+                  letterSpacing: isTouchCentered ? 0 : undefined,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
                   textShadow: '0 3px 0 #850043',
                   boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.35), 0 5px 0 #92004c',
                 }}
@@ -1455,9 +1550,9 @@ function WheelAd({ close, onComplete, onSecretComplete, placement }) {
           color: '#111',
           cursor: 'pointer',
           fontSize: 27,
-          lineHeight: '24px',
           fontWeight: 900,
           zIndex: 7,
+          ...adCloseButtonAlignStyle,
         }}
       >
         ×
@@ -1644,8 +1739,6 @@ function WheelAd({ close, onComplete, onSecretComplete, placement }) {
             }}
           >
             开始
-            <br />
-            抽奖
           </button>
         </div>
 
@@ -1697,6 +1790,8 @@ function WheelAd({ close, onComplete, onSecretComplete, placement }) {
 }
 
 function EmojiSlotAd({ close, onComplete, placement }) {
+  const isTouchCentered = placement === 'center';
+  const slotActionFontSize = isTouchCentered ? 50 : 64;
   const reelSymbols = useMemo(
     () => [
       ['💖', '🍒', '🍋', '🍉', '🍇', '🍓', '🍑', '🍎', '🍍'],
@@ -1862,9 +1957,9 @@ function EmojiSlotAd({ close, onComplete, placement }) {
           color: '#111',
           cursor: 'pointer',
           fontSize: 32,
-          lineHeight: '28px',
           fontWeight: 900,
           zIndex: 8,
+          ...adCloseButtonAlignStyle,
         }}
       >
         ×
@@ -2121,9 +2216,11 @@ function EmojiSlotAd({ close, onComplete, placement }) {
               background: isSpinning ? 'linear-gradient(#d76cff, #5d008a)' : 'linear-gradient(#f02cff 0%, #7f00c8 58%, #3e007e 100%)',
               color: '#ffe86a',
               cursor: isSpinning ? 'wait' : 'pointer',
-              fontSize: 64,
+              fontSize: slotActionFontSize,
               lineHeight: 1,
               fontWeight: 900,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
               letterSpacing: 0,
               WebkitTextStroke: '2px #6a2600',
               textShadow: '0 4px 0 #27001e, 0 0 10px rgba(255,255,255,0.55)',
@@ -2167,6 +2264,26 @@ export default function MingchuanFloatingAds({
   const navigate = useNavigate();
   const ad = useMemo(() => getAdById(adId), [adId]);
   const [isClosed, setIsClosed] = useState(false);
+  const [isTouchMode, setIsTouchMode] = useState(isTouchModeActive);
+  const [viewport, setViewport] = useState(getViewportSize);
+
+  useEffect(() => {
+    const updateFloatingAdMode = () => {
+      setIsTouchMode(isTouchModeActive());
+      setViewport(getViewportSize());
+    };
+
+    updateFloatingAdMode();
+    window.addEventListener('resize', updateFloatingAdMode);
+    window.addEventListener('orientationchange', updateFloatingAdMode);
+    window.addEventListener('heart-home:input-mode-change', updateFloatingAdMode);
+
+    return () => {
+      window.removeEventListener('resize', updateFloatingAdMode);
+      window.removeEventListener('orientationchange', updateFloatingAdMode);
+      window.removeEventListener('heart-home:input-mode-change', updateFloatingAdMode);
+    };
+  }, []);
 
   const handleComplete = (completedAdId) => {
     if (debug) {
@@ -2194,6 +2311,14 @@ export default function MingchuanFloatingAds({
     return null;
   }
 
+  const touchAdScale = Math.min(
+    UNIFORM_AD_SCALE,
+    viewport.width > 0 ? (viewport.width - 24) / UNIFORM_AD_WIDTH : UNIFORM_AD_SCALE,
+    viewport.height > 0 ? (viewport.height - 24) / UNIFORM_AD_HEIGHT : UNIFORM_AD_SCALE,
+  );
+  const placement = isTouchMode ? 'center' : 'right';
+  const isTouchNarrow = isTouchMode && viewport.width <= 768;
+
   const adLayer = (
     <div
       aria-label="明川新闻网广告"
@@ -2214,9 +2339,20 @@ export default function MingchuanFloatingAds({
         isolation: 'isolate',
         WebkitTextSizeAdjust: '100%',
         textSizeAdjust: '100%',
+        '--mingchuan-ad-scale': touchAdScale,
+        ...(isTouchNarrow
+          ? {
+              '--mingchuan-ad-title-letter-spacing': '0.04em',
+              '--mingchuan-ad-title-stroke-width': '0.75px',
+              '--mingchuan-quiz-title-shadow':
+                '0 2px 0 #ff9c00, 0 0 8px rgba(255,255,255,0.5)',
+              '--mingchuan-fortune-title-shadow':
+                '0 2px 0 #ff8a00, 0 0 9px rgba(255,255,255,0.58)',
+            }
+          : null),
       }}
     >
-      {renderAdLayout(ad, () => setIsClosed(true), () => handleComplete(ad.id), handleSecretComplete)}
+      {renderAdLayout(ad, () => setIsClosed(true), () => handleComplete(ad.id), handleSecretComplete, placement)}
     </div>
   );
 

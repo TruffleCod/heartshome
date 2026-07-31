@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MingchuanFloatingAds from './MingchuanFloatingAds';
 import { publicPath } from '../utils/publicPath';
+import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
 import '../styles/mingchuanNews.css';
 
 const GLITCH_TEXT_OPTIONS = [
@@ -84,6 +85,19 @@ function isTypingTarget(target) {
   );
 }
 
+function isTouchModeActive() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  return (
+    document.documentElement.classList.contains('hh-input-mode-touch') ||
+    window.localStorage.getItem(INPUT_MODE_STORAGE_KEY) === INPUT_MODES.TOUCH
+  );
+}
+
+function isLongPressBlankTarget(target) {
+  if (!target || isTypingTarget(target)) return false;
+  return !target.closest?.('a, button, form, img, video, canvas, [role="button"], .mc-hidden-search-backdrop, .mc-hidden-search-panel');
+}
+
 function buildParagraphsWithGlitch(paragraphs) {
   if (paragraphs.length === 0 || Math.random() >= BODY_GLITCH_CHANCE) {
     return paragraphs;
@@ -128,6 +142,7 @@ function HiddenSearchModal({ keyword, onChange, onClose, onSubmit, error }) {
 
   return (
     <div
+      className="mc-hidden-search-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="mingchuan-search-title"
@@ -144,6 +159,7 @@ function HiddenSearchModal({ keyword, onChange, onClose, onSubmit, error }) {
       }}
     >
       <div
+        className="mc-hidden-search-panel"
         style={{
           width: 'min(680px, 92vw)',
           background: '#ffffff',
@@ -153,8 +169,9 @@ function HiddenSearchModal({ keyword, onChange, onClose, onSubmit, error }) {
       >
         <div style={{ background: '#8b0000', height: 10 }} />
 
-        <form onSubmit={onSubmit} style={{ padding: '32px 34px 30px' }}>
+        <form className="mc-hidden-search-form" onSubmit={onSubmit} style={{ padding: '32px 34px 30px' }}>
           <p
+            className="mc-hidden-search-title"
             id="mingchuan-search-title"
             style={{
               margin: 0,
@@ -167,15 +184,16 @@ function HiddenSearchModal({ keyword, onChange, onClose, onSubmit, error }) {
             请输入检索对象：
           </p>
 
-          <p style={helperTextStyle}>
+          <p className="mc-hidden-search-helper" style={helperTextStyle}>
             支持按姓名、官方机构全称，检索本站公开报道。
           </p>
 
-          <p style={helperTextStyle}>
+          <p className="mc-hidden-search-helper" style={helperTextStyle}>
             当前搜索功能测试中，如遇文字乱码、图片错误等故障，可尝试刷新解决。
           </p>
 
           <input
+            className="mc-hidden-search-input"
             autoFocus
             type="text"
             value={keyword}
@@ -208,6 +226,7 @@ function HiddenSearchModal({ keyword, onChange, onClose, onSubmit, error }) {
           ) : null}
 
           <div
+            className="mc-hidden-search-actions"
             style={{
               marginTop: 24,
               display: 'flex',
@@ -270,6 +289,12 @@ export default function MingchuanNewsArticle({
   const [showSearch, setShowSearch] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState('');
+
+  const openHiddenSearch = () => {
+    setKeyword('');
+    setShowSearch(true);
+    setError('');
+  };
   const [displayParagraphs] = useState(() =>
     disableGlitches ? paragraphs : buildParagraphsWithGlitch(paragraphs),
   );
@@ -297,16 +322,89 @@ export default function MingchuanNewsArticle({
         return;
       }
 
-      if (event.key === '~' || event.key === '`' || event.code === 'Backquote') {
+      if (!isTouchModeActive() && (event.key === '~' || event.key === '`' || event.code === 'Backquote')) {
         event.preventDefault();
-        setKeyword('');
-        setShowSearch(true);
-        setError('');
+        openHiddenSearch();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSearch]);
+
+
+
+  useEffect(() => {
+    let tapCount = 0;
+    let tapTimer = 0;
+    let startX = 0;
+    let startY = 0;
+    let tapTargetIsBlank = false;
+    let moved = false;
+
+    const resetTapCount = () => {
+      window.clearTimeout(tapTimer);
+      tapTimer = 0;
+      tapCount = 0;
+    };
+
+    const handleTouchStart = (event) => {
+      if (!isTouchModeActive() || showSearch || event.touches.length !== 1) {
+        tapTargetIsBlank = false;
+        moved = false;
+        return;
+      }
+
+      const touch = event.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      moved = false;
+      tapTargetIsBlank = isLongPressBlankTarget(event.target);
+    };
+
+    const handleTouchMove = (event) => {
+      if (!tapTargetIsBlank || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      if (Math.abs(touch.clientX - startX) > 12 || Math.abs(touch.clientY - startY) > 12) {
+        moved = true;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (!tapTargetIsBlank || moved || showSearch) {
+        tapTargetIsBlank = false;
+        moved = false;
+        return;
+      }
+
+      tapCount += 1;
+      window.clearTimeout(tapTimer);
+
+      if (tapCount >= 3) {
+        resetTapCount();
+        tapTargetIsBlank = false;
+        moved = false;
+        openHiddenSearch();
+        return;
+      }
+
+      tapTimer = window.setTimeout(resetTapCount, 900);
+      tapTargetIsBlank = false;
+      moved = false;
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('touchcancel', resetTapCount);
+
+    return () => {
+      resetTapCount();
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', resetTapCount);
+    };
   }, [showSearch]);
 
   const handleSubmit = (event) => {

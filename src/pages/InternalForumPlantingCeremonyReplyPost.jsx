@@ -50,7 +50,7 @@ const comments = [
       {
         type: 'link',
         href: '/p/44d2ae09f6',
-        label: 'https://www.xinzhijia.cc/p/44d2ae09f6',
+        label: '新闻链接',
       },
     ],
   },
@@ -126,6 +126,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
 
   return (
     <div
+      className={`inner-forum-post-page ${lightsOn ? 'is-light' : 'is-dark'}`}
       style={{
         minHeight: '100vh',
         backgroundColor: lightsOn ? INNER_FORUM_LIGHT_BG : INTERNAL_FORUM_BLACK,
@@ -144,6 +145,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
       <HeartHomeHeader dark={!lightsOn} variant={lightsOn ? 'innerLight' : 'innerDark'} />
 
       <main
+        className="inner-forum-post-main post-detail-main"
         style={{
           flex: 1,
           width: '100%',
@@ -156,6 +158,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
         }}
       >
         <Link
+          className="inner-forum-return-link post-return-link"
           to="/p/3e7b10a9c4"
           style={{
             position: 'sticky',
@@ -191,8 +194,9 @@ export default function InternalForumPlantingCeremonyReplyPost() {
           {'返\n回\n论\n坛'}
         </Link>
 
-        <article>
+        <article className="inner-forum-post-article post-detail-article">
           <div
+            className="inner-forum-post-heading"
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -312,6 +316,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
 
           {!lightsOn ? (
             <div
+              className="inner-forum-ritual-verse"
               style={{
                 margin: '0 0 56px',
                 color: theme.text,
@@ -330,6 +335,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
 
           {!lightsOn ? (
             <section
+              className="post-comments-box inner-forum-comments-box"
               style={{
                 border: `1px solid ${INTERNAL_FORUM_RED}`,
                 background: INTERNAL_FORUM_BLACK,
@@ -339,8 +345,10 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                 gap: 14,
               }}
             >
+              <div className="post-comments-list inner-forum-comments-list" style={{ display: 'grid', gap: 18 }}>
               {comments.map((comment, index) => (
                 <article
+                  className="post-comment-card inner-forum-comment-card"
                   key={`${comment.author}-${index}`}
                   style={{
                     border: `1px solid ${INTERNAL_FORUM_RED}`,
@@ -350,6 +358,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                   }}
                 >
                   <div
+                    className="post-comment-meta inner-forum-comment-meta"
                     style={{
                       display: 'flex',
                       gap: 10,
@@ -375,6 +384,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                       {comment.author === '园丁001' ? '管理员' : '花匠'}
                     </span>
                     <span
+                      className="post-comment-floor inner-forum-comment-floor"
                       style={{
                         marginLeft: 'auto',
                         width: 40,
@@ -403,6 +413,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                     if (typeof paragraph === 'object' && paragraph?.type === 'link') {
                       return (
                         <p
+                          className="post-comment-text inner-forum-comment-text"
                           key={`${comment.author}-${paragraphIndex}`}
                           style={paragraphStyle}
                         >
@@ -424,8 +435,9 @@ export default function InternalForumPlantingCeremonyReplyPost() {
 
                     return (
                       <p
-                        key={`${comment.author}-${paragraphIndex}`}
-                        style={paragraphStyle}
+                          className="post-comment-text inner-forum-comment-text"
+                          key={`${comment.author}-${paragraphIndex}`}
+                          style={paragraphStyle}
                       >
                         {paragraph}
                       </p>
@@ -433,6 +445,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                   })}
                 </article>
               ))}
+              </div>
             </section>
           ) : null}
         </article>

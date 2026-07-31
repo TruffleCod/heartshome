@@ -1,6 +1,7 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { publicPath } from '../utils/publicPath';
+import { INPUT_MODES, readInputMode } from '../utils/inputMode';
 import { savePlayerGuestbookMessage } from '../utils/dongyangGuestbookStorage';
 import {
   readSearchHistory,
@@ -276,6 +277,31 @@ function InteractiveMap() {
   const [view, setView] = useState({ scale: 1, x: 0, y: 0 });
   const viewportRef = useRef(null);
   const dragState = useRef(null);
+  const pointersRef = useRef(new Map());
+  const pinchState = useRef(null);
+
+  const isMapTouchMode = () => (
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('hh-input-mode-touch')
+  );
+
+  const getPointerMetrics = () => {
+    const points = Array.from(pointersRef.current.values());
+
+    if (points.length < 2) {
+      return null;
+    }
+
+    const [first, second] = points;
+    const dx = second.x - first.x;
+    const dy = second.y - first.y;
+
+    return {
+      distance: Math.max(1, Math.hypot(dx, dy)),
+      centerX: (first.x + second.x) / 2,
+      centerY: (first.y + second.y) / 2,
+    };
+  };
 
   const clampView = (nextView) => {
     const nextScale = Number.isFinite(nextView.scale) ? nextView.scale : 1;
@@ -321,6 +347,27 @@ function InteractiveMap() {
       return;
     }
 
+    if (isMapTouchMode() && event.pointerType === 'touch') {
+      pointersRef.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      if (pointersRef.current.size >= 2) {
+        const metrics = getPointerMetrics();
+        if (metrics) {
+          pinchState.current = {
+            ...metrics,
+            scale: view.scale,
+            x: view.x,
+            y: view.y,
+          };
+          dragState.current = null;
+        }
+        return;
+      }
+    }
+
     dragState.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -331,6 +378,32 @@ function InteractiveMap() {
   };
 
   const handlePointerMove = (event) => {
+    if (isMapTouchMode() && event.pointerType === 'touch') {
+      if (!pointersRef.current.has(event.pointerId)) {
+        return;
+      }
+
+      pointersRef.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const metrics = getPointerMetrics();
+      const pinch = pinchState.current;
+
+      if (metrics && pinch) {
+        const nextScale = pinch.scale * (metrics.distance / pinch.distance);
+
+        setView(() =>
+          clampView({
+            scale: nextScale,
+            x: pinch.x + metrics.centerX - pinch.centerX,
+            y: pinch.y + metrics.centerY - pinch.centerY,
+          })
+        );
+        return;
+      }
+    }
     const drag = dragState.current;
 
     if (!drag || drag.pointerId !== event.pointerId) {
@@ -347,6 +420,13 @@ function InteractiveMap() {
   };
 
   const handlePointerUp = (event) => {
+    if (isMapTouchMode() && event.pointerType === 'touch') {
+      pointersRef.current.delete(event.pointerId);
+      if (pointersRef.current.size < 2) {
+        pinchState.current = null;
+      }
+    }
+
     if (dragState.current?.pointerId === event.pointerId) {
       try {
         if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
@@ -361,6 +441,8 @@ function InteractiveMap() {
 
   const handleLostPointerCapture = () => {
     dragState.current = null;
+    pointersRef.current.clear();
+    pinchState.current = null;
   };
 
   return (
@@ -406,7 +488,24 @@ export function DongyangOldStoriesLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
+  const [recentSearches, setRecentSearches] = useState(() => readSearchHistory(SEARCH_HISTORY_KEY).slice(0, 3));
+  const [inputMode, setInputMode] = useState(readInputMode);
   const closeTimer = useRef(null);
+  const isTouchMode = inputMode === INPUT_MODES.TOUCH;
+
+  useEffect(() => {
+    const updateMode = (event) => {
+      setInputMode(event.detail?.mode || readInputMode());
+    };
+
+    window.addEventListener('heart-home:input-mode-change', updateMode);
+    window.addEventListener('storage', updateMode);
+    return () => {
+      window.removeEventListener('heart-home:input-mode-change', updateMode);
+      window.removeEventListener('storage', updateMode);
+    };
+  }, []);
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -418,6 +517,7 @@ export function DongyangOldStoriesLayout({ children }) {
 
     setSearchOpen(false);
     navigate(`/p/71a6d0e2bf/search?q=${encodeURIComponent(normalized)}`);
+    setRecentSearches(readSearchHistory(SEARCH_HISTORY_KEY).slice(0, 3));
   };
 
   const openSidebar = () => {
@@ -434,8 +534,36 @@ export function DongyangOldStoriesLayout({ children }) {
     closeTimer.current = window.setTimeout(() => setSidebarOpen(false), 140);
   };
 
+
+  const handleBlogSurfaceClick = (event) => {
+    if (!isTouchMode) {
+      return;
+    }
+
+    const target = event.target;
+    const touchedMap = target.closest?.('.dy-map-card, .dy-map-viewport, .dy-map-image');
+    const image = touchedMap ? null : target.closest?.('img');
+
+    if (image && event.currentTarget.contains(image)) {
+      event.preventDefault();
+      event.stopPropagation();
+      setImagePreview({
+        src: image.currentSrc || image.src,
+        alt: image.alt || '????',
+      });
+      return;
+    }
+
+    const touchedPanel = target.closest?.('.dy-sidebar, .dy-search-panel, .dy-menu-toggle');
+
+    if (!touchedPanel) {
+      setSidebarOpen(false);
+      setSearchOpen(false);
+    }
+  };
+
   return (
-    <div className="dy-blog">
+    <div className="dy-blog" onClickCapture={handleBlogSurfaceClick}>
       <style>{`
         .dy-blog {
           min-height: 100vh;
@@ -495,7 +623,7 @@ export function DongyangOldStoriesLayout({ children }) {
         .dy-brand strong {
           padding: 0 16px;
           color: #2a120f;
-          font-size: 25px;
+          font-size: 21px;
           line-height: 1;
           font-weight: 700;
           white-space: nowrap;
@@ -610,12 +738,17 @@ export function DongyangOldStoriesLayout({ children }) {
 
         .dy-search-panel form {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 54px;
+          grid-template-columns: minmax(0, 1fr) 60px;
           gap: 10px;
         }
 
+        .dy-search-menu-links,
+        .dy-recent-searches {
+          display: none;
+        }
+
         .dy-search-close {
-          width: 44px;
+          width: 38px;
           height: 34px;
           margin-bottom: 46px;
           display: grid;
@@ -665,11 +798,15 @@ export function DongyangOldStoriesLayout({ children }) {
 
         .dy-search-panel button[type="submit"] {
           height: 42px;
+          min-width: 60px;
+          padding: 0 12px;
           border: 1px solid rgba(106, 22, 19, 0.42);
           background: #6a1613;
           color: #ffeaa0;
           font-family: inherit;
           font-size: 15px;
+          line-height: 1;
+          white-space: nowrap;
           cursor: pointer;
         }
 
@@ -1206,7 +1343,7 @@ export function DongyangOldStoriesLayout({ children }) {
         }
 
         .dy-map-controls button {
-          min-width: 42px;
+          min-width: 28px;
           height: 32px;
           border: 1px solid rgba(106, 22, 19, 0.42);
           background: rgba(255, 242, 189, 0.88);
@@ -1258,6 +1395,253 @@ export function DongyangOldStoriesLayout({ children }) {
 
         .dy-reply p { margin: 0; }
 
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-blog {
+            background:
+              radial-gradient(circle at 52% 0%, rgba(255, 255, 255, 0.38), transparent 36%),
+              linear-gradient(90deg, rgba(106, 22, 19, 0.045) 1px, transparent 1px),
+              linear-gradient(180deg, #f4dc83 0%, #d1a943 100%);
+            background-size: auto, 42px 42px, auto;
+          }
+
+          .hh-input-mode-touch .dy-page {
+            width: min(100%, 720px);
+            padding: 32px 18px 72px;
+            --dy-top-offset: 32px;
+          }
+
+          .hh-input-mode-touch .dy-shell {
+            padding-right: 0;
+          }
+
+          .hh-input-mode-touch .dy-shell::before {
+            display: none;
+          }
+
+          .hh-input-mode-touch .dy-topline {
+            position: relative;
+            max-width: none;
+            min-height: 78px;
+            margin-bottom: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 40px;
+            align-items: start;
+            gap: 10px;
+          }
+
+          .hh-input-mode-touch .dy-brand {
+            width: fit-content;
+            height: 38px;
+            margin-top: 4px;
+            box-shadow: none;
+          }
+
+          .hh-input-mode-touch .dy-brand strong {
+            padding: 0 18px;
+            font-size: clamp(20px, 6.2vw, 27px);
+            line-height: 1;
+          }
+
+          .hh-input-mode-touch .dy-tagline {
+            grid-column: 1 / -1;
+            max-width: 18em;
+            margin-top: -20px;
+            color: #6a1613;
+            font-size: clamp(12px, 3.7vw, 15px);
+            line-height: 1.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .hh-input-mode-touch .dy-menu-toggle {
+            position: static !important;
+            top: auto !important;
+            right: auto !important;
+            width: 38px;
+            height: 38px;
+            margin-top: 4px;
+            border: 2px solid #6a1613;
+            border-radius: 6px;
+            background: #ffeaa0;
+            box-shadow: none;
+            color: #6a1613;
+            font-size: 18px;
+            z-index: 70;
+            touch-action: manipulation;
+          }
+
+          .hh-input-mode-touch .dy-sidebar,
+          .hh-input-mode-touch .dy-search-panel {
+            position: absolute;
+            top: 82px;
+            left: 0;
+            right: 0;
+            width: auto;
+            height: auto;
+            max-height: 48vh;
+            overflow: auto;
+            margin: 0;
+            padding: 8px 14px 10px;
+            background: linear-gradient(180deg, rgba(255,255,255,.22), transparent 48%), #ffeaa0;
+            border: 1px solid rgba(106, 22, 19, 0.32);
+            box-shadow: 5px 7px 0 rgba(106, 22, 19, 0.13);
+            transform: translateY(0);
+            animation: none;
+            z-index: 60;
+          }
+
+          .hh-input-mode-touch .dy-sidebar.closed {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+          }
+
+          .hh-input-mode-touch .dy-sidebar::before,
+          .hh-input-mode-touch .dy-sidebar::after,
+          .hh-input-mode-touch .dy-search-panel::before,
+          .hh-input-mode-touch .dy-search-panel::after {
+            display: none;
+          }
+
+          .hh-input-mode-touch .dy-side-button {
+            position: relative;
+            min-height: 34px;
+            display: grid;
+            grid-template-columns: 24px minmax(0, 1fr) 12px;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            border-bottom: 0;
+            color: #3a1713;
+            justify-items: start;
+            text-align: left;
+            font-size: clamp(13px, 4vw, 17px);
+            line-height: 1.2;
+          }
+
+          .hh-input-mode-touch .dy-side-button::before {
+            content: "";
+            position: absolute;
+            left: 32px;
+            right: 0;
+            bottom: 0;
+            height: 0;
+            border-top: 1px solid rgba(106, 22, 19, 0.2);
+          }
+
+          .hh-input-mode-touch .dy-side-button::after {
+            content: "›";
+            justify-self: end;
+            align-self: center;
+            color: #3a1713;
+            font-size: 18px;
+            line-height: 1;
+          }
+
+          .hh-input-mode-touch .dy-side-button:last-child::before {
+            display: none;
+          }
+
+          .hh-input-mode-touch .dy-side-icon {
+            width: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            line-height: 1;
+          }
+          .hh-input-mode-touch .dy-search-panel {
+            z-index: 80;
+          }
+
+          .hh-input-mode-touch .dy-search-close,
+          .hh-input-mode-touch .dy-search-title {
+            display: none;
+          }
+
+          .hh-input-mode-touch .dy-search-panel form {
+            grid-template-columns: minmax(0, 1fr) 38px;
+            gap: 0;
+            margin-bottom: 20px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel input {
+            height: 38px;
+            padding: 0 16px;
+            border: 2px solid rgba(106, 22, 19, 0.5);
+            border-right: 0;
+            border-radius: 6px 0 0 6px;
+            background: rgba(255, 247, 203, 0.68);
+            font-size: clamp(13px, 4vw, 16px);
+          }
+
+          .hh-input-mode-touch .dy-search-panel button[type="submit"] {
+            height: 38px;
+            border: 2px solid rgba(106, 22, 19, 0.5);
+            border-left: 0;
+            border-radius: 0 6px 6px 0;
+            background: rgba(255, 247, 203, 0.68);
+            color: #6a1613;
+            font-size: 0;
+          }
+
+          .hh-input-mode-touch .dy-search-panel button[type="submit"]::before {
+            content: "⌕";
+            font-size: 21px;
+            line-height: 1;
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-search-menu-links {
+            display: grid;
+            gap: 0;
+            margin: 0 0 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(106, 22, 19, 0.3);
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-search-menu-links .dy-side-button {
+            min-height: 34px;
+            border-bottom: 0;
+          }
+
+          .hh-input-mode-touch .dy-recent-searches {
+            display: grid;
+            gap: 12px;
+          }
+
+          .hh-input-mode-touch .dy-recent-title {
+            color: #6a1613;
+            font-size: clamp(13px, 3.9vw, 16px);
+            font-weight: 700;
+          }
+
+          .hh-input-mode-touch .dy-recent-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+          }
+
+          .hh-input-mode-touch .dy-recent-chip {
+            min-height: 34px;
+            padding: 0 14px;
+            border: 1px solid rgba(106, 22, 19, 0.36);
+            border-radius: 5px;
+            background: rgba(255, 239, 171, 0.78);
+            color: #3a1713;
+            font: inherit;
+            font-size: clamp(12px, 3.7vw, 15px);
+          }
+
+          .hh-input-mode-touch .dy-card,
+          .hh-input-mode-touch .dy-album-empty,
+          .hh-input-mode-touch .dy-message-section,
+          .hh-input-mode-touch .dy-search-results {
+            max-width: none;
+          }
+        }
         @media (max-width: 1120px) {
           .dy-shell { padding-right: 190px; }
           .dy-menu-toggle { right: 210px; }
@@ -1329,6 +1713,566 @@ export function DongyangOldStoriesLayout({ children }) {
           .dy-card p { font-size: 13px; }
           .dy-album-slogan { font-size: 26px; }
         }
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-album-empty,
+          .hh-input-mode-touch .dy-search-results,
+          .hh-input-mode-touch .dy-message-section {
+            padding: 14px 16px;
+          }
+
+          .hh-input-mode-touch .dy-album-empty::before {
+            font-size: clamp(12px, 3.6vw, 14px);
+            line-height: 1.6;
+          }
+
+          .hh-input-mode-touch .dy-album-slogan {
+            margin-top: 10px;
+            padding-top: 8px;
+            font-size: clamp(15px, 4.5vw, 19px) !important;
+            line-height: 1.75;
+            text-underline-offset: 2px;
+          }
+
+          .hh-input-mode-touch .dy-search-heading {
+            padding-bottom: 10px;
+          }
+
+          .hh-input-mode-touch .dy-search-heading h1,
+          .hh-input-mode-touch .dy-search-history h2 {
+            font-size: clamp(18px, 5.5vw, 23px);
+            line-height: 1.35;
+          }
+
+          .hh-input-mode-touch .dy-search-heading p,
+          .hh-input-mode-touch .dy-no-results,
+          .hh-input-mode-touch .dy-message-section.board p,
+          .hh-input-mode-touch .dy-message-list .dy-message p {
+            font-size: clamp(12px, 3.7vw, 15px);
+            line-height: 1.75;
+          }
+
+          .hh-input-mode-touch .dy-search-history {
+            padding: 10px 0 12px;
+          }
+
+          .hh-input-mode-touch .dy-search-history-list {
+            gap: 6px;
+          }
+
+          .hh-input-mode-touch .dy-search-history-item,
+          .hh-input-mode-touch .dy-result-type,
+          .hh-input-mode-touch .dy-message-list .dy-meta,
+          .hh-input-mode-touch .dy-message-list .dy-meta span:first-child,
+          .hh-input-mode-touch .dy-message-list .dy-meta span:last-child,
+          .hh-input-mode-touch .dy-reply strong {
+            font-size: clamp(10px, 3.2vw, 12px);
+          }
+
+          .hh-input-mode-touch .dy-result-card,
+          .hh-input-mode-touch .dy-no-results,
+          .hh-input-mode-touch .dy-message-list .dy-message {
+            padding: 10px 0 12px;
+          }
+
+          .hh-input-mode-touch .dy-result-card h2,
+          .hh-input-mode-touch .dy-image-links,
+          .hh-input-mode-touch .dy-deleted-resource {
+            font-size: clamp(14px, 4.3vw, 17px);
+            line-height: 1.55;
+          }
+
+          .hh-input-mode-touch .dy-message-section.board h1 {
+            font-size: clamp(18px, 5.6vw, 22px);
+            line-height: 1.35;
+          }
+
+          .hh-input-mode-touch .dy-message-form input,
+          .hh-input-mode-touch .dy-message-form textarea,
+          .hh-input-mode-touch .dy-message-form button {
+            font-size: clamp(12px, 3.7vw, 15px);
+          }
+        }
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-search-results .dy-search-heading h1,
+          .hh-input-mode-touch .dy-search-results .dy-search-history h2,
+          .hh-input-mode-touch .dy-message-section.board h1 {
+            font-size: clamp(16px, 4.9vw, 18px) !important;
+            line-height: 1.35 !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-search-heading p,
+          .hh-input-mode-touch .dy-message-section.board p,
+          .hh-input-mode-touch .dy-message-list .dy-message p {
+            font-size: clamp(11px, 3.45vw, 13px) !important;
+            line-height: 1.65 !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-result-card h2,
+          .hh-input-mode-touch .dy-search-results .dy-image-links,
+          .hh-input-mode-touch .dy-search-results .dy-deleted-resource {
+            font-size: clamp(13px, 4vw, 15px) !important;
+            line-height: 1.48 !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-image-result-card .dy-result-type {
+            margin-bottom: 5px !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-image-result-card .dy-image-links {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            margin-top: 0 !important;
+            gap: 4px 10px !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-image-result-card .dy-image-links a {
+            display: inline !important;
+            color: #4a241d !important;
+            text-decoration: underline !important;
+            text-decoration-thickness: 1px !important;
+            text-underline-offset: 3px !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-result-card,
+          .hh-input-mode-touch .dy-search-results .dy-no-results,
+          .hh-input-mode-touch .dy-message-list .dy-message {
+            padding: 8px 0 10px !important;
+          }
+
+          .hh-input-mode-touch .dy-search-results .dy-search-history-item,
+          .hh-input-mode-touch .dy-search-results .dy-result-type,
+          .hh-input-mode-touch .dy-message-list .dy-meta,
+          .hh-input-mode-touch .dy-message-list .dy-meta span:first-child,
+          .hh-input-mode-touch .dy-message-list .dy-meta span:last-child {
+            font-size: clamp(9px, 2.9vw, 11px) !important;
+          }
+
+          .hh-input-mode-touch .dy-message-form input,
+          .hh-input-mode-touch .dy-message-form textarea,
+          .hh-input-mode-touch .dy-message-form button {
+            font-size: clamp(11px, 3.45vw, 13px) !important;
+          }
+        }
+
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-deleted-modal-backdrop,
+          .dy-page .dy-deleted-modal-backdrop {
+            position: fixed !important;
+            inset: 0 !important;
+            display: grid !important;
+            place-items: center !important;
+            padding: 16px !important;
+          }
+
+          .hh-input-mode-touch .dy-deleted-modal,
+          .dy-page .dy-deleted-modal {
+            width: min(300px, calc(100vw - 36px)) !important;
+            margin: 0 auto !important;
+            padding: 18px 20px 17px !important;
+            box-shadow: 5px 7px 0 rgba(106, 22, 19, 0.18), 0 12px 28px rgba(42, 18, 15, 0.24) !important;
+            transform: none !important;
+          }
+
+          .hh-input-mode-touch .dy-deleted-modal::after,
+          .dy-page .dy-deleted-modal::after {
+            inset: 8px !important;
+          }
+
+          .hh-input-mode-touch .dy-deleted-modal h2,
+          .dy-page .dy-deleted-modal h2 {
+            font-size: clamp(17px, 5vw, 20px) !important;
+            line-height: 1.3 !important;
+            margin-bottom: 9px !important;
+          }
+
+          .hh-input-mode-touch .dy-deleted-modal p,
+          .dy-page .dy-deleted-modal p {
+            font-size: clamp(12px, 3.6vw, 14px) !important;
+            line-height: 1.65 !important;
+          }
+
+          .hh-input-mode-touch .dy-deleted-modal button,
+          .dy-page .dy-deleted-modal button {
+            height: 28px !important;
+            margin-top: 15px !important;
+            padding: 0 12px !important;
+            font-size: clamp(11px, 3.3vw, 13px) !important;
+          }
+        }
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-message-section.archive {
+            padding: 14px 16px !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive .dy-card h1 {
+            font-size: clamp(18px, 5.2vw, 22px) !important;
+            line-height: 1.25 !important;
+            margin: 6px 0 2px !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive .dy-card p {
+            font-size: clamp(11px, 3.4vw, 13px) !important;
+            line-height: 1.55 !important;
+            margin-top: 6px !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive .dy-card > h1:first-child,
+          .hh-input-mode-touch .dy-message-section.archive > h1 {
+            font-size: clamp(21px, 6.2vw, 26px) !important;
+            line-height: 1.25 !important;
+          }
+
+          .hh-input-mode-touch .dy-message-list .dy-meta,
+          .hh-input-mode-touch .dy-message-list .dy-meta span:first-child,
+          .hh-input-mode-touch .dy-message-list .dy-meta span:last-child {
+            font-size: clamp(8px, 2.65vw, 10px) !important;
+          }
+        }
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-message-section.archive {
+            padding: 12px 14px !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive .dy-message {
+            padding: 10px 0 12px !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive > h1,
+          .hh-input-mode-touch .dy-message-section.archive .dy-message-list + h1 {
+            font-size: clamp(18px, 5vw, 22px) !important;
+            line-height: 1.25 !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive .dy-message p,
+          .hh-input-mode-touch .dy-message-section.archive .dy-message-list .dy-message p {
+            font-size: clamp(13px, 3.8vw, 16px) !important;
+            line-height: 1.35 !important;
+            margin: 6px 0 0 !important;
+            font-weight: 700 !important;
+          }
+
+          .hh-input-mode-touch .dy-message-section.archive .dy-meta,
+          .hh-input-mode-touch .dy-message-section.archive .dy-meta span:first-child,
+          .hh-input-mode-touch .dy-message-section.archive .dy-meta span:last-child {
+            font-size: clamp(8px, 2.45vw, 10px) !important;
+            line-height: 1.15 !important;
+          }
+        }
+
+        .hh-input-mode-touch .dy-menu-toggle,
+        .hh-input-mode-touch .dy-search-close {
+          aspect-ratio: 1 / 1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          line-height: 1;
+          text-align: center;
+        }
+
+        .hh-input-mode-touch .dy-menu-toggle {
+          width: 36px;
+          height: 36px;
+          font-size: 17px;
+        }
+
+        .hh-input-mode-touch .dy-search-close {
+          width: 36px;
+          height: 36px;
+          margin-bottom: 28px;
+          font-size: 20px;
+        }
+
+        .hh-input-mode-touch .dy-menu-toggle > span,
+        .hh-input-mode-touch .dy-search-close > span {
+          display: inline-block;
+          line-height: 1;
+        }
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-map-controls {
+            display: none;
+          }
+        }
+
+        .hh-input-mode-touch .dy-map-controls {
+          display: none !important;
+        }
+
+        @media (min-width: 821px) {
+          .hh-input-mode-touch .dy-page {
+            width: min(100%, 1180px);
+            padding: 56px 48px 86px;
+            --dy-top-offset: 56px;
+          }
+
+          .hh-input-mode-touch .dy-shell {
+            padding-right: 360px;
+          }
+
+          .hh-input-mode-touch .dy-topline {
+            max-width: 720px;
+            margin-bottom: 54px;
+          }
+
+          .hh-input-mode-touch .dy-brand,
+          .hh-input-mode-touch .dy-menu-toggle {
+            box-shadow: none;
+          }
+
+          .hh-input-mode-touch .dy-menu-toggle {
+            position: fixed;
+            top: var(--dy-top-offset);
+            right: calc((100vw - min(100vw, 1180px)) / 2 + 402px);
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+          }
+
+          .hh-input-mode-touch .dy-sidebar {
+            position: fixed;
+            top: calc(var(--dy-top-offset) + 44px);
+            right: calc((100vw - min(100vw, 1180px)) / 2 + 48px);
+            width: min(390px, calc(100vw - 96px));
+            height: auto;
+            max-height: min(430px, calc(100vh - var(--dy-top-offset) - 84px));
+            padding: 22px 26px;
+            gap: 10px;
+            overflow: auto;
+            background: linear-gradient(180deg, rgba(255,255,255,.26), transparent 48%), #ffeaa0;
+            border: 1px solid rgba(106, 22, 19, 0.32);
+            box-shadow: 6px 8px 0 rgba(106, 22, 19, 0.13);
+          }
+
+          .hh-input-mode-touch .dy-search-panel {
+            position: fixed;
+            top: calc(var(--dy-top-offset) + 44px);
+            right: calc((100vw - min(100vw, 1180px)) / 2 + 48px);
+            width: min(390px, calc(100vw - 96px));
+            height: auto;
+            max-height: min(460px, calc(100vh - var(--dy-top-offset) - 84px));
+            padding: 28px 30px 30px;
+            overflow: auto;
+            background: linear-gradient(180deg, rgba(255,255,255,.28), transparent 42%), #ffeaa0;
+            border: 1px solid rgba(106, 22, 19, 0.28);
+            box-shadow: 6px 8px 0 rgba(106, 22, 19, 0.13);
+            animation: none;
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-search-menu-links {
+            display: none;
+          }
+
+          .hh-input-mode-touch .dy-search-title {
+            display: block;
+            margin: 0 0 16px;
+            font-size: 18px;
+          }
+
+          .hh-input-mode-touch .dy-search-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 34px;
+            height: 34px;
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel form {
+            grid-template-columns: minmax(0, 1fr) 66px;
+            gap: 10px;
+            margin-bottom: 18px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel input,
+          .hh-input-mode-touch .dy-search-panel button[type="submit"] {
+            height: 34px;
+            border: 1px solid rgba(106, 22, 19, 0.36);
+            border-radius: 4px;
+            font-size: 13px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel button[type="submit"] {
+            background: #6a1613;
+            color: #ffeaa0;
+            font-size: 13px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel button[type="submit"]::before {
+            content: none;
+          }
+        }
+        /* dy-touch-wide-search-panel */
+
+        @media (max-width: 820px) {
+          .hh-input-mode-touch .dy-search-panel {
+            max-height: none;
+            overflow: visible;
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-search-close {
+            display: none !important;
+          }
+
+          .hh-input-mode-touch .dy-search-panel form {
+            margin-bottom: 12px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-search-menu-links {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+          }
+        }
+        /* dy-touch-compact-search-close-fix */
+
+        .hh-input-mode-touch .dy-card-body img:not(.dy-map-image),
+        .hh-input-mode-touch .dy-investigation-photo img,
+        .hh-input-mode-touch .dy-signature {
+          cursor: zoom-in;
+        }
+
+        .dy-image-preview-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 130;
+          display: grid;
+          place-items: center;
+          padding: 18px;
+          background: rgba(42, 18, 15, 0.72);
+        }
+
+        .dy-image-preview-dialog {
+          position: relative;
+          max-width: min(94vw, 980px);
+          max-height: 88vh;
+          display: grid;
+          place-items: center;
+        }
+
+        .dy-image-preview-dialog img {
+          display: block;
+          max-width: 100%;
+          max-height: 88vh;
+          object-fit: contain;
+          background: #1d100e;
+          box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+        }
+
+        .dy-image-preview-close {
+          position: absolute;
+          top: -12px;
+          right: -12px;
+          width: 34px;
+          height: 34px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: 1px solid rgba(106, 22, 19, 0.58);
+          background: #ffeaa0;
+          color: #6a1613;
+          font-family: inherit;
+          font-size: 22px;
+          line-height: 1;
+        }
+
+
+        .hh-input-mode-touch .dy-recent-list {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          gap: 8px 10px !important;
+          align-items: flex-start !important;
+        }
+
+        .hh-input-mode-touch .dy-recent-chip {
+          appearance: none !important;
+          width: auto !important;
+          min-width: 128px !important;
+          max-width: 100% !important;
+          height: 34px !important;
+          min-height: 34px !important;
+          max-height: 34px !important;
+          padding: 0 18px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border: 1px solid rgba(106, 22, 19, 0.34) !important;
+          border-radius: 4px !important;
+          background: rgba(255, 239, 171, 0.62) !important;
+          color: #3a1713 !important;
+          line-height: 1 !important;
+          box-shadow: none !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+        }
+
+        @media (min-width: 821px) {
+          .hh-input-mode-touch .dy-page {
+            --dy-touch-aside: clamp(300px, 33vw, 420px);
+            --dy-touch-gap: 32px;
+          }
+
+          .hh-input-mode-touch .dy-shell {
+            padding-right: calc(var(--dy-touch-aside) + var(--dy-touch-gap)) !important;
+          }
+
+          .hh-input-mode-touch .dy-topline {
+            max-width: calc(100% - var(--dy-touch-aside) - var(--dy-touch-gap)) !important;
+            padding-right: 0;
+          }
+
+          .hh-input-mode-touch .dy-menu-toggle {
+            position: absolute !important;
+            top: 0 !important;
+            right: calc(var(--dy-touch-aside) + 16px) !important;
+          }
+
+          .hh-input-mode-touch .dy-sidebar,
+          .hh-input-mode-touch .dy-search-panel {
+            position: absolute !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: var(--dy-touch-aside) !important;
+            max-height: none !important;
+          }
+
+          .hh-input-mode-touch .dy-search-panel {
+            padding: 28px 30px 30px;
+            overflow: visible;
+          }
+
+          .hh-input-mode-touch .dy-search-panel form {
+            grid-template-columns: minmax(0, 1fr) 66px;
+            gap: 10px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel input,
+          .hh-input-mode-touch .dy-search-panel button[type="submit"] {
+            width: 100%;
+            min-width: 0;
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-recent-list {
+            gap: 8px 10px;
+          }
+
+          .hh-input-mode-touch .dy-search-panel .dy-recent-chip {
+            min-width: min(160px, 100%);
+            max-width: 100%;
+          }
+        }
       `}</style>
 
       <main className="dy-page">
@@ -1337,27 +2281,47 @@ export function DongyangOldStoriesLayout({ children }) {
             <Link className="dy-brand" to="/p/71a6d0e2bf">
               <strong>东阳旧事</strong>
             </Link>
+            <button
+              className="dy-menu-toggle"
+              type="button"
+              aria-label={sidebarOpen ? '收起侧边栏' : '展开侧边栏'}
+              aria-expanded={sidebarOpen}
+              onMouseEnter={() => {
+                if (!isTouchMode) {
+                  openSidebar();
+                }
+              }}
+              onMouseLeave={() => {
+                if (!isTouchMode) {
+                  closeSidebarSoon();
+                }
+              }}
+              onClick={() => {
+                if (closeTimer.current) {
+                  window.clearTimeout(closeTimer.current);
+                }
+                setSearchOpen(false);
+                setSidebarOpen((open) => !open);
+              }}
+            >
+              ☰
+            </button>
             <span className="dy-tagline">一个记者，只写给自己看的手札记录</span>
           </div>
-
-          <button
-            className="dy-menu-toggle"
-            type="button"
-            aria-label={sidebarOpen ? '收起侧边栏' : '展开侧边栏'}
-            aria-expanded={sidebarOpen}
-            onMouseEnter={openSidebar}
-            onMouseLeave={closeSidebarSoon}
-            onFocus={openSidebar}
-            onClick={() => setSidebarOpen((open) => !open)}
-          >
-            ☰
-          </button>
 
           <nav
             className={`dy-sidebar${sidebarOpen ? '' : ' closed'}`}
             aria-label="东阳旧事侧边栏"
-            onMouseEnter={openSidebar}
-            onMouseLeave={closeSidebarSoon}
+            onMouseEnter={() => {
+              if (!isTouchMode) {
+                openSidebar();
+              }
+            }}
+            onMouseLeave={() => {
+              if (!isTouchMode) {
+                closeSidebarSoon();
+              }
+            }}
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget)) {
                 setSidebarOpen(false);
@@ -1374,6 +2338,7 @@ export function DongyangOldStoriesLayout({ children }) {
                     setSearchKeyword('');
                     setSearchOpen(true);
                     setSidebarOpen(false);
+                    setRecentSearches(readSearchHistory(SEARCH_HISTORY_KEY).slice(0, 3));
                   }}
                 >
                   <span className="dy-side-icon" aria-hidden="true">{item.icon}</span>
@@ -1409,12 +2374,59 @@ export function DongyangOldStoriesLayout({ children }) {
                 />
                 <button type="submit">搜索</button>
               </form>
+              <div className="dy-search-menu-links" aria-label="东阳旧事菜单">
+                {menuItems.filter((item) => item.action !== 'search').map((item) => (
+                  <Link
+                    className="dy-side-button"
+                    to={item.href}
+                    key={`search-${item.label}`}
+                    onClick={() => setSearchOpen(false)}
+                  >
+                    <span className="dy-side-icon" aria-hidden="true">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+              {recentSearches.length ? (
+                <div className="dy-recent-searches" aria-label="最近搜索">
+                  <div className="dy-recent-title">最近搜索</div>
+                  <div className="dy-recent-list">
+                    {recentSearches.map((item) => (
+                      <button
+                        className="dy-recent-chip"
+                        type="button"
+                        key={`${item.keyword}-${item.searchedAt}`}
+                        onClick={() => {
+                          setSearchOpen(false);
+                          navigate(`/p/71a6d0e2bf/search?q=${encodeURIComponent(item.keyword)}`);
+                        }}
+                      >
+                        {item.keyword}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </section>
           )}
 
           {children}
         </div>
       </main>
+      {imagePreview ? (
+        <div className="dy-image-preview-backdrop" role="presentation" onClick={() => setImagePreview(null)}>
+          <div
+            className="dy-image-preview-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label={imagePreview.alt}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <img src={imagePreview.src} alt={imagePreview.alt} />
+          </div>
+        </div>
+      ) : null}
+
     </div>
   );
 }
@@ -1508,9 +2520,9 @@ export function DongyangOldStoriesSearch() {
         {results.length > 0 ? (
           results.map((item) =>
             item.type === 'image' ? (
-              <article className="dy-result-card" key={item.id}>
+              <article className="dy-result-card dy-image-result-card" key={item.id}>
                 <p className="dy-result-type">图片资源 | {item.date}</p>
-                <div className="dy-image-links">
+                <h2 className="dy-image-links">
                   {(item.paths || [item.path]).map((path, index) => (
                     <ImageResourceLink path={path} key={path}>
                       查看图片{(item.paths || []).length > 1 ? index + 1 : ''}
@@ -1521,7 +2533,7 @@ export function DongyangOldStoriesSearch() {
                       查看译文
                     </a>
                   ) : null}
-                </div>
+                </h2>
               </article>
             ) : item.type === 'text' ? (
               <a
@@ -1535,9 +2547,9 @@ export function DongyangOldStoriesSearch() {
                 <h2>{item.title}</h2>
               </a>
             ) : item.type === 'deleted' ? (
-              <article className="dy-result-card" key={item.id}>
+              <article className="dy-result-card dy-image-result-card" key={item.id}>
                 <p className="dy-result-type">图片资源 | {item.date}</p>
-                <div className="dy-image-links">
+                <h2 className="dy-image-links">
                   <button
                     className="dy-deleted-resource"
                     type="button"
@@ -1545,19 +2557,19 @@ export function DongyangOldStoriesSearch() {
                   >
                     查看图片
                   </button>
-                </div>
+                </h2>
               </article>
             ) : (
-              <Link
+              <a
                 className="dy-result-card"
-                to={item.path}
+                href={publicPath(item.path)}
                 target="_blank"
                 rel="noopener noreferrer"
                 key={item.id}
               >
                 <p className="dy-result-type">博文链接 | {item.date}</p>
                 <h2>{item.title}</h2>
-              </Link>
+              </a>
             )
           )
         ) : (

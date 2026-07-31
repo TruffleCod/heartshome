@@ -1,19 +1,22 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
 import posts from '../data/posts.json';
 import { LOGIN_PATH, clearHeartHomeLogin } from '../utils/forumAccess';
-import { hashWithPepper, normalizeInput } from '../utils/hash';
+import {
+  getCounselingRecordPathForAccount,
+  normalizeRecordCodeInput,
+} from '../utils/counselingRecordAccess';
 import { publicPath } from '../utils/publicPath';
 
 const MENU_ITEMS = [
-  { key: 'appointment', label: '预约咨询' },
-  { key: 'records', label: '咨询记录' },
-  { key: 'messages', label: '站内私信' },
-  { key: 'posts', label: '发帖记录' },
-  { key: 'security', label: '账户安全' },
+  { key: 'appointment', label: '预约咨询', shortLabel: '预约' },
+  { key: 'records', label: '咨询记录', shortLabel: '记录' },
+  { key: 'messages', label: '站内私信', shortLabel: '私信' },
+  { key: 'posts', label: '发帖记录', shortLabel: '论坛' },
+  { key: 'security', label: '账户安全', shortLabel: '账户' },
 ];
 
 const CARD_STYLE = {
@@ -21,6 +24,10 @@ const CARD_STYLE = {
   border: '1px solid #d9e5de',
   borderRadius: 10,
   padding: '16px 18px',
+};
+
+const POST_PUBLIC_PATHS = {
+  'moral-kidnapping-rant': '/p/8a04e6d3f2',
 };
 
 const COUNSELORS = [
@@ -61,15 +68,6 @@ const COUNSELORS = [
 const WEEK_HEADERS = ['日', '一', '二', '三', '四', '五', '六'];
 const BOOKING_START = '2026-06-15';
 const BOOKING_END = '2026-06-30';
-const RECORD_CODE_PEPPER = 'heart_home_record_key_v1::';
-const RECORD_HASH_TO_PATH = {
-  '5bbec09980046b1ebd6c3d7c69967350b0ef0de396a45b666b8b676d0a70aca8':
-    '/p/e47a92c0d1',
-  '80b9462d494619151bdb37e034c3438642309ccee32ee3ac48a069dc40e91e29':
-    '/p/0f6b83d2a7',
-  '0d6ba888e22ac8a6ad02b8c71a6e1b1e3f7b528ff355b0e0dcbaa239880e9e3d':
-    '/p/c5a18f0e9d',
-};
 const MESSAGE_THREADS = [
   {
 
@@ -212,6 +210,7 @@ export default function BuXiangWorkspace() {
   const [selectedCounselorId, setSelectedCounselorId] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedThreadId, setSelectedThreadId] = useState(MESSAGE_THREADS[0].id);
+  const [messageDetailOpen, setMessageDetailOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState('');
   const [showAppointmentBlockedModal, setShowAppointmentBlockedModal] = useState(false);
   const [noticeModalText, setNoticeModalText] = useState('');
@@ -286,14 +285,13 @@ export default function BuXiangWorkspace() {
     window.open(publicPath(path), '_blank', 'noopener,noreferrer');
   };
   const handleQueryRecordByInput = async () => {
-    const normalized = normalizeInput(recordCodeInput).toUpperCase();
+    const normalized = normalizeRecordCodeInput(recordCodeInput);
     if (!normalized) {
       setNoticeModalText('请输入预约编号。');
       return;
     }
 
-    const hash = await hashWithPepper(normalized, RECORD_CODE_PEPPER);
-    const matchedPath = RECORD_HASH_TO_PATH[hash];
+    const matchedPath = await getCounselingRecordPathForAccount('buxiang', normalized);
     if (!matchedPath) {
       setNoticeModalText('未找到对应咨询记录编号。');
       return;
@@ -319,9 +317,10 @@ export default function BuXiangWorkspace() {
         <div style={{ ...CARD_STYLE, padding: 18 }}>
           <h2 style={{ margin: '0 0 14px', fontSize: 22, color: '#1f3f2d' }}>预约咨询</h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
+          <div className="workspace-appointment-layout" style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
             <div>
               <div
+                className="workspace-calendar-nav"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '44px 1fr 44px',
@@ -364,7 +363,7 @@ export default function BuXiangWorkspace() {
                 </button>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
+              <div className="workspace-calendar-weekdays" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
                 {WEEK_HEADERS.map((item) => (
                   <div key={item} style={{ textAlign: 'center', color: '#6f837a', fontSize: 16, lineHeight: 1.8 }}>
                     {item}
@@ -372,7 +371,7 @@ export default function BuXiangWorkspace() {
                 ))}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10 }}>
+              <div className="workspace-calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10 }}>
                 {cells.map((day, index) => {
                   if (!day) {
                     return <div key={`empty-${index}`} style={{ width: '100%', minWidth: 0, aspectRatio: '1 / 1', background: '#f6f8f7', borderRadius: 10 }} />;
@@ -596,9 +595,9 @@ export default function BuXiangWorkspace() {
 
     if (activeKey === 'messages') {
       return (
-        <div style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', height: 690 }}>
-            <aside style={{ borderRight: '1px solid #d9e5de', background: '#f9fcfa' }}>
+        <div className={messageDetailOpen ? 'workspace-messages-card is-detail-open' : 'workspace-messages-card'} style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
+          <div className="workspace-messages-layout" style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', height: 690 }}>
+            <aside className="workspace-message-list" style={{ borderRight: '1px solid #d9e5de', background: '#f9fcfa' }}>
               <h2 style={{ margin: 0, padding: '14px 14px 10px', fontSize: 20, color: '#1f3f2d' }}>站内私信</h2>
               <div style={{ display: 'grid' }}>
                 {MESSAGE_THREADS.map((thread) => {
@@ -607,7 +606,10 @@ export default function BuXiangWorkspace() {
                     <button
                       key={thread.id}
                       type="button"
-                      onClick={() => setSelectedThreadId(thread.id)}
+                      onClick={() => {
+                        setSelectedThreadId(thread.id);
+                        setMessageDetailOpen(true);
+                      }}
                       style={{
                         width: '100%',
                         minWidth: 0,
@@ -642,12 +644,21 @@ export default function BuXiangWorkspace() {
               </div>
             </aside>
 
-            <section style={{ background: '#ffffff', display: 'grid', gridTemplateRows: '56px minmax(0,1fr) 56px', height: 690, overflow: 'hidden' }}>
-              <header style={{ borderBottom: '1px solid #e6efea', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#234337', fontWeight: 700 }}>
-                与 {activeThread.name} 的对话
+            <section className="workspace-message-detail" style={{ background: '#ffffff', display: 'grid', gridTemplateRows: '56px minmax(0,1fr) 56px', height: 690, overflow: 'hidden' }}>
+              <header className="workspace-message-detail-header" style={{ borderBottom: '1px solid #e6efea', display: 'flex', alignItems: 'center', padding: '0 16px', color: '#234337', fontWeight: 700 }}>
+                <button
+                  type="button"
+                  className="workspace-message-back"
+                  onClick={() => setMessageDetailOpen(false)}
+                >
+                  返回
+                </button>
+                <span>与 {activeThread.name} 的对话
+</span>
               </header>
 
               <div
+                className="workspace-chat-body"
                 ref={chatBodyRef}
                 onMouseDown={handleChatDragStart}
                 onMouseMove={handleChatDragMove}
@@ -758,7 +769,7 @@ export default function BuXiangWorkspace() {
                 ) : null}
               </div>
 
-              <footer style={{ borderTop: '1px solid #e6efea', display: 'flex', alignItems: 'center', padding: '0 12px', color: '#7a8f86', fontSize: 13 }}>
+              <footer className="workspace-message-footer" style={{ borderTop: '1px solid #e6efea', display: 'flex', alignItems: 'center', padding: '0 12px', color: '#7a8f86', fontSize: 13 }}>
                 账户功能异常：当前仅支持查看历史私信，不支持发送新消息。
               </footer>
             </section>
@@ -769,17 +780,18 @@ export default function BuXiangWorkspace() {
 
     if (activeKey === 'posts') {
       return (
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div style={CARD_STYLE}>
-            <h2 style={{ margin: '0 0 10px', fontSize: 20, color: '#1f3f2d' }}>发帖记录</h2>
+        <div className="workspace-posts-panel buxiang-workspace-posts-panel" style={{ display: 'grid', gap: 12 }}>
+          <div className="workspace-posts-card buxiang-workspace-posts-card" style={CARD_STYLE}>
+            <h2 className="workspace-posts-title buxiang-workspace-posts-title" style={{ margin: '0 0 10px', fontSize: 20, color: '#1f3f2d' }}>发帖记录</h2>
             {myPosts.length === 0 ? (
               <p style={{ margin: 0, color: '#5e756d', lineHeight: 1.8 }}>因疑似违禁发言，账号锁定中，暂时无法查看发帖记录。</p>
             ) : (
-              <div style={{ display: 'grid', gap: 12 }}>
+              <div className="workspace-posts-list buxiang-workspace-posts-list" style={{ display: 'grid', gap: 12 }}>
                 {myPosts.map((post) => (
-                  <div key={post.id} style={{ border: '1px solid #d9e5de', borderRadius: 8, padding: '12px 14px' }}>
+                  <div className="workspace-posts-item buxiang-workspace-posts-item" key={post.id} style={{ border: '1px solid #d9e5de', borderRadius: 8, padding: '12px 14px' }}>
                     <a
-                      href="http://localhost:5173/p/8a04e6d3f2"
+                      className="workspace-posts-item-link buxiang-workspace-posts-item-link"
+                      href={publicPath(POST_PUBLIC_PATHS[post.id] || `/p/${post.id}`)}
                       style={{
                         display: 'inline-block',
                         margin: 0,
@@ -968,6 +980,7 @@ export default function BuXiangWorkspace() {
 
   return (
     <div
+      className="workspace-page"
       style={{
         minHeight: '100vh',
         background: '#f5f7f6',
@@ -980,8 +993,9 @@ export default function BuXiangWorkspace() {
     >
       <HeartHomeHeader />
 
-      <main style={{ flex: 1, padding: '48px 20px 64px' }}>
+      <main className="workspace-main" style={{ flex: 1, padding: '48px 20px 64px' }}>
         <section
+          className="workspace-shell"
           style={{
             maxWidth: 1100,
             margin: '0 auto',
@@ -992,8 +1006,9 @@ export default function BuXiangWorkspace() {
             minHeight: 'calc(100vh - 80px - 112px - 64px)',
           }}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)' }}>
+          <div className="workspace-layout" style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)' }}>
             <aside
+              className="workspace-sidebar"
               style={{
                 background: '#f8fbf9',
                 borderRight: '1px solid #e3ece7',
@@ -1002,6 +1017,7 @@ export default function BuXiangWorkspace() {
               }}
             >
               <h1
+                className="workspace-title"
                 style={{
                   margin: '6px 8px 14px',
                   fontSize: 22,
@@ -1011,14 +1027,18 @@ export default function BuXiangWorkspace() {
               >
                 工作台
               </h1>
-              <div style={{ display: 'grid', gap: 6 }}>
+              <div className="workspace-tabs" style={{ display: 'grid', gap: 6 }}>
                 {MENU_ITEMS.map((item) => {
                   const active = activeKey === item.key;
                   return (
                     <button
                       key={item.key}
                       type="button"
-                      onClick={() => setActiveKey(item.key)}
+                      className="workspace-tab"
+                      onClick={() => {
+                        setActiveKey(item.key);
+                        setMessageDetailOpen(false);
+                      }}
                       style={{
                         textAlign: 'left',
                         border: active ? '1px solid #2f7a4a' : '1px solid #d9e5de',
@@ -1030,14 +1050,15 @@ export default function BuXiangWorkspace() {
                         cursor: 'pointer',
                       }}
                     >
-                      {item.label}
+                      <span className="workspace-tab-full">{item.label}</span>
+                      <span className="workspace-tab-short">{item.shortLabel || item.label}</span>
                     </button>
                   );
                 })}
               </div>
             </aside>
 
-            <div style={{ padding: 24, minHeight: '100%' }}>{renderContent()}</div>
+            <div className="workspace-content" style={{ padding: 24, minHeight: '100%' }}>{renderContent()}</div>
           </div>
         </section>
       </main>

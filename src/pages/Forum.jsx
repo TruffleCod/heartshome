@@ -74,6 +74,7 @@ export default function Forum() {
 
   return (
     <div
+      className="forum-page"
       style={{
         minHeight: '100vh',
         background: '#f7fbf7',
@@ -87,6 +88,7 @@ export default function Forum() {
       <HeartHomeHeader />
 
       <main
+        className="forum-main"
         style={{
           flex: 1,
           width: '100%',
@@ -97,6 +99,7 @@ export default function Forum() {
         }}
       >
         <section
+          className="forum-hero"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -107,6 +110,7 @@ export default function Forum() {
         >
           <div>
             <p
+              className="forum-kicker"
               style={{
                 margin: '0 0 10px',
                 color: '#2f7a4a',
@@ -118,6 +122,7 @@ export default function Forum() {
               心之家社区
             </p>
             <h1
+              className="forum-title"
               style={{
                 margin: '0 0 16px',
                 color: '#1f3f2d',
@@ -128,6 +133,7 @@ export default function Forum() {
               秘密花园-访客试读区
             </h1>
             <p
+              className="forum-subtitle"
               style={{
                 margin: 0,
                 color: '#66766c',
@@ -140,6 +146,7 @@ export default function Forum() {
           </div>
 
           <Link
+            className="forum-login-link"
             to={loginTargetPath}
             target="_blank"
             rel="noopener noreferrer"
@@ -162,6 +169,7 @@ export default function Forum() {
         </section>
 
         <nav
+          className="forum-post-list"
           aria-label="论坛帖子"
           style={{
             display: 'grid',
@@ -170,6 +178,7 @@ export default function Forum() {
         >
           {forumPosts.map((post) => (
             <Link
+              className="forum-post-card"
               key={post.title}
               to={post.to}
               target="_blank"

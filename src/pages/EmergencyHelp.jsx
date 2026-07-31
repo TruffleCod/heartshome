@@ -56,6 +56,7 @@ export default function EmergencyHelp() {
 
   return (
     <div
+      className="emergency-help-page"
       style={{
         minHeight: '100vh',
         background: 'linear-gradient(180deg, #fbfdfb 0%, #ffffff 42%, #f5faf6 100%)',
@@ -68,8 +69,9 @@ export default function EmergencyHelp() {
     >
       <HeartHomeHeader />
 
-      <main style={{ flex: 1 }}>
+      <main className="emergency-help-main" style={{ flex: 1 }}>
         <section
+          className="emergency-help-shell"
           style={{
             maxWidth: 1280,
             margin: '0 auto',
@@ -78,12 +80,14 @@ export default function EmergencyHelp() {
           }}
         >
           <div
+            className="emergency-help-inner"
             style={{
               maxWidth: 1040,
               margin: '0 auto',
             }}
           >
             <p
+              className="emergency-help-kicker"
               style={{
                 margin: '0 0 12px',
                 color: '#6d7b83',
@@ -95,6 +99,7 @@ export default function EmergencyHelp() {
               REAL-WORLD SUPPORT
             </p>
             <h1
+              className="emergency-help-title"
               style={{
                 margin: '0 0 24px',
                 color: '#4e6258',
@@ -108,12 +113,14 @@ export default function EmergencyHelp() {
             </h1>
 
             <div
+              className="emergency-help-card-list"
               style={{
                 display: 'grid',
                 gap: 28,
               }}
             >
               <section
+                className="emergency-help-card"
                 style={{
                   padding: '32px 36px',
                   borderRadius: 26,
@@ -123,6 +130,7 @@ export default function EmergencyHelp() {
                 }}
               >
                 <p
+                  className="emergency-help-lead"
                   style={{
                     margin: '0 0 22px',
                     color: '#55616c',
@@ -133,9 +141,13 @@ export default function EmergencyHelp() {
                   • “心之家”只是个虚拟游戏，但如果现实里的你真的需要帮助，以下是你可以信任的方式：
                 </p>
 
-                <div style={{ display: 'grid', gap: 22, paddingLeft: 40 }}>
+                <div
+                  className="emergency-help-resource-list"
+                  style={{ display: 'grid', gap: 22, paddingLeft: 40 }}
+                >
                   {hotlineResources.map((item) => (
                     <p
+                      className="emergency-help-resource"
                       key={item.name}
                       style={{
                         margin: 0,
@@ -146,6 +158,7 @@ export default function EmergencyHelp() {
                     >
                       • {item.name}：{' '}
                       <span
+                        className="emergency-help-resource-value"
                         style={{
                           color: '#41566b',
                           fontSize: bodySize,
@@ -162,6 +175,7 @@ export default function EmergencyHelp() {
               </section>
 
               <section
+                className="emergency-help-card"
                 style={{
                   padding: '32px 36px',
                   borderRadius: 26,
@@ -171,6 +185,7 @@ export default function EmergencyHelp() {
                 }}
               >
                 <p
+                  className="emergency-help-lead"
                   style={{
                     margin: '0 0 22px',
                     color: '#55616c',
@@ -181,9 +196,13 @@ export default function EmergencyHelp() {
                   • 以下是几个真实的全国性心理咨询平台，提供常规的、付费的、预约制的心理咨询服务
                 </p>
 
-                <div style={{ display: 'grid', gap: 22, paddingLeft: 40 }}>
+                <div
+                  className="emergency-help-resource-list"
+                  style={{ display: 'grid', gap: 22, paddingLeft: 40 }}
+                >
                   {counselingPlatforms.map((item) => (
                     <p
+                      className="emergency-help-resource"
                       key={item.name}
                       style={{
                         margin: 0,
@@ -194,6 +213,7 @@ export default function EmergencyHelp() {
                     >
                       • {item.name}：{' '}
                       <a
+                        className="emergency-help-resource-link"
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"

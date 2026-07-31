@@ -71,6 +71,7 @@ export default function InternalForumBulliedHelpPost() {
       <HeartHomeHeader />
 
       <main
+        className="post-detail-main"
         style={{
           flex: 1,
           width: '100%',
@@ -82,6 +83,7 @@ export default function InternalForumBulliedHelpPost() {
         }}
       >
         <Link
+          className="post-return-link"
           to="/p/b12e8f40a6"
           style={{
             position: 'sticky',
@@ -117,7 +119,7 @@ export default function InternalForumBulliedHelpPost() {
           {'返\n回\n论\n坛'}
         </Link>
 
-        <article>
+        <article className="post-detail-article">
           <h1
             style={{
               margin: '0 0 46px',

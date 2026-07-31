@@ -1,11 +1,35 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { publicPath } from '../utils/publicPath';
 import { preloadImage } from '../utils/preloadAssets';
+import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
+
+function isTouchModeActive() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  return (
+    document.documentElement.classList.contains('hh-input-mode-touch') ||
+    window.localStorage.getItem(INPUT_MODE_STORAGE_KEY) === INPUT_MODES.TOUCH
+  );
+}
 
 export default function InternalForumCaveBackdrop({ active }) {
+  const [isTouchMode, setIsTouchMode] = useState(isTouchModeActive);
+
   useEffect(() => {
-    preloadImage('images/blog/background.jpg');
+    const updateTouchMode = () => setIsTouchMode(isTouchModeActive());
+    updateTouchMode();
+    window.addEventListener('resize', updateTouchMode);
+    window.addEventListener('heart-home:input-mode-change', updateTouchMode);
+    return () => {
+      window.removeEventListener('resize', updateTouchMode);
+      window.removeEventListener('heart-home:input-mode-change', updateTouchMode);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!isTouchMode && !isTouchModeActive()) {
+      preloadImage('images/blog/background.jpg');
+    }
+  }, [isTouchMode]);
 
   if (!active) {
     return null;
@@ -50,29 +74,33 @@ export default function InternalForumCaveBackdrop({ active }) {
           overflow: 'hidden',
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            inset: '-2%',
-            backgroundImage: `url("${publicPath('images/blog/background.jpg')}")`,
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-            animation: 'innerForumCaveBreath 9.5s ease-in-out infinite',
-            transformOrigin: 'center center',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'radial-gradient(circle at 50% 58%, rgba(90, 255, 156, 0.9) 0%, rgba(42, 189, 103, 0.35) 24%, rgba(4, 35, 18, 0.08) 52%, transparent 76%)',
-            mixBlendMode: 'screen',
-            animation: 'innerForumCaveGlowBreath 9.5s ease-in-out infinite',
-            transformOrigin: '50% 58%',
-          }}
-        />
+        {!isTouchMode && (
+          <>
+            <div
+              style={{
+                position: 'absolute',
+                inset: '-2%',
+                backgroundImage: `url("${publicPath('images/blog/background.jpg')}")`,
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+                animation: 'innerForumCaveBreath 9.5s ease-in-out infinite',
+                transformOrigin: 'center center',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'radial-gradient(circle at 50% 58%, rgba(90, 255, 156, 0.9) 0%, rgba(42, 189, 103, 0.35) 24%, rgba(4, 35, 18, 0.08) 52%, transparent 76%)',
+                mixBlendMode: 'screen',
+                animation: 'innerForumCaveGlowBreath 9.5s ease-in-out infinite',
+                transformOrigin: '50% 58%',
+              }}
+            />
+          </>
+        )}
         <div
           style={{
             position: 'absolute',

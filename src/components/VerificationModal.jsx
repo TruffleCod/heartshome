@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { markVisitorForumVerified } from '../utils/forumAccess';
 
@@ -7,9 +7,14 @@ const CORRECT_ANSWERS = ['温暖照亮'];
 export default function VerificationModal({ onClose, onSuccess }) {
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
+  const answerInputRef = useRef(null);
 
   const normalizeAnswer = (value) => {
     return value.replace(/\s/g, '').replace(/[，。、“”‘’?']/g, '').trim();
+  };
+
+  const focusAnswerInput = () => {
+    answerInputRef.current?.focus({ preventScroll: true });
   };
 
   const handleSubmit = (event) => {
@@ -38,6 +43,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
 
   return (
     <div
+      className="hh-modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="verification-title"
@@ -54,6 +60,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
       }}
     >
       <div
+        className="hh-modal-panel"
         style={{
           width: 'min(860px, 92vw)',
           background: 'rgba(255, 255, 255, 0.96)',
@@ -74,9 +81,10 @@ export default function VerificationModal({ onClose, onSuccess }) {
           }}
         />
 
-        <form onSubmit={handleSubmit} style={{ padding: '42px 56px 46px' }}>
+        <form className="hh-modal-form" onSubmit={handleSubmit} style={{ padding: '42px 56px 46px' }}>
           <div style={{ marginBottom: 32 }}>
             <p
+              className="hh-modal-title"
               id="verification-title"
               style={{
                 margin: 0,
@@ -90,6 +98,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
             </p>
 
             <p
+              className="hh-modal-copy"
               style={{
                 margin: '18px 0 0',
                 color: '#53635b',
@@ -102,6 +111,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
             </p>
 
             <p
+              className="hh-modal-copy"
               style={{
                 margin: '10px 0 0',
                 color: '#53635b',
@@ -129,6 +139,9 @@ export default function VerificationModal({ onClose, onSuccess }) {
           </div>
 
           <div
+            className="hh-modal-answer-box"
+            onPointerDown={focusAnswerInput}
+            onClick={focusAnswerInput}
             style={{
               margin: '36px 0 0',
               padding: '28px 30px',
@@ -138,6 +151,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
             }}
           >
             <label
+              className="hh-modal-answer-label"
               htmlFor="forum-verification-answer"
               style={{
                 display: 'flex',
@@ -153,8 +167,12 @@ export default function VerificationModal({ onClose, onSuccess }) {
               <span>我承诺，这里每一句对话，都值得被</span>
 
               <input
+                ref={answerInputRef}
+                className="hh-modal-input"
                 id="forum-verification-answer"
                 type="text"
+                inputMode="text"
+                enterKeyHint="done"
                 value={answer}
                 onChange={(event) => {
                   setAnswer(event.target.value);
@@ -196,6 +214,7 @@ export default function VerificationModal({ onClose, onSuccess }) {
           </div>
 
           <div
+            className="hh-modal-actions"
             style={{
               marginTop: 32,
               display: 'flex',

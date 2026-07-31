@@ -17,6 +17,7 @@ const paragraphs = [
 export default function AssessmentEasterEgg() {
   return (
     <div
+      className="assessment-easter-egg-page"
       style={{
         minHeight: '100vh',
         background: '#f7fbf7',
@@ -25,9 +26,53 @@ export default function AssessmentEasterEgg() {
           'Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", "PingFang SC", sans-serif',
       }}
     >
+      <style>{`
+        @media (max-width: 820px) {
+          .assessment-easter-egg-main {
+            padding: 48px 18px 72px !important;
+            max-width: 100% !important;
+          }
+
+          .assessment-easter-egg-kicker {
+            margin-bottom: 10px !important;
+            font-size: clamp(11px, 3.2vw, 13px) !important;
+            letter-spacing: 0.06em !important;
+          }
+
+          .assessment-easter-egg-title {
+            margin-bottom: 20px !important;
+            font-size: clamp(22px, 6.2vw, 28px) !important;
+            line-height: 1.28 !important;
+            font-weight: 700 !important;
+          }
+
+          .assessment-easter-egg-card {
+            padding: 22px 20px !important;
+            border-radius: 8px !important;
+          }
+
+          .assessment-easter-egg-card p {
+            margin-top: 13px !important;
+            font-size: clamp(13px, 3.75vw, 15px) !important;
+            font-weight: 400 !important;
+            line-height: 1.72 !important;
+          }
+
+          .assessment-easter-egg-card p:first-child {
+            margin-top: 0 !important;
+          }
+
+          .assessment-easter-egg-back {
+            margin-top: 20px !important;
+            font-size: clamp(13px, 3.7vw, 15px) !important;
+          }
+        }
+      `}</style>
+
       <HeartHomeHeader />
 
       <main
+        className="assessment-easter-egg-main"
         style={{
           maxWidth: 820,
           margin: '0 auto',
@@ -35,6 +80,7 @@ export default function AssessmentEasterEgg() {
         }}
       >
         <p
+          className="assessment-easter-egg-kicker"
           style={{
             margin: '0 0 14px',
             color: '#2f7a4a',
@@ -47,6 +93,7 @@ export default function AssessmentEasterEgg() {
         </p>
 
         <h1
+          className="assessment-easter-egg-title"
           style={{
             margin: '0 0 28px',
             color: '#1f4d33',
@@ -59,6 +106,7 @@ export default function AssessmentEasterEgg() {
         </h1>
 
         <div
+          className="assessment-easter-egg-card"
           style={{
             border: '1px solid #dce9de',
             borderRadius: 8,
@@ -84,6 +132,7 @@ export default function AssessmentEasterEgg() {
         </div>
 
         <Link
+          className="assessment-easter-egg-back"
           to="/p/c70a5e1d92"
           style={{
             display: 'inline-flex',

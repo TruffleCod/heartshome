@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { sha256 } from '../utils/hash';
 
 const INTRO_COPY = {
   title: '恭喜你，调查员',
@@ -267,10 +268,7 @@ function normalizeAnswer(value) {
 }
 
 async function hashNormalizedAnswer(value) {
-  const normalized = normalizeAnswer(value);
-  const data = new TextEncoder().encode(normalized);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return sha256(normalizeAnswer(value));
 }
 
 export default function InternalForumRitualQuestions() {
@@ -676,9 +674,10 @@ export default function InternalForumRitualQuestions() {
   };
 
   const renderIntro = () => (
-    <section style={panelStyle}>
+    <section className="ritual-questions-panel ritual-questions-intro-panel" style={panelStyle}>
       {renderTypedIntro()}
       <div
+        className="ritual-questions-intro-actions"
         style={{
           display: 'flex',
           gap: 12,
@@ -689,7 +688,7 @@ export default function InternalForumRitualQuestions() {
           transition: 'opacity 220ms ease',
         }}
       >
-        <button type="button" onClick={handleStart} style={primaryButtonStyle}>
+        <button className="ritual-questions-primary-button" type="button" onClick={handleStart} style={primaryButtonStyle}>
           开始评估
         </button>
       </div>
@@ -697,9 +696,10 @@ export default function InternalForumRitualQuestions() {
   );
 
   const renderTextQuestion = () => (
-    <form onSubmit={handleTextSubmit} style={panelStyle}>
-      <h1 style={questionPromptStyle}>{currentQuestion.prompt}</h1>
+    <form className="ritual-questions-panel ritual-questions-form" onSubmit={handleTextSubmit} style={panelStyle}>
+      <h1 className="ritual-questions-prompt" style={questionPromptStyle}>{currentQuestion.prompt}</h1>
       <input
+        className="ritual-questions-input"
         ref={inputRef}
         type="text"
         value={inputValue}
@@ -712,11 +712,11 @@ export default function InternalForumRitualQuestions() {
         style={textInputStyle}
       />
       <div style={{ marginTop: 24 }}>
-        <button type="submit" style={submitButtonStyle}>
+        <button className="ritual-questions-submit-button" type="submit" style={submitButtonStyle}>
           提交
         </button>
       </div>
-      {noticeText && <p style={noticeStyle}>{noticeText}</p>}
+      {noticeText && <p className="ritual-questions-notice" style={noticeStyle}>{noticeText}</p>}
     </form>
   );
 
@@ -753,18 +753,18 @@ export default function InternalForumRitualQuestions() {
 
     return (
       <>
-        <h1 style={{ ...ritualQuestionTitleStyle, marginBottom: 22 }}>
+        <h1 className="ritual-questions-intro-title" style={{ ...ritualQuestionTitleStyle, marginBottom: 22 }}>
           {title}
         </h1>
-        <div style={{ display: 'grid', gap: 24, color: '#d7ded8', lineHeight: 1.75 }}>
-          {firstBody && <p style={leadParagraphStyle}>{firstBody}</p>}
+        <div className="ritual-questions-intro-copy" style={{ display: 'grid', gap: 24, color: '#d7ded8', lineHeight: 1.75 }}>
+          {firstBody && <p className="ritual-questions-intro-lead" style={leadParagraphStyle}>{firstBody}</p>}
           {secondBody && (
-            <p style={leadParagraphStyle}>
+            <p className="ritual-questions-intro-lead" style={leadParagraphStyle}>
               {renderHighlightedTypedText(secondBody, 'intro-second')}
             </p>
           )}
           {description && (
-            <p style={descriptionStyle}>
+            <p className="ritual-questions-intro-description" style={descriptionStyle}>
               {renderHighlightedTypedText(description, 'intro-description')}
             </p>
           )}
@@ -781,8 +781,8 @@ export default function InternalForumRitualQuestions() {
     const isLockedByStrike = Boolean(strikethroughTarget);
 
     return (
-      <section style={panelStyle}>
-        <h1 style={{ ...questionPromptStyle, marginBottom: 26 }}>{currentQuestion.prompt}</h1>
+      <section className="ritual-questions-panel ritual-questions-form" style={panelStyle}>
+        <h1 className="ritual-questions-prompt" style={{ ...questionPromptStyle, marginBottom: 26 }}>{currentQuestion.prompt}</h1>
         <div style={{ display: 'grid', gap: 12 }}>
           {options.map((option, index) => {
             const isStriking =
@@ -797,6 +797,7 @@ export default function InternalForumRitualQuestions() {
                 onMouseEnter={() => setHoveredOptionIndex(index)}
                 onMouseLeave={() => setHoveredOptionIndex(-1)}
                 disabled={isLockedByStrike}
+                className="ritual-questions-choice-button"
                 style={{
                   ...choiceButtonStyle,
                   border:
@@ -841,7 +842,7 @@ export default function InternalForumRitualQuestions() {
             );
           })}
         </div>
-        {noticeText && <p style={noticeStyle}>{noticeText}</p>}
+        {noticeText && <p className="ritual-questions-notice" style={noticeStyle}>{noticeText}</p>}
       </section>
     );
   };
@@ -859,12 +860,12 @@ export default function InternalForumRitualQuestions() {
   };
 
   const renderFinalConfirmModal = () => (
-    <div style={modalBackdropStyle}>
-      <section role="dialog" aria-modal="true" style={modalPanelStyle}>
-        <p style={modalTextStyle}>
+    <div className="ritual-modal-backdrop" style={modalBackdropStyle}>
+      <section className="ritual-modal-panel" role="dialog" aria-modal="true" style={modalPanelStyle}>
+        <p className="ritual-modal-text" style={modalTextStyle}>
           本问题的答案决定了您的理智评估结果，请仔细确认你的答案。
         </p>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
+        <div className="ritual-modal-actions" style={modalActionsStyle}>
           <button type="button" onClick={handleFinalConfirm} style={modalPrimaryButtonStyle}>
             确认提交
           </button>
@@ -881,20 +882,20 @@ export default function InternalForumRitualQuestions() {
   );
 
   const renderRecordNoticeModal = () => (
-    <div style={modalBackdropStyle}>
-      <section role="status" aria-live="polite" style={recordNoticePanelStyle}>
-        <p style={recordNoticeTextStyle}>{recordNoticeText}</p>
+    <div className="ritual-modal-backdrop" style={modalBackdropStyle}>
+      <section className="ritual-modal-panel ritual-record-notice-panel" role="status" aria-live="polite" style={recordNoticePanelStyle}>
+        <p className="ritual-record-notice-text" style={recordNoticeTextStyle}>{recordNoticeText}</p>
       </section>
     </div>
   );
 
   const renderTrueEndingRetryNoticeModal = () => (
-    <div style={modalBackdropStyle}>
-      <section role="alertdialog" aria-modal="true" style={modalPanelStyle}>
-        <p style={modalTextStyle}>
+    <div className="ritual-modal-backdrop" style={modalBackdropStyle}>
+      <section className="ritual-modal-panel" role="alertdialog" aria-modal="true" style={modalPanelStyle}>
+        <p className="ritual-modal-text" style={modalTextStyle}>
           恭喜你找到了圣君的真实姓名！但遗憾的是，你并未成功完成所有理智评估的问题，请重新作答。
         </p>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
+        <div className="ritual-modal-actions" style={modalActionsStyle}>
           <button type="button" onClick={handleRestartAssessment} style={modalPrimaryButtonStyle}>
             重新作答
           </button>
@@ -904,39 +905,40 @@ export default function InternalForumRitualQuestions() {
   );
 
   const renderEndingPopupModal = () => (
-    <div style={modalBackdropStyle}>
-      <section role="alertdialog" aria-modal="true" style={endingPopupPanelStyle}>
-        <p style={endingPopupTextStyle}>「{endingPopupText}」</p>
+    <div className="ritual-modal-backdrop" style={modalBackdropStyle}>
+      <section className="ritual-ending-popup-panel" role="alertdialog" aria-modal="true" style={endingPopupPanelStyle}>
+        <p className="ritual-ending-popup-text" style={endingPopupTextStyle}>「{endingPopupText}」</p>
       </section>
     </div>
   );
 
   const renderEnding = () => (
     <article
+      className="ritual-ending-panel"
       style={{
         ...endingPanelStyle,
         opacity: endingContentOpacity,
       }}
     >
-      <h1 style={endingTitleStyle}>{ending.title}</h1>
+      <h1 className="ritual-ending-title" style={endingTitleStyle}>{ending.title}</h1>
       <div style={{ display: 'grid', gap: 18 }}>
         {ending.paragraphs.map((paragraph) => (
-          <p key={paragraph} style={endingParagraphStyle}>
+          <p className="ritual-ending-paragraph" key={paragraph} style={endingParagraphStyle}>
             {paragraph}
           </p>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 34 }}>
+      <div className="ritual-ending-actions" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 34 }}>
         {ending === ENDINGS.true ? (
-          <Link to={TRUE_ENDING_AUTHOR_NOTE_PATH} style={endingReturnButtonStyle}>
+          <Link className="ritual-ending-return-button" to={TRUE_ENDING_AUTHOR_NOTE_PATH} style={endingReturnButtonStyle}>
             通关纪念
           </Link>
         ) : (
           <>
-            <Link to="/home" style={endingReturnButtonStyle}>
+            <Link className="ritual-ending-return-button" to="/home" style={endingReturnButtonStyle}>
               返回心之家
             </Link>
-            <button type="button" onClick={handleRestartAssessment} style={endingReturnButtonStyle}>
+            <button className="ritual-ending-return-button" type="button" onClick={handleRestartAssessment} style={endingReturnButtonStyle}>
               返回理智评估
             </button>
           </>
@@ -958,7 +960,7 @@ export default function InternalForumRitualQuestions() {
           }}
         />
       )}
-      <main style={ending ? endingMainStyle : mainStyle}>
+      <main className="ritual-questions-main" style={ending ? endingMainStyle : mainStyle}>
         {!hasStarted ? renderIntro() : renderCurrentQuestion()}
       </main>
       {isFinalConfirmOpen && renderFinalConfirmModal()}
@@ -1200,6 +1202,13 @@ const modalTextStyle = {
 const recordNoticeTextStyle = {
   ...modalTextStyle,
   whiteSpace: 'nowrap',
+};
+
+const modalActionsStyle = {
+  display: 'flex',
+  gap: 12,
+  flexWrap: 'wrap',
+  marginTop: 24,
 };
 
 const modalPrimaryButtonStyle = {

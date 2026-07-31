@@ -34,6 +34,7 @@ const paragraphs = [
 export default function TrueEndingAuthorNote() {
   return (
     <div
+      className="true-ending-author-note-page"
       style={{
         minHeight: '100vh',
         background: '#f7fbf7',
@@ -45,6 +46,7 @@ export default function TrueEndingAuthorNote() {
       <HeartHomeHeader />
 
       <main
+        className="true-ending-author-note-main"
         style={{
           maxWidth: 820,
           margin: '0 auto',
@@ -52,6 +54,7 @@ export default function TrueEndingAuthorNote() {
         }}
       >
         <p
+          className="true-ending-author-note-kicker"
           style={{
             margin: '0 0 14px',
             color: '#2f7a4a',
@@ -64,6 +67,7 @@ export default function TrueEndingAuthorNote() {
         </p>
 
         <h1
+          className="true-ending-author-note-title"
           style={{
             margin: '0 0 28px',
             color: '#1f4d33',
@@ -76,6 +80,7 @@ export default function TrueEndingAuthorNote() {
         </h1>
 
         <div
+          className="true-ending-author-note-card"
           style={{
             border: '1px solid #dce9de',
             borderRadius: 8,
@@ -86,6 +91,7 @@ export default function TrueEndingAuthorNote() {
         >
           {paragraphs.map((paragraph, index) => (
             <p
+              className="true-ending-author-note-paragraph"
               key={index}
               style={{
                 margin: index === 0 ? 0 : '18px 0 0',
@@ -101,6 +107,7 @@ export default function TrueEndingAuthorNote() {
         </div>
 
         <nav
+          className="true-ending-author-note-nav"
           style={{
             display: 'flex',
             gap: 22,
@@ -117,6 +124,8 @@ export default function TrueEndingAuthorNote() {
           </Link>
         </nav>
       </main>
+
+      <style>{styles}</style>
     </div>
   );
 }
@@ -126,3 +135,73 @@ const bottomLinkStyle = {
   textDecoration: 'none',
   fontWeight: 800,
 };
+
+const styles = `
+  .hh-input-mode-touch-narrow .true-ending-author-note-main {
+    max-width: 100% !important;
+    padding: 42px 20px 74px !important;
+  }
+
+  .hh-input-mode-touch-narrow .true-ending-author-note-kicker {
+    margin-bottom: 10px !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .hh-input-mode-touch-narrow .true-ending-author-note-title {
+    margin-bottom: 20px !important;
+    font-size: clamp(26px, 8vw, 32px) !important;
+    line-height: 1.22 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .hh-input-mode-touch-narrow .true-ending-author-note-card {
+    padding: 22px 18px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 24px rgba(21, 71, 42, 0.05) !important;
+  }
+
+  .hh-input-mode-touch-narrow .true-ending-author-note-paragraph {
+    margin-top: 14px !important;
+    font-size: 14px !important;
+    line-height: 1.72 !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .hh-input-mode-touch-narrow .true-ending-author-note-paragraph:first-child {
+    margin-top: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.58 !important;
+    font-weight: 700 !important;
+  }
+
+  .hh-input-mode-touch-narrow .true-ending-author-note-nav {
+    gap: 14px !important;
+    margin-top: 22px !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  @media (max-width: 360px) {
+    .hh-input-mode-touch-narrow .true-ending-author-note-main {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+
+    .hh-input-mode-touch-narrow .true-ending-author-note-title {
+      font-size: 25px !important;
+    }
+
+    .hh-input-mode-touch-narrow .true-ending-author-note-card {
+      padding: 20px 16px !important;
+    }
+
+    .hh-input-mode-touch-narrow .true-ending-author-note-paragraph {
+      font-size: 13.5px !important;
+      line-height: 1.68 !important;
+    }
+  }
+`;

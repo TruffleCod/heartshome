@@ -1,4 +1,4 @@
-﻿import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeartHomeHeader from '../components/HeartHomeHeader';
 import HeartHomeFooter from '../components/HeartHomeFooter';
@@ -239,6 +239,7 @@ export default function Assessment() {
 
   return (
     <div
+      className="assessment-page"
       style={{
         minHeight: '100vh',
         background: '#ffffff',
@@ -250,6 +251,7 @@ export default function Assessment() {
       <HeartHomeHeader />
 
       <main
+        className="assessment-main"
         style={{
           maxWidth: 1560,
           margin: '0 auto',
@@ -257,6 +259,7 @@ export default function Assessment() {
         }}
       >
         <h1
+          className="assessment-title"
           style={{
             margin: '0 0 56px',
             color: '#59616a',
@@ -269,8 +272,9 @@ export default function Assessment() {
           静息评估
         </h1>
 
-        <section style={{ maxWidth: 1320 }}>
+        <section className="assessment-intro" style={{ maxWidth: 1320 }}>
           <p
+            className="assessment-intro-copy"
             style={{
               margin: '0 0 12px',
               color: '#4e5965',
@@ -285,6 +289,7 @@ export default function Assessment() {
           </p>
 
           <p
+            className="assessment-instruction"
             style={{
               margin: '34px 0 0',
               color: '#214932',
@@ -306,6 +311,7 @@ export default function Assessment() {
 
         <form onSubmit={handleSubmit}>
           <div
+            className="assessment-question-list"
             style={{
               display: 'grid',
               gridTemplateColumns: '1fr',
@@ -316,6 +322,7 @@ export default function Assessment() {
             {shuffledQuestions.map((question) => (
               <fieldset
                 key={question.id}
+                className="assessment-question-card"
                 ref={(element) => {
                   questionRefs.current[question.id] = element;
                 }}
@@ -330,6 +337,7 @@ export default function Assessment() {
                 }}
               >
                 <legend
+                  className="assessment-question-legend"
                   style={{
                     marginBottom: 12,
                     color: '#4e5965',
@@ -341,6 +349,7 @@ export default function Assessment() {
                 </legend>
 
                 <p
+                  className="assessment-question-text"
                   style={{
                     margin: '0 0 12px',
                     color: '#4e5965',
@@ -355,6 +364,7 @@ export default function Assessment() {
                   {question.options.map((option, optionIndex) => (
                     <label
                       key={option.value}
+                      className="assessment-option-label"
                       style={{
                         display: 'grid',
                         gridTemplateColumns: '22px minmax(0, 1fr)',
@@ -387,6 +397,7 @@ export default function Assessment() {
 
           <div
             ref={submitRef}
+            className="assessment-submit-row"
             style={{
               marginTop: 58,
               display: 'flex',
@@ -397,6 +408,7 @@ export default function Assessment() {
           >
             <button
               type="submit"
+              className="assessment-submit-button"
               disabled={isSubmitting}
               style={{
                 minWidth: 180,
@@ -425,6 +437,7 @@ export default function Assessment() {
         {(isSubmitting || result) && (
           <section
             ref={resultRef}
+            className="assessment-result-card"
             style={{
               marginTop: 52,
               padding: '30px 34px',
@@ -436,6 +449,7 @@ export default function Assessment() {
           >
             {isSubmitting ? (
               <p
+                className="assessment-loading-text"
                 style={{
                   margin: 0,
                   color: '#4e6258',
@@ -449,6 +463,7 @@ export default function Assessment() {
             ) : (
               <>
                 <p
+                  className="assessment-result-kicker"
                   style={{
                     margin: '0 0 12px',
                     color: '#2f7a4a',
@@ -460,6 +475,7 @@ export default function Assessment() {
                   ASSESSMENT RESULT
                 </p>
                 <h2
+                  className="assessment-result-title"
                   style={{
                     margin: '0 0 14px',
                     color: '#1f4d33',
@@ -470,6 +486,7 @@ export default function Assessment() {
                   {result.title}
                 </h2>
                 <p
+                  className="assessment-result-meta"
                   style={{
                     margin: '0 0 14px',
                     color: '#66766c',
@@ -480,6 +497,7 @@ export default function Assessment() {
                   总分：{result.score} 分 · {result.range}
                 </p>
                 <p
+                  className="assessment-result-body"
                   style={{
                     margin: 0,
                     maxWidth: 1320,
