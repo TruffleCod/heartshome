@@ -365,7 +365,9 @@ export default function MingchuanThirdMiddleCaseFive() {
             .hh-input-mode-touch .dy-case-five-card h1 {
               font-size: clamp(24px, calc((100cqw - 40px) / 18), 34px) !important;
               line-height: 1.22 !important;
-              white-space: nowrap !important;
+              white-space: normal !important;
+              overflow-wrap: break-word !important;
+              word-break: keep-all !important;
             }
 
             @media (min-width: 821px) {
@@ -384,6 +386,7 @@ export default function MingchuanThirdMiddleCaseFive() {
 
               .hh-input-mode-touch .dy-case-five-card h1 {
                 font-size: clamp(28px, calc((100cqw - 96px) / 18), 34px) !important;
+                white-space: nowrap !important;
               }
             }
           `}</style>
