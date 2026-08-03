@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { sha256 } from '../utils/hash';
 
 const INTRO_COPY = {
-  title: '恭喜你，调查员',
+  title: '恭喜你，叶诗隐',
   body: [
     '栽种仪式已被你中断，世人很快就会知道全部的真相。',
     '在结束这次调查前，请先完成一次理智评估。',

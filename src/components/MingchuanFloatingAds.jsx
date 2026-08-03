@@ -495,7 +495,11 @@ function FortuneAd({ close, placement }) {
       return;
     }
 
-    if (!/^[\u4e00-\u9fff]{2,5}$/.test(normalizedName) && !/^[\u4e00-\u9fff]{1,4}[·•][\u4e00-\u9fff]{1,6}$/.test(normalizedName)) {
+    const isChineseName = /^[\u4e00-\u9fff]{2,5}$/.test(normalizedName);
+    const isChineseNameWithSeparator = /^[\u4e00-\u9fff]{1,4}[·•][\u4e00-\u9fff]{1,6}$/.test(normalizedName);
+    const isEnglishName = /^(?=.{2,40}$)[A-Za-z]+(?:[ '-][A-Za-z]+){0,3}$/.test(normalizedName);
+
+    if (!isChineseName && !isChineseNameWithSeparator && !isEnglishName) {
       setMessage('请输入合法姓名。');
       return;
     }
