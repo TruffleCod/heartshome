@@ -2,7 +2,53 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <title>&#24515;&#20043;&#23478;</title>
+    <title>心之家｜中式克苏鲁网页推理解谜游戏</title>
+    <meta
+      name="description"
+      content="《心之家》是一款含少量恐怖元素的中文网页推理游戏。你将扮演叶诗隐，在妹妹叶诗遥失踪后进入她留下的“心之家”网站，通过阅读网页、寻找线索与输入答案，追查她的下落。"
+    />
+    <meta
+      name="keywords"
+      content="心之家,网页推理游戏,互动解谜游戏,沉浸式剧情游戏,悬疑解谜,中文独立游戏,ARG"
+    />
+    <meta name="author" content="TruffleCod" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#1f4d33" />
+    <link rel="canonical" href="https://xinzhijia.cc/" />
+
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="心之家" />
+    <meta property="og:title" content="心之家｜沉浸式网页推理游戏" />
+    <meta
+      property="og:description"
+      content="《心之家》是一款免费的网页推理解密游戏。玩家需要调查一个神秘心理咨询网站，通过论坛、新闻、博客和隐藏线索寻找失踪少女背后的真相。"
+    />
+    <meta property="og:url" content="https://xinzhijia.cc/" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="心之家｜沉浸式网页推理游戏" />
+    <meta
+      name="twitter:description"
+      content="通过阅读网页、寻找线索与输入答案，追查失踪妹妹叶诗遥的下落。"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "心之家",
+        "url": "https://xinzhijia.cc/",
+        "description": "《心之家》是一款免费的网页推理解密游戏。玩家需要调查一个神秘心理咨询网站，通过论坛、新闻、博客和隐藏线索寻找失踪少女背后的真相。",
+        "inLanguage": "zh-CN",
+        "gamePlatform": "Web browser",
+        "applicationCategory": "Game",
+        "genre": ["Puzzle", "Adventure", "Mystery"],
+        "author": {
+          "@type": "Person",
+          "name": "TruffleCod"
+        }
+      }
+    </script>
     <script>
       (() => {
         const baseUrl = '%BASE_URL%';
@@ -37,7 +83,17 @@
         }
 
         const siteProfile = siteProfiles[siteKey];
-        document.title = siteProfile.title;
+        document.title = pathname === '/'
+          ? '\u5fc3\u4e4b\u5bb6\uff5c\u6c89\u6d78\u5f0f\u7f51\u9875\u63a8\u7406\u6e38\u620f'
+          : siteProfile.title;
+        const robotsMeta = document.querySelector('meta[name="robots"]');
+        if (robotsMeta && pathname !== '/') {
+          robotsMeta.content = 'noindex, nofollow, noarchive';
+        }
+        const canonicalLink = document.querySelector('link[rel="canonical"]');
+        if (canonicalLink && pathname !== '/') {
+          canonicalLink.remove();
+        }
         const iconLink = document.createElement('link');
         iconLink.rel = 'icon';
         iconLink.type = 'image/svg+xml';

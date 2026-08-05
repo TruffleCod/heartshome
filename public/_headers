@@ -1,0 +1,11 @@
+/home
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/p/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/news/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/404-page-not-found
+  X-Robots-Tag: noindex, nofollow, noarchive

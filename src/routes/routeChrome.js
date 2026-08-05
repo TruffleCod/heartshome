@@ -101,7 +101,11 @@ export function updateFavicon(iconHref) {
 
 export function updateSiteChrome(site) {
   const siteProfile = siteProfiles[site] || siteProfiles.heartHome;
-  document.title = siteProfile.title;
+  const isPublicLandingPage = window.location.pathname === '/';
+  document.title = isPublicLandingPage
+    ? '心之家｜中式克苏鲁网页推理解谜游戏'
+    : siteProfile.title;
+
   updateFavicon(siteProfile.icon);
 }
 
