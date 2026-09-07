@@ -25,17 +25,14 @@ const hotlineResources = [
 const counselingPlatforms = [
   {
     name: '壹心理',
-    url: 'https://www.xinli001.com',
     label: 'www.xinli001.com',
   },
   {
     name: '简单心理',
-    url: 'https://www.jiandanxinli.com',
     label: 'www.jiandanxinli.com',
   },
   {
     name: 'KnowYourself知我心理',
-    url: 'http://www.zhiwotansuo.cn/',
     label: 'http://www.zhiwotansuo.cn/',
   },
 ];
@@ -212,11 +209,8 @@ export default function EmergencyHelp() {
                       }}
                     >
                       • {item.name}：{' '}
-                      <a
+                      <span
                         className="emergency-help-resource-link"
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         style={{
                           color: '#41566b',
                           fontSize: bodySize,
@@ -226,7 +220,7 @@ export default function EmergencyHelp() {
                         }}
                       >
                         {item.label}
-                      </a>
+                      </span>
                     </p>
                   ))}
                 </div>

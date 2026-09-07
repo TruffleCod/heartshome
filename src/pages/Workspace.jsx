@@ -9,7 +9,7 @@ import {
   getCounselingRecordPathForAccount,
   normalizeRecordCodeInput,
 } from '../utils/counselingRecordAccess';
-import { publicPath } from '../utils/publicPath';
+import { openGameRoute, publicPath } from '../utils/publicPath';
 
 const MENU_ITEMS = [
   { key: 'appointment', label: '预约咨询', shortLabel: '预约' },
@@ -326,7 +326,7 @@ export default function Workspace() {
     chatBodyRef.current.scrollTop += event.deltaY;
   };
   const handleOpenRecord = (path) => {
-    window.open(publicPath(path), '_blank', 'noopener,noreferrer');
+    openGameRoute(path);
   };
   const handleQueryRecordByInput = async () => {
     const normalized = normalizeRecordCodeInput(recordCodeInput);

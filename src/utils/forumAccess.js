@@ -1,4 +1,4 @@
-import { publicPath } from './publicPath';
+import { openGameRoute } from './publicPath';
 
 export const VISITOR_FORUM_PATH = '/p/b12e8f40a6';
 export const WORKSPACE_PATH = '/p/1b9c60e4fa';
@@ -17,7 +17,7 @@ export function markVisitorForumVerified() {
 }
 
 export function openVisitorForumWindow() {
-  window.open(publicPath(VISITOR_FORUM_PATH), '_blank', 'noopener,noreferrer');
+  openGameRoute(VISITOR_FORUM_PATH);
 }
 
 export function openVisitorForumOrVerify(showVerification) {

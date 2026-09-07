@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import PageProgressBanner from './components/PageProgressBanner';
 import ScrollToTop from './components/ScrollToTop';
 import StartGame from './pages/StartGame';
+import MarsTextConverter from './pages/MarsTextConverter';
 import HomeNew from './pages/HomeNew';
 import InternalForumGhostCache from './pages/InternalForumGhostCache';
 import {
@@ -10,6 +11,7 @@ import {
   isInnerForumLightToggleRoute,
   updateSiteChrome,
 } from './routes/routeChrome';
+import { isTapTapH5 } from './utils/publicPath';
 
 const PageRouteDispatcher = lazy(() => import('./routes/PageRouteDispatcher'));
 const MingchuanNewsSearch = lazy(() => import('./pages/MingchuanNewsSearch'));
@@ -97,6 +99,7 @@ function AppRoutes() {
           path="/404-page-not-found"
           element={<InternalForumGhostCache showGame={false} copy={ordinaryNotFoundCopy} />}
         />
+        <Route path="/tools/mars-text-converter" element={<MarsTextConverter />} />
         <Route
           path={SEARCH_PATHS.mingchuan}
           element={
@@ -127,9 +130,11 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const Router = isTapTapH5 ? HashRouter : BrowserRouter;
+
   return (
-    <BrowserRouter basename={routerBasename}>
+    <Router basename={isTapTapH5 ? undefined : routerBasename}>
       <AppRoutes />
-    </BrowserRouter>
+    </Router>
   );
 }

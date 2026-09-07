@@ -6,7 +6,7 @@ import {
   recordSearchHistory,
 } from '../utils/searchHistory';
 import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
-import { publicPath } from '../utils/publicPath';
+import { routePath } from '../utils/publicPath';
 import '../styles/mingchuanNews.css';
 
 const SEARCH_HISTORY_KEY = 'heart-home:mingchuan-news-search-history';
@@ -509,7 +509,7 @@ export default function MingchuanNewsSearch() {
                 results.map((item) => (
                   <a
                     key={item.id}
-                    href={publicPath(item.path)}
+                    href={routePath(item.path)}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{

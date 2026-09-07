@@ -9,7 +9,7 @@ import {
   getCounselingRecordPathForAccount,
   normalizeRecordCodeInput,
 } from '../utils/counselingRecordAccess';
-import { publicPath } from '../utils/publicPath';
+import { openGameRoute, publicPath, routePath } from '../utils/publicPath';
 
 const MENU_ITEMS = [
   { key: 'appointment', label: '预约咨询', shortLabel: '预约' },
@@ -282,7 +282,7 @@ export default function BuXiangWorkspace() {
     chatBodyRef.current.scrollTop += event.deltaY;
   };
   const handleOpenRecord = (path) => {
-    window.open(publicPath(path), '_blank', 'noopener,noreferrer');
+    openGameRoute(path);
   };
   const handleQueryRecordByInput = async () => {
     const normalized = normalizeRecordCodeInput(recordCodeInput);
@@ -791,7 +791,7 @@ export default function BuXiangWorkspace() {
                   <div className="workspace-posts-item buxiang-workspace-posts-item" key={post.id} style={{ border: '1px solid #d9e5de', borderRadius: 8, padding: '12px 14px' }}>
                     <a
                       className="workspace-posts-item-link buxiang-workspace-posts-item-link"
-                      href={publicPath(POST_PUBLIC_PATHS[post.id] || `/p/${post.id}`)}
+                      href={routePath(POST_PUBLIC_PATHS[post.id] || `/p/${post.id}`)}
                       style={{
                         display: 'inline-block',
                         margin: 0,

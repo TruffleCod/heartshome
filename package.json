@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:h5": "vite build --mode taptap --outDir dist-h5",
+    "package:h5": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-h5.ps1",
     "lint": "eslint .",
     "preview": "vite preview"
   },

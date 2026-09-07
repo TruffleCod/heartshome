@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { publicPath } from '../utils/publicPath';
+import { publicPath, routePath } from '../utils/publicPath';
 import { INPUT_MODES, readInputMode } from '../utils/inputMode';
 import { savePlayerGuestbookMessage } from '../utils/dongyangGuestbookStorage';
 import {
@@ -2538,7 +2538,7 @@ export function DongyangOldStoriesSearch() {
             ) : item.type === 'text' ? (
               <a
                 className="dy-result-card"
-                href={publicPath(item.path)}
+                href={routePath(item.path)}
                 target="_blank"
                 rel="noopener noreferrer"
                 key={item.id}
@@ -2562,7 +2562,7 @@ export function DongyangOldStoriesSearch() {
             ) : (
               <a
                 className="dy-result-card"
-                href={publicPath(item.path)}
+                href={routePath(item.path)}
                 target="_blank"
                 rel="noopener noreferrer"
                 key={item.id}

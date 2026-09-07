@@ -6,7 +6,7 @@ import {
   getCounselingRecordPathForAccount,
   normalizeRecordCodeInput,
 } from '../utils/counselingRecordAccess';
-import { publicPath } from '../utils/publicPath';
+import { openGameRoute, publicPath, routePath } from '../utils/publicPath';
 
 const CORRUPTION_START_MS = 30000;
 const CORRUPTION_STEP_MS = 5000;
@@ -487,7 +487,7 @@ export default function InnerForumWorkspace() {
   };
 
   const handleOpenRecord = (path) => {
-    window.open(publicPath(path), '_blank', 'noopener,noreferrer');
+    openGameRoute(path);
   };
 
   const handleQueryRecordByInput = async () => {
@@ -972,7 +972,7 @@ export default function InnerForumWorkspace() {
                 <a
                   className="workspace-posts-item-link inner-workspace-posts-item-link"
                   key={post.id}
-                  href={publicPath(post.to)}
+                  href={routePath(post.to)}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -1242,5 +1242,4 @@ export default function InnerForumWorkspace() {
     </div>
   );
 }
-
 

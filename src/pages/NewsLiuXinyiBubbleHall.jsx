@@ -26,8 +26,8 @@ export default function NewsLiuXinyiBubbleHall() {
       }}
       relatedLinks={[
         {
-          href: 'http://life.chacuo.net/convertchs2qq',
-          label: '火星文转换器',
+          href: '/tools/mars-text-converter',
+          label: '站内火星文转换器',
         },
       ]}
     />

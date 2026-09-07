@@ -6,7 +6,7 @@ import InternalForumCaveBackdrop from '../components/InternalForumCaveBackdrop';
 import InternalForumEyesBackground from '../components/InternalForumEyesBackground';
 import VerificationModal from '../components/VerificationModal';
 import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
-import { publicPath } from '../utils/publicPath';
+import { routePath } from '../utils/publicPath';
 import {
   INTERNAL_FORUM_BLACK,
   INTERNAL_FORUM_DARK_SURFACE,
@@ -418,7 +418,7 @@ export default function InternalForumPlantingCeremonyReplyPost() {
                           style={paragraphStyle}
                         >
                           <a
-                            href={publicPath(paragraph.href)}
+                            href={routePath(paragraph.href)}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{

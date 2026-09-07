@@ -6,7 +6,7 @@ import InternalForumCaveBackdrop from '../components/InternalForumCaveBackdrop';
 import InternalForumEyesBackground from '../components/InternalForumEyesBackground';
 import VerificationModal from '../components/VerificationModal';
 import { openVisitorForumOrVerify, openVisitorForumWindow } from '../utils/forumAccess';
-import { publicPath } from '../utils/publicPath';
+import { routePath } from '../utils/publicPath';
 import {
   INTERNAL_FORUM_BLACK,
   INTERNAL_FORUM_GLOW,
@@ -285,7 +285,7 @@ export default function InternalForumRulesPost() {
             <p style={{ margin: 0, color: theme.text, fontSize: 21, lineHeight: 1.95 }}>
               {renderMaskedText('严禁发布教唆、鼓励或详细描述自伤、自杀、伤害他人的具体方法或计划。如果您或您认识的人有此类倾向，我们强烈建议并恳请您立即寻求专业危机干预（')}
               <a
-                href={publicPath('p/ad5f0c8b62')}
+                href={routePath('p/ad5f0c8b62')}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#2d54ff' }}

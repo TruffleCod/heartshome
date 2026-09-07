@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MingchuanFloatingAds from './MingchuanFloatingAds';
-import { publicPath } from '../utils/publicPath';
+import { publicPath, routePath } from '../utils/publicPath';
 import { INPUT_MODE_STORAGE_KEY, INPUT_MODES } from '../utils/inputMode';
 import '../styles/mingchuanNews.css';
 
@@ -636,7 +636,7 @@ export default function MingchuanNewsArticle({
                   {visibleRelatedLinks.map((link, index) => (
                     <a
                       key={link.href}
-                      href={publicPath(link.href)}
+                      href={routePath(link.href)}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{

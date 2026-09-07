@@ -54,7 +54,7 @@ const FLASH_IMAGES = [
   '/images/followup/flash-3.jpg',
   '/images/followup/flash-4.jpg',
 ];
-const FOLLOWUP_CURSOR = `url('${publicPath('images/followup/cursor-knife.svg')}') 8 6, auto`;
+const FOLLOWUP_CURSOR = 'crosshair';
 const COMPLETE_TEXT = '恭喜您已登陆，当前登陆身份为花匠338。\n系统已记录下你的选择。\n\n请选择下一步。';
 const COMPLETE_HIGHLIGHT = '花匠338';
 const FINAL_NAME_SCRIBBLE_CONFIG = {

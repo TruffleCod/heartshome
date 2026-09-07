@@ -8,7 +8,7 @@ import {
   openVisitorForumOrVerify,
   openVisitorForumWindow,
 } from '../utils/forumAccess';
-import { publicPath } from '../utils/publicPath';
+import { openGameRoute } from '../utils/publicPath';
 
 const forumPosts = [
   {
@@ -55,11 +55,7 @@ export default function Forum() {
 
     if (currentTargetPath !== loginTargetPath) {
       event.preventDefault();
-      window.open(
-        publicPath(currentTargetPath),
-        '_blank',
-        'noopener,noreferrer'
-      );
+      openGameRoute(currentTargetPath);
     }
   };
 
